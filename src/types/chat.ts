@@ -7,6 +7,11 @@ export interface GrispiChatOptions {
   tenantId: string;
 
   /**
+   * Optional. Language code for the chat interface.
+   */
+  language?: string;
+
+  /**
    * Optional. Query selector for the HTML element where the chat will be mounted.
    * If not provided, it will be created automatically in the body.
    */

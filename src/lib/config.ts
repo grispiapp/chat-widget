@@ -37,61 +37,15 @@ export const STORAGE_KEYS = {
 };
 
 export const ENVIRONMENTS = {
-  PRODUCTION: "prod",
-  STAGING: "staging",
-  LOCAL: "local",
-  PREPROD: "preprod",
+  local: "local",
+  staging: "staging",
+  preprod: "preprod",
+  prod: "prod",
 };
 
-function extractSearchParamsInSrc() {
-  if (!document.currentScript || !document.currentScript.src) {
-    console.error(`'document.currentScript' is not available!`);
-    return {};
-  }
-
-  const searchParams = new URL(document.currentScript?.src).searchParams;
-
-  const debugModeParam = searchParams.get(DEBUG_MODE_URL_QUERY_PARAMETER) || "";
-  return {
-    chatJsUrl: document.currentScript.src,
-    environment: parseEnv(searchParams.get(ENVIRONMENT_URL_QUERY_PARAMETER)),
-    inDebugMode: debugModeParam.toLowerCase() === "true",
-    tenantId: searchParams.get("tenantId"),
-    lang:
-      searchParams.get("lang") ??
-      (navigator.language.startsWith("tr") ? "tr" : "en"),
-  };
-}
-
-const onlineStatus = async () => {
-  const response = await fetch(`${GRISPI_API_URL}/chat/status`, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      tenantId: tenantId,
-    },
-  });
-  return await response.json();
+export const API_URLS = {
+  local: "http://localhost:8080",
+  staging: "https://api.grispi.dev",
+  preprod: "https://api.grispi.net",
+  prod: "https://api.grispi.com",
 };
-
-function uuidv4() {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-    (
-      c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
-  );
-}
-
-function grispiApiUrl(env) {
-  switch (env) {
-    case ENV_LOCAL:
-      return "http://localhost:8080";
-    case ENV_STAGING:
-      return "https://api.grispi.dev";
-    case ENV_PROD:
-      return "https://api.grispi.com";
-    case ENV_PREPROD:
-      return "https://api.grispi.net";
-  }
-}

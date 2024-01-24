@@ -6,8 +6,21 @@ const VERSION = "0.2.0";
 console.log(`Grispi chat.js ${VERSION}`);
 window.GRISPI_CHAT_JS_VERSION = VERSION;
 
-export const GrispiChat = {
+type GrispiChat = {
+  create: (options: GrispiChatOptions) => void;
+  options: GrispiChatOptions | undefined;
+};
+
+export const GrispiChat: GrispiChat = {
+  options: undefined,
+
   create: async (options: GrispiChatOptions) => {
+    if (GrispiChat.options) {
+      throw new Error("GrispiChat already initialized");
+    }
+
+    GrispiChat.options = options;
+
     let widgetEl;
 
     if (options.element) {

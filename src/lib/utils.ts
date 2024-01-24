@@ -1,5 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
+import { type GrispiChatOptions } from "../types/chat";
+import { API_URLS } from "./config";
+
+const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 
 export const cn = (...args: ClassValue[]) =>
   extendTailwindMerge({
@@ -28,8 +32,6 @@ export const mergeChatOptions = (target, source) => {
   return options;
 };
 
-const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
-
 export const hexToRgb = (hex: string): string => {
   var result = HEX_REGEX.exec(hex);
   if (!result) return hex;
@@ -41,4 +43,8 @@ export const hexToRgb = (hex: string): string => {
   };
 
   return `${r}, ${g}, ${b}`;
+};
+
+export const getChatUrl = (environment?: GrispiChatOptions["environment"]) => {
+  return API_URLS[environment || "prod"];
 };
