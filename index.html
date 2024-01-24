@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Preact</title>
+    <style>
+      body {
+        background-color: #333333;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/src/index.tsx"></script>
+    <script type="module">
+      GrispiChat.create({
+        agent: {
+          name: "Murat",
+        },
+        popup_message: "Hey! Yardım lazım mı?",
+        welcome_message: "Merhaba, ben Murat. Size nasıl yardımcı olabilirim?",
+      });
+    </script>
+  </body>
+</html>
