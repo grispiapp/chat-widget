@@ -6,7 +6,6 @@ import {
   useEffect,
   useContext,
 } from "preact/hooks";
-import showdown from "showdown";
 import ChatBoxContext from "./chat-box-context";
 
 export type ConversationState = "idle" | "typing";
@@ -69,8 +68,6 @@ export const ConversationContextProvider = ({ children }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [replies, setReplies] = useState<Reply[]>([]);
 
-  const converter = new showdown.Converter();
-
   const addMessage = useCallback<ConversationContextType["addMessage"]>(
     async (message, withPrevious = true) => {
       try {
@@ -85,8 +82,6 @@ export const ConversationContextProvider = ({ children }) => {
         if (!message.formattedText) {
           message.formattedText = message.text;
         }
-
-        message.formattedText = converter.makeHtml(message.formattedText);
 
         setMessages((prev) =>
           withPrevious ? [...prev, message as Message] : [message as Message]

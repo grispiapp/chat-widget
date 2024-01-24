@@ -1,6 +1,6 @@
 import { render } from "preact";
 import { Widget } from "@components/widget";
-import { type GrispiChatOptions } from "./types/common";
+import { type GrispiChatOptions } from "./types/chat";
 
 const VERSION = "0.2.0";
 console.log(`Grispi chat.js ${VERSION}`);

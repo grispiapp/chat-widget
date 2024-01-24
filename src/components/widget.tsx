@@ -3,7 +3,7 @@ import { ChatBox } from "@components/chat-box";
 import { StickyCta } from "@components/sticky-cta";
 import { ConversationContextProvider } from "@context/conversation-context";
 import { type FC } from "preact/compat";
-import { type GrispiChatOptions } from "../types/common";
+import { type GrispiChatOptions } from "../types/chat";
 import { Wrapper } from "./wrapper";
 
 export interface WidgetProps {

@@ -1,6 +1,6 @@
+import { type IconType } from "@components/icons";
 import { cn } from "@lib/utils";
 import type { JSX, FC } from "preact/compat";
-import { type IconType } from "react-icons";
 
 interface ButtonProps
   extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, "icon" | "size"> {
@@ -61,7 +61,11 @@ export const Button: FC<ButtonProps> = ({
       {icon && (
         <div className="shrink-0">
           {icon({
-            size: size === "sm" ? 20 : size === "md" ? 24 : 28,
+            className: cn({
+              "cb-w-5 cb-h-5": size === "sm",
+              "cb-w-6 cb-h-6": size === "md",
+              "cb-w-7 cb-h-7": size === "lg",
+            }),
           })}
         </div>
       )}

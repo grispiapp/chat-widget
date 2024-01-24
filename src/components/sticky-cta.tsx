@@ -3,7 +3,7 @@ import ChatBoxContext from "@context/chat-box-context";
 import { cn } from "@lib/utils";
 import { AgentAvatar } from "./common/agent-avatar";
 import { Button } from "@ui/button";
-import { IoMdClose } from "react-icons/io";
+import { CloseIcon } from "./icons";
 
 interface StickyCtaProps {}
 
@@ -39,7 +39,7 @@ export const StickyCta: FC<StickyCtaProps> = () => {
           <Button
             onClick={handleCloseWelcomeMessage}
             variant="secondary"
-            icon={IoMdClose}
+            icon={CloseIcon}
             size="sm"
             className="cb-absolute cb-right-0 cb-top-0 -cb-translate-y-1/2 cb-translate-x-1/2 cb-shadow"
           />

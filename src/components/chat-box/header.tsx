@@ -1,9 +1,9 @@
 import { AgentAvatar } from "@components/common/agent-avatar";
+import { CloseIcon, RefreshIcon } from "@components/icons";
 import ChatBoxContext from "@context/chat-box-context";
 import ConversationContext from "@context/conversation-context";
 import { Button } from "@ui/button";
 import { useContext } from "preact/hooks";
-import { IoMdClose, IoMdRefresh } from "react-icons/io";
 
 export const ChatBoxHeader = () => {
   const { toggleState, options } = useContext(ChatBoxContext);
@@ -24,8 +24,8 @@ export const ChatBoxHeader = () => {
         <span className="cb-font-bold cb-text-sm">{options.agent.name}</span>
       </div>
       <div className="cb-flex cb-items-center cb-text-zinc-600">
-        <Button onClick={handleRefresh} variant="link" icon={IoMdRefresh} />
-        <Button onClick={toggleState} variant="link" icon={IoMdClose} />
+        <Button onClick={handleRefresh} variant="link" icon={RefreshIcon} />
+        <Button onClick={toggleState} variant="link" icon={CloseIcon} />
       </div>
     </div>
   );

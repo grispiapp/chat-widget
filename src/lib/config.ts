@@ -1,12 +1,12 @@
-import { type GrispiChatOptions } from "../types/common";
+import { type GrispiChatOptions } from "../types/chat";
 
-export const DEFAULT_WIDGET_OPTIONS: GrispiChatOptions = {
+export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
   colors: {
     primary: "99, 45, 145",
   },
   agent: {
-    name: "Leyla",
-    avatar: "https://i.ibb.co/7tGKGvb/leyla.png",
+    name: "Grispi",
+    avatar: "https://i.ibb.co/7tGKGvb/grispi.png",
   },
   popup_message:
     "Hey! Ben Leyla, (tamamen ücretsiz) sanal düğün planlama asistanınız. Size yardımcı olmamı ister misiniz?",
@@ -42,16 +42,6 @@ export const ENVIRONMENTS = {
   LOCAL: "local",
   PREPROD: "preprod",
 };
-
-export const DEBUG_MODE_URL_QUERY_PARAMETER = "debug";
-export const ENVIRONMENT_URL_QUERY_PARAMETER = "env";
-
-export function parseEnv(env) {
-  if (!env || env.trim().length === 0) return ENVIRONMENTS.PRODUCTION;
-  if (env.toLowerCase() === ENVIRONMENTS.PREPROD) ENVIRONMENTS.PREPROD;
-  if (env.toLowerCase() === ENVIRONMENTS.STAGING) ENVIRONMENTS.STAGING;
-  if (env.toLowerCase() === ENVIRONMENTS.LOCAL) ENVIRONMENTS.LOCAL;
-}
 
 function extractSearchParamsInSrc() {
   if (!document.currentScript || !document.currentScript.src) {

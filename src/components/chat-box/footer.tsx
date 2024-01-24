@@ -1,4 +1,5 @@
 import { Typing } from "@components/common/typing";
+import { SendIcon } from "@components/icons";
 import ChatBoxContext from "@context/chat-box-context";
 import ConversationContext from "@context/conversation-context";
 import { cn } from "@lib/utils";
@@ -11,13 +12,12 @@ import {
   useState,
 } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
-import { BiSend } from "react-icons/bi";
 
 export const ChatBoxFooter = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState<string>("");
 
-  const { state: boxState, size: boxSize } = useContext(ChatBoxContext);
+  const { state: boxState } = useContext(ChatBoxContext);
   const {
     state: conversationState,
     addMessage,
@@ -29,7 +29,7 @@ export const ChatBoxFooter = () => {
     if (boxState === "open" && conversationState === "idle") {
       inputRef.current?.focus();
     }
-  }, [boxState, boxSize, conversationState]);
+  }, [boxState, conversationState]);
 
   useEffect(() => {
     inputRef.current?.addEventListener("keydown", (e) => {
@@ -120,7 +120,7 @@ export const ChatBoxFooter = () => {
             <div className="cb-flex cb-items-center cb-justify-center">
               <Button
                 size="sm"
-                icon={BiSend}
+                icon={SendIcon}
                 disabled={conversationState === "typing"}
               />
             </div>

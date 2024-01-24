@@ -1,7 +1,7 @@
 import { createContext } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { type GrispiChatOptions } from "../types/common";
-import { deepMerge, hexToRgb, mergeChatOptions } from "@lib/utils";
+import { useState } from "preact/hooks";
+import { type GrispiChatOptions } from "../types/chat";
+import { deepMerge, mergeChatOptions } from "@lib/utils";
 import { DEFAULT_WIDGET_OPTIONS } from "@lib/config";
 
 type ChatBoxState = "open" | "closed" | "opening" | "closing";
