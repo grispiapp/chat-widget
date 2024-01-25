@@ -1,9 +1,9 @@
-import { type FC, useContext, useState, useEffect } from "preact/compat";
 import ChatBoxContext from "@context/chat-box-context";
 import { cn } from "@lib/utils";
-import { ChatBoxHeader } from "./header";
+import { useContext, type FC } from "preact/compat";
 import { ChatBoxContent } from "./content";
 import { ChatBoxFooter } from "./footer";
+import { ChatBoxHeader } from "./header";
 
 interface ChatBoxProps {}
 
@@ -22,7 +22,7 @@ export const ChatBox: FC<ChatBoxProps> = () => {
           "cb-opacity-0 cb-translate-y-40 cb-pointer-events-none cb-select-none":
             state === "closing" || state === "opening",
           "cb-opacity-100 cb-translate-y-0": state === "open",
-        }
+        },
       )}
       style={{
         boxShadow: "0 4px 30px #00000061",

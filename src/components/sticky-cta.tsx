@@ -1,8 +1,8 @@
-import { FC, useContext, useEffect, useState } from "preact/compat";
 import ChatBoxContext from "@context/chat-box-context";
 import { cn } from "@lib/utils";
-import { AgentAvatar } from "./common/agent-avatar";
 import { Button } from "@ui/button";
+import { FC, useContext, useState } from "preact/compat";
+import { AgentAvatar } from "./common/agent-avatar";
 import { CloseIcon } from "./icons";
 
 interface StickyCtaProps {}
@@ -30,7 +30,7 @@ export const StickyCta: FC<StickyCtaProps> = () => {
           "cb-opacity-100": state === "closed",
           "cb-opacity-0 cb-pointer-events-none cb-select-none":
             state === "opening" || state === "closing",
-        }
+        },
       )}
     >
       {displayWelcomeMessage && (

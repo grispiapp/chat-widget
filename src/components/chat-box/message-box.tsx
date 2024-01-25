@@ -1,8 +1,7 @@
 import { AgentAvatar } from "@components/common/agent-avatar";
-import ChatBoxContext from "@context/chat-box-context";
 import { Sender } from "@context/conversation-context";
 import { cn } from "@lib/utils";
-import { useContext, type FC } from "preact/compat";
+import { type FC } from "preact/compat";
 import type { JSX } from "preact/jsx-runtime";
 
 interface MessageBoxProps extends JSX.HTMLAttributes<HTMLDivElement> {
@@ -38,7 +37,7 @@ export const MessageBox: FC<MessageBoxProps> = ({
             {
               "cb-bg-white": sender === "ai",
               "cb-bg-primary": sender === "user",
-            }
+            },
           )}
         >
           <div

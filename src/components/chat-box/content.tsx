@@ -1,9 +1,9 @@
-import { useContext, useLayoutEffect, useRef } from "preact/hooks";
-import { MessageBox } from "./message-box";
-import ConversationContext from "@context/conversation-context";
-import ChatBoxContext from "@context/chat-box-context";
-import { useChatScroll } from "@hooks/useChatScroll";
 import { UserForm } from "@components/user-form";
+import ChatBoxContext from "@context/chat-box-context";
+import ConversationContext from "@context/conversation-context";
+import { useChatScroll } from "@hooks/useChatScroll";
+import { useContext, useRef } from "preact/hooks";
+import { MessageBox } from "./message-box";
 
 export const ChatBoxContent = () => {
   const contentScrollRef = useRef<HTMLDivElement>(null);
@@ -16,7 +16,7 @@ export const ChatBoxContent = () => {
       contentScrollRef,
       contentRef,
     },
-    [messages.length]
+    [messages.length],
   );
 
   return (

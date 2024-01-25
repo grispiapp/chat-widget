@@ -1,14 +1,14 @@
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
-import { debug, getBrokerUrl, uuidv4 } from "./utils";
+import { websocketConnectionReadyEvent } from "../api/chat";
 import {
   SERVER_MESSAGE_CODE,
   SubscribeableChatResponseForEndUser,
   UploadFilesResponse,
   WsMessage,
 } from "../types/backend";
-import { InternalEventTypeMap } from "./config";
-import { websocketConnectionReadyEvent } from "../api/chat";
 import { MediaFileMeta } from "../types/content";
+import { InternalEventTypeMap } from "./config";
+import { debug, getBrokerUrl, uuidv4 } from "./utils";
 
 /**
  * msgGrispiId or message id header
@@ -33,17 +33,17 @@ const chatDisconnectedEvent = () =>
   window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CHAT_DISCONNECTED));
 const myMessageSentEvent = (receiptId: string) =>
   window.dispatchEvent(
-    new CustomEvent(InternalEventTypeMap.GOT_RECEIPT, { detail: receiptId })
+    new CustomEvent(InternalEventTypeMap.GOT_RECEIPT, { detail: receiptId }),
   );
 const myMessageReceivedEvent = (messageId: string) =>
   window.dispatchEvent(
     new CustomEvent(InternalEventTypeMap.MESSAGE_RECEIVED, {
       detail: messageId,
-    })
+    }),
   );
 const myMessageSeenEvent = (messageId: string) =>
   window.dispatchEvent(
-    new CustomEvent(InternalEventTypeMap.MESSAGE_SEEN, { detail: messageId })
+    new CustomEvent(InternalEventTypeMap.MESSAGE_SEEN, { detail: messageId }),
   );
 
 const WebSocketErrorMessages = {
@@ -149,7 +149,7 @@ const incomingMessageHandler = (message: IMessage) => {
       terminateWsConnection();
       chatDisconnectedEvent();
       window.dispatchEvent(
-        new CustomEvent(InternalEventTypeMap.CHAT_SESSION_CLOSED)
+        new CustomEvent(InternalEventTypeMap.CHAT_SESSION_CLOSED),
       );
       return;
     }
@@ -158,7 +158,7 @@ const incomingMessageHandler = (message: IMessage) => {
     window.dispatchEvent(
       new CustomEvent(InternalEventTypeMap.INCOMING_MESSAGE, {
         detail: parsedMessage,
-      })
+      }),
     );
     message.ack({
       [MESSAGE_ID_HEADER]: parsedMessage.id,
@@ -210,12 +210,12 @@ const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
   if (!subscriptionToUpdates) {
     subscriptionToUpdates = client.subscribe(
       UPDATES_QUEUE_DESTINATION,
-      incomingUpdateMessageHandler
+      incomingUpdateMessageHandler,
     );
   }
 
   window.dispatchEvent(
-    new CustomEvent(InternalEventTypeMap.SUBSCRIBED_TO_CHAT)
+    new CustomEvent(InternalEventTypeMap.SUBSCRIBED_TO_CHAT),
   );
 };
 //</editor-fold>
@@ -225,7 +225,7 @@ function sendMessageOverWs(destination: string, message: WsMessage): void {
   if (!message) {
     console.error(
       "sendMessageOverWs",
-      'mandatory "message" parameter is missing!'
+      'mandatory "message" parameter is missing!',
     );
     return;
   }
@@ -233,7 +233,7 @@ function sendMessageOverWs(destination: string, message: WsMessage): void {
   if (!destination) {
     console.error(
       "sendMessageOverWs",
-      'mandatory "destination" parameter is missing!'
+      'mandatory "destination" parameter is missing!',
     );
     return;
   }
@@ -315,7 +315,7 @@ function getMediaFileMetaData(file: UploadFilesResponse) {
 }
 const sendMediaMessage = (
   uploadedFile: UploadFilesResponse,
-  senderName: string
+  senderName: string,
 ) => {
   const text = getMediaFileMetaData(uploadedFile);
   return sendMessage({
@@ -339,7 +339,7 @@ const sendMessage = (message: WsMessage) => {
   window.dispatchEvent(
     new CustomEvent(InternalEventTypeMap.INCOMING_MESSAGE, {
       detail: { id: Date.now() * -1, ...message },
-    })
+    }),
   );
 
   sendMessageOverWs(CHAT_MESSAGE_DESTINATION, message);
@@ -374,7 +374,7 @@ function terminateWsConnection(): Promise<void> {
 const setChatDestinations = (
   destination: string,
   closeChatSessionDestination: string,
-  chatmessageseendestination: string
+  chatmessageseendestination: string,
 ): void => {
   CHAT_MESSAGE_DESTINATION = destination;
   END_SESSION_DESTINATION = closeChatSessionDestination;

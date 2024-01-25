@@ -1,5 +1,5 @@
 import { cn, filled, getFirst, inputId } from "@lib/utils";
-import type { JSX, FC } from "preact/compat";
+import type { FC, JSX } from "preact/compat";
 import { Label } from "./label";
 
 interface InputProps extends JSX.HTMLAttributes<HTMLInputElement> {
@@ -30,7 +30,7 @@ export const Input: FC<InputProps> = ({
           "cb-block cb-w-full cb-p-2 cb-rounded cb-border focus:cb-outline-primary",
           {
             "cb-border-red-500": filled(error),
-          }
+          },
         )}
       />
       {filled(error) && <span className="cb-text-red-500">{error}</span>}

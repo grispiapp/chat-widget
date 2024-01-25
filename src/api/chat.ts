@@ -1,8 +1,8 @@
 import { api } from "@lib/api";
 import { InternalEventTypeMap } from "@lib/config";
 import { debug, getHostUrl } from "@lib/utils";
-import { UserInput } from "../types/user";
 import { SubscribeableChatResponseForEndUser } from "../types/backend";
+import { UserInput } from "../types/user";
 
 export const chatStatus = async () => {
   debug("chatStatus", "Fetch chat status...");

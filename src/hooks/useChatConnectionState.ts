@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { InternalEventTypeMap } from "@lib/config";
+import { useEffect, useState } from "react";
 
 export const useChatConnectionState = () => {
   const [subscribedToChat, setSubscribedToChat] = useState(false);
@@ -15,22 +15,22 @@ export const useChatConnectionState = () => {
 
     window.addEventListener(
       InternalEventTypeMap.SUBSCRIBED_TO_CHAT,
-      subscribedToChatHandler
+      subscribedToChatHandler,
     );
 
     window.addEventListener(
       InternalEventTypeMap.CHAT_DISCONNECTED,
-      disconnectHandler
+      disconnectHandler,
     );
 
     return () => {
       window.removeEventListener(
         InternalEventTypeMap.CHAT_DISCONNECTED,
-        disconnectHandler
+        disconnectHandler,
       );
       window.removeEventListener(
         InternalEventTypeMap.SUBSCRIBED_TO_CHAT,
-        subscribedToChatHandler
+        subscribedToChatHandler,
       );
     };
   }, []);

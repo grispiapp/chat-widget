@@ -1,13 +1,13 @@
+import { getFirst, uuidv4 } from "@lib/utils";
 import { createContext } from "preact";
 import {
-  type StateUpdater,
-  useState,
   useCallback,
-  useEffect,
   useContext,
+  useEffect,
+  useState,
+  type StateUpdater,
 } from "preact/hooks";
 import ChatBoxContext from "./chat-box-context";
-import { getFirst, uuidv4 } from "@lib/utils";
 
 export type ConversationState = "idle" | "typing";
 export type Sender = "ai" | "user";
@@ -47,7 +47,7 @@ interface ConversationContextType {
   selectReply: (reply: Reply) => void;
   addMessage: (
     message: AddMessage,
-    withPrevious?: boolean
+    withPrevious?: boolean,
   ) => Promise<Message | void>;
   reset: () => void;
 }
@@ -85,12 +85,12 @@ export const ConversationContextProvider = ({ children }) => {
       const mergedMessages = [...messages, message];
 
       const endUserMessages = mergedMessages.filter(
-        (message) => message.sender === "user"
+        (message) => message.sender === "user",
       );
 
       return endUserMessages.length === 1;
     },
-    [messages]
+    [messages],
   );
 
   const addMessage = useCallback<ConversationContextType["addMessage"]>(
@@ -99,7 +99,7 @@ export const ConversationContextProvider = ({ children }) => {
 
       try {
         setMessages((prev) =>
-          withPrevious ? [...prev, message as Message] : [message as Message]
+          withPrevious ? [...prev, message as Message] : [message as Message],
         );
 
         if (message.sender === "user") {
@@ -127,7 +127,7 @@ export const ConversationContextProvider = ({ children }) => {
         throw err;
       }
     },
-    [conversation, isFirstMessageFromEndUser]
+    [conversation, isFirstMessageFromEndUser],
   );
 
   const selectReply = useCallback<ConversationContextType["selectReply"]>(
@@ -140,7 +140,7 @@ export const ConversationContextProvider = ({ children }) => {
 
       setReplies([]);
     },
-    []
+    [],
   );
 
   const reset = useCallback(() => {
@@ -154,7 +154,7 @@ export const ConversationContextProvider = ({ children }) => {
         text: options.welcome_message,
         shouldSendToApi: false,
       },
-      false
+      false,
     );
 
     // setReplies([

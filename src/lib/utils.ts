@@ -61,19 +61,19 @@ export const isDebugMode = () => {
 };
 
 export const getChatUrl = (
-  environment?: GrispiChatOptions["environment"]
+  environment?: GrispiChatOptions["environment"],
 ): string => {
   return API_URLS[environment || getEnvironment()];
 };
 
 export const getBrokerUrl = (
-  environment?: GrispiChatOptions["environment"]
+  environment?: GrispiChatOptions["environment"],
 ): string => {
   return BROKER_URLS[environment || getEnvironment()];
 };
 
 export const getBackendUrl = (
-  environment?: GrispiChatOptions["environment"]
+  environment?: GrispiChatOptions["environment"],
 ): string => {
   return BACKEND_URLS[environment || getEnvironment()];
 };
@@ -88,7 +88,7 @@ export const uuidv4 = (): string => {
     (
       c ^
       (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
+    ).toString(16),
   );
 };
 
@@ -103,7 +103,7 @@ export const blank = (value: unknown): value is null | undefined | "" => {
 };
 
 export const filled = <T = string>(
-  value: unknown
+  value: unknown,
 ): value is Exclude<T, null | undefined> => {
   return !blank(value);
 };

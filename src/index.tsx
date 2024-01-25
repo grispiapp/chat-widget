@@ -1,9 +1,9 @@
-import { render } from "preact";
 import { Widget } from "@components/widget";
-import { type GrispiChatOptions } from "./types/chat-box";
-import styles from "./index.css?inline";
-import { debug } from "@lib/utils";
 import { VERSION } from "@lib/config";
+import { debug } from "@lib/utils";
+import { render } from "preact";
+import styles from "./index.css?inline";
+import { type GrispiChatOptions } from "./types/chat-box";
 
 type GrispiChat = {
   create: (options: GrispiChatOptions) => void;

@@ -35,7 +35,7 @@ export const ChatBoxFooter = () => {
   const handleSubmit = useCallback(
     async (
       e: JSX.TargetedSubmitEvent<HTMLFormElement> | KeyboardEvent,
-      value: string
+      value: string,
     ) => {
       e.preventDefault();
 
@@ -57,7 +57,7 @@ export const ChatBoxFooter = () => {
         setValue(value);
       }
     },
-    [conversationState, addMessage, isInputDisabled]
+    [conversationState, addMessage, isInputDisabled],
   );
 
   useEffect(() => {

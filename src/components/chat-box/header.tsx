@@ -11,7 +11,7 @@ export const ChatBoxHeader = () => {
 
   const handleRefresh = () => {
     const confirm = window.confirm(
-      "Konuşma yeniden başlatılacak ve geçmiş konuşmalar silecek. Onaylıyor musunuz?"
+      "Konuşma yeniden başlatılacak ve geçmiş konuşmalar silecek. Onaylıyor musunuz?",
     );
 
     confirm && reset();

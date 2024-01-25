@@ -1,6 +1,6 @@
 import { type IconType } from "@components/icons";
 import { cn } from "@lib/utils";
-import type { JSX, FC } from "preact/compat";
+import type { FC, JSX } from "preact/compat";
 
 interface ButtonProps
   extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, "icon" | "size"> {
@@ -55,7 +55,7 @@ export const Button: FC<ButtonProps> = ({
         {
           "cb-pointer-events-none cb-select-none cb-opacity-75": disabled,
         },
-        className
+        className,
       )}
     >
       {icon && (

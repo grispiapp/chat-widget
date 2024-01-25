@@ -1,6 +1,6 @@
-import { ChatBoxContextProvider } from "@context/chat-box-context";
 import { ChatBox } from "@components/chat-box";
 import { StickyCta } from "@components/sticky-cta";
+import { ChatBoxContextProvider } from "@context/chat-box-context";
 import { ConversationContextProvider } from "@context/conversation-context";
 import { type FC } from "preact/compat";
 import { type GrispiChatOptions } from "../types/chat";

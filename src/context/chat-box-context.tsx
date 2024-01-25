@@ -1,11 +1,11 @@
-import { createContext } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { type GrispiChatOptions } from "../types/chat-box";
+import { DEFAULT_WIDGET_OPTIONS } from "@lib/config";
 import { deepMerge, mergeChatOptions } from "@lib/utils";
-import { DEFAULT_WIDGET_OPTIONS, InternalEventTypeMap } from "@lib/config";
-import { SubscribeableChatResponseForEndUser } from "../types/backend";
-import { UserInput } from "../types/user";
+import { createContext } from "preact";
 import { SetStateAction } from "preact/compat";
+import { useEffect, useState } from "preact/hooks";
+import { SubscribeableChatResponseForEndUser } from "../types/backend";
+import { type GrispiChatOptions } from "../types/chat-box";
+import { UserInput } from "../types/user";
 
 type ChatBoxState = "open" | "closed" | "opening" | "closing";
 
@@ -42,7 +42,7 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
 export const ChatBoxContextProvider = ({ options, children }) => {
   const [state, setState] = useState<ChatBoxContextType["state"]>("closed");
   const [optionsState, setOptionsState] = useState<GrispiChatOptions>(
-    mergeChatOptions(DEFAULT_WIDGET_OPTIONS, options)
+    mergeChatOptions(DEFAULT_WIDGET_OPTIONS, options),
   );
   const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
   const [user, setUser] = useState<ChatBoxContextType["user"]>({
