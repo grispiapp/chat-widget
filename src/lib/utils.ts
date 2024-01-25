@@ -13,13 +13,14 @@ export const cn = (...args: ClassValue[]) =>
 export const deepMerge = (target, source) => {
   for (const key of Object.keys(source)) {
     if (source[key] instanceof Object) {
-      Object.assign(source[key], deepMerge(target[key], source[key]));
+      source[key] = {
+        ...source[key],
+        ...deepMerge(target[key], source[key]),
+      };
     }
   }
 
-  Object.assign(target || {}, source);
-
-  return target;
+  return { ...(target || {}), ...source };
 };
 
 export const mergeChatOptions = (target, source) => {
