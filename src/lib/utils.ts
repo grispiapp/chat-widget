@@ -4,6 +4,7 @@ import { type GrispiChatOptions } from "../types/chat-box";
 import { API_URLS, BACKEND_URLS, BROKER_URLS, DEFAULT_WIDGET_OPTIONS, type ENVIRONMENTS } from "./config";
 
 const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export const cn = (...args: ClassValue[]) =>
     extendTailwindMerge({
@@ -67,7 +68,8 @@ export const getHostUrl = () => {
 };
 
 export const uuidv4 = (): string => {
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
         (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
     );
@@ -99,4 +101,8 @@ export const getFirst = <T>(...values: unknown[]): T => {
 
 export const inputId = (name?: string | undefined) => {
     return getFirst<string>(`${name}_${uuidv4()}`, uuidv4);
+};
+
+export const isEmail = (input: string): boolean => {
+    return EMAIL_REGEX.test(input);
 };

@@ -16,13 +16,13 @@ export interface Message {
     formattedText: string;
     sender: Sender;
     createdAt: string;
+    shouldSendToApi?: boolean;
 }
 
 export interface AddMessage extends Omit<Message, "id" | "formattedText" | "createdAt"> {
     id?: string;
     formattedText?: string;
     createdAt?: string;
-    shouldSendToApi?: boolean;
 }
 
 export interface Reply {

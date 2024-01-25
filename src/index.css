@@ -10,7 +10,10 @@
 
         --color-foreground: 17, 24, 39;
         --color-muted-foreground: 55, 65, 81;
-        --color-background: 243, 244, 246;
+        --color-background: 255, 255, 255;
+        --color-muted-background: 243, 244, 246;
+        --color-success: 5, 150, 105;
+        --color-danger: 255, 77, 79;
     }
 }
 

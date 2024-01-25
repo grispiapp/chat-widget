@@ -9,6 +9,7 @@ type UseErrors<T> = {
     errors: ErrorRecord<T>;
     setErrors: SetStateAction<ErrorRecord<T>>;
     setError: (key: keyof T, value: string) => void;
+    resetErrors: () => void;
 };
 
 export const useErrors = <T>(defaultErrors?: ErrorRecord<T>): UseErrors<T> => {
@@ -21,9 +22,14 @@ export const useErrors = <T>(defaultErrors?: ErrorRecord<T>): UseErrors<T> => {
         }));
     };
 
+    const resetErrors = () => {
+        setErrors(defaultErrors);
+    };
+
     return {
         errors,
         setErrors,
         setError,
+        resetErrors,
     };
 };

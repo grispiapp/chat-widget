@@ -21,21 +21,21 @@ export const MessageBox: FC<MessageBoxProps> = ({ sender, text, createdAt }) => 
                 })}
             >
                 {sender === "ai" && (
-                    <AgentAvatar className={"cb-z-50 -cb-me-2 cb-mt-1 cb-border-2 cb-border-white cb-shadow-sm"} />
+                    <AgentAvatar className={"cb-z-50 -cb-me-2 cb-mt-1 cb-border-2 cb-border-background cb-shadow-sm"} />
                 )}
                 <div
                     className={cn(
                         "cb-space-y-2 cb-rounded-bl-xl cb-rounded-br cb-rounded-tl cb-rounded-tr-xl cb-p-3 cb-text-sm cb-shadow-sm",
                         {
-                            "cb-bg-white": sender === "ai",
+                            "cb-bg-background": sender === "ai",
                             "cb-bg-primary": sender === "user",
                         }
                     )}
                 >
                     <div
                         className={cn("cb-prose cb-prose-sm prose-p:cb-leading-snug", {
-                            "cb-text-gray-700": sender === "ai",
-                            "cb-text-white": sender === "user",
+                            "cb-text-foreground": sender === "ai",
+                            "cb-text-background": sender === "user",
                         })}
                         dangerouslySetInnerHTML={{ __html: text }}
                     />

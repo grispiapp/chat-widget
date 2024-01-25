@@ -38,10 +38,10 @@ export const Button: FC<ButtonProps> = ({
                     "cb-px-4 cb-py-3 cb-text-lg": size === "lg",
                 },
                 {
-                    "cb-bg-primary cb-text-white hover:cb-bg-primary/80": variant === "primary",
+                    "cb-bg-primary cb-text-background hover:cb-bg-primary/80": variant === "primary",
                     "cb-bg-white cb-text-zinc-600 hover:cb-bg-zinc-100 hover:cb-text-zinc-600": variant === "secondary",
-                    "cb-text-zinc-600 hover:cb-text-zinc-800": variant === "link",
-                    "cb-border-primary/60 cb-bg-white/50 cb-px-3 cb-py-2 cb-text-primary cb-backdrop-blur-lg hover:cb-bg-primary hover:cb-text-white":
+                    "cb-text-muted-foreground hover:cb-text-foreground": variant === "link",
+                    "cb-border-primary/60 cb-bg-background/50 cb-px-3 cb-py-2 cb-text-primary cb-backdrop-blur-lg hover:cb-bg-primary hover:cb-text-background":
                         variant === "suggest",
                 },
                 {
