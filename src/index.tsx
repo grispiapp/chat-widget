@@ -1,6 +1,7 @@
 import { render } from "preact";
 import { Widget } from "@components/widget";
 import { type GrispiChatOptions } from "./types/chat";
+import styles from "./index.css?inline";
 
 const VERSION = "0.2.0";
 console.log(`Grispi chat.js ${VERSION}`);
@@ -39,10 +40,8 @@ export const GrispiChat: GrispiChat = {
       mode: "open",
     });
 
-    const styles = await import("./index.css");
-
     const styleTag = document.createElement("style");
-    styleTag.innerHTML = styles.default;
+    styleTag.innerHTML = styles;
     widgetEl.shadowRoot.appendChild(styleTag);
 
     render(<Widget options={options} />, widgetEl.shadowRoot);
