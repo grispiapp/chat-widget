@@ -7,6 +7,7 @@ import {
   useContext,
 } from "preact/hooks";
 import ChatBoxContext from "./chat-box-context";
+import { getFirst, uuidv4 } from "@lib/utils";
 
 export type ConversationState = "idle" | "typing";
 export type Sender = "ai" | "user";
@@ -28,6 +29,7 @@ export interface AddMessage
   id?: string;
   formattedText?: string;
   createdAt?: string;
+  shouldSendToApi?: boolean;
 }
 
 export interface Reply {
@@ -61,54 +63,57 @@ const ConversationContext = createContext<ConversationContextType>({
   reset: () => {},
 });
 
+const setDefaultsForMessage = (message) => {
+  return {
+    ...message,
+    id: getFirst(message.id, uuidv4),
+    createdAt: getFirst(message.createdAt, () => new Date().toISOString()),
+    formattedText: getFirst(message.formattedText, message.text),
+    shouldSendToApi: getFirst(message.shouldSendToApi, true),
+  };
+};
+
 export const ConversationContextProvider = ({ children }) => {
-  const { options } = useContext(ChatBoxContext);
+  const { options, setUserFormVisibility } = useContext(ChatBoxContext);
   const [state, setState] = useState<ConversationState>("idle");
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [replies, setReplies] = useState<Reply[]>([]);
 
+  const isFirstMessageFromEndUser = useCallback(
+    (message: AddMessage) => {
+      const mergedMessages = [...messages, message];
+
+      const endUserMessages = mergedMessages.filter(
+        (message) => message.sender === "user"
+      );
+
+      return endUserMessages.length === 1;
+    },
+    [messages]
+  );
+
   const addMessage = useCallback<ConversationContextType["addMessage"]>(
     async (message, withPrevious = true) => {
+      message = setDefaultsForMessage(message);
+
       try {
-        if (!message.id) {
-          message.id = Math.random().toString() + Date.now().toString();
-        }
-
-        if (!message.createdAt) {
-          message.createdAt = new Date().toISOString();
-        }
-
-        if (!message.formattedText) {
-          message.formattedText = message.text;
-        }
-
         setMessages((prev) =>
           withPrevious ? [...prev, message as Message] : [message as Message]
         );
 
         if (message.sender === "user") {
-          setState("typing");
+          if (message.shouldSendToApi && isFirstMessageFromEndUser(message)) {
+            setUserFormVisibility(true);
+          }
 
           // const response = await createMessage(message, conversation);
 
-          const response = {
-            run_id: message.createdAt,
-            thread_id: "1",
-            output: "Ne dedin?",
-          };
-
-          // addMessage({
-          //   sender: "ai",
-          //   id: response.run_id,
-          //   text: response.output,
-          // });
-
-          if (conversation === undefined) {
-            setConversation({
-              id: response.thread_id,
-            });
-          }
+          // if (conversation === undefined) {
+          //   setConversation({
+          //     id: response.thread_id,
+          //   });
+          // }
 
           setState("idle");
           setReplies([]);
@@ -122,7 +127,7 @@ export const ConversationContextProvider = ({ children }) => {
         throw err;
       }
     },
-    [conversation]
+    [conversation, isFirstMessageFromEndUser]
   );
 
   const selectReply = useCallback<ConversationContextType["selectReply"]>(
@@ -147,33 +152,16 @@ export const ConversationContextProvider = ({ children }) => {
         id: "starter",
         sender: "ai",
         text: options.welcome_message,
+        shouldSendToApi: false,
       },
       false
     );
 
-    addMessage({
-      id: "starter-2",
-      sender: "user",
-      text: "Düğün yapmak istiyorum.",
-    });
-
-    addMessage({
-      id: "starter-3",
-      sender: "ai",
-      text: "Düğün yapmak istiyorsunuz. Peki kaç kişi olacak?",
-    });
-
-    addMessage({
-      id: "starter-4",
-      sender: "user",
-      text: "100 kişi.",
-    });
-
-    setReplies([
-      { label: "Düğün yapmak istiyorum." },
-      { label: "Nişan yapmak istiyorum." },
-      { label: "Kına gecesi yapmak istiyorum." },
-    ]);
+    // setReplies([
+    //   { label: "Düğün yapmak istiyorum." },
+    //   { label: "Nişan yapmak istiyorum." },
+    //   { label: "Kına gecesi yapmak istiyorum." },
+    // ]);
   }, []);
 
   useEffect(() => {

@@ -8,8 +8,7 @@ export async function api<T>(
   body: Record<string, unknown> = {}
 ): Promise<T> {
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    const baseUrl = getChatUrl(window.GrispiChat.options.environment);
-    url = `${baseUrl}${url}`;
+    url = `${getChatUrl()}${url}`;
   }
 
   const init: RequestInit = {
@@ -28,7 +27,10 @@ export async function api<T>(
   const response = await fetch(url, init);
 
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+    throw {
+      message: `Request failed: ${response.status}`,
+      response,
+    };
   }
 
   return await response.json();

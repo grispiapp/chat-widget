@@ -17,7 +17,7 @@ export const ChatBox: FC<ChatBoxProps> = () => {
   return (
     <div
       className={cn(
-        "md:cb-h-[40rem] md:cb-max-w-[30rem] cb-flex cb-flex-col cb-fixed cb-inset-0 md:cb-left-[unset] md:cb-right-6 md:cb-bottom-6 md:cb-top-[unset] cb-z-[1000] cb-bg-gray-100 cb-bg-opacity-90 cb-backdrop-filter cb-backdrop-blur-lg md:cb-rounded-xl cb-transition-all",
+        "md:cb-h-[35rem] md:cb-max-w-[25rem] cb-flex cb-flex-col cb-fixed cb-inset-0 md:cb-left-[unset] md:cb-right-6 md:cb-bottom-6 md:cb-top-[unset] cb-z-[1000] cb-bg-gray-100 cb-bg-opacity-90 cb-backdrop-filter cb-backdrop-blur-lg md:cb-rounded-xl cb-transition-all",
         {
           "cb-opacity-0 cb-translate-y-40 cb-pointer-events-none cb-select-none":
             state === "closing" || state === "opening",

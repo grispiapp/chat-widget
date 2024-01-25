@@ -6,6 +6,9 @@ export default {
     extend: {
       colors: {
         primary: "rgba(var(--color-primary))",
+        foreground: "rgba(var(--color-foreground))",
+        mutedForeground: "rgba(var(--color-muted-foreground))",
+        background: "rgba(var(--color-background))",
       },
     },
   },

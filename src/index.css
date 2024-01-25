@@ -7,6 +7,10 @@
     all: initial;
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    --color-foreground: 17, 24, 39;
+    --color-muted-foreground: 55, 65, 81;
+    --color-background: 243, 244, 246;
   }
 }
 

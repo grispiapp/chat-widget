@@ -1,11 +1,9 @@
 import { render } from "preact";
 import { Widget } from "@components/widget";
-import { type GrispiChatOptions } from "./types/chat";
+import { type GrispiChatOptions } from "./types/chat-box";
 import styles from "./index.css?inline";
-
-const VERSION = "0.2.0";
-console.log(`Grispi chat.js ${VERSION}`);
-window.GRISPI_CHAT_JS_VERSION = VERSION;
+import { debug } from "@lib/utils";
+import { VERSION } from "@lib/config";
 
 type GrispiChat = {
   create: (options: GrispiChatOptions) => void;
@@ -21,6 +19,8 @@ export const GrispiChat: GrispiChat = {
     }
 
     GrispiChat.options = options;
+
+    debug("chat.js", VERSION);
 
     let widgetEl;
 
