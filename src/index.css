@@ -3,37 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  :host {
-    all: initial;
-    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    :host {
+        all: initial;
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+            "Noto Color Emoji";
 
-    --color-foreground: 17, 24, 39;
-    --color-muted-foreground: 55, 65, 81;
-    --color-background: 243, 244, 246;
-  }
+        --color-foreground: 17, 24, 39;
+        --color-muted-foreground: 55, 65, 81;
+        --color-background: 243, 244, 246;
+    }
 }
 
 @layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .cb-no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .cb-no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .cb-no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .cb-no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
 }
 
 .cb-message-box::after {
-  content: "";
-  width: 10px;
-  height: 13px;
-  background: url("http://localhost:5173/images/chat-launcher-preview.png")
-    no-repeat center center;
-  background-size: 10px;
-  position: absolute;
-  bottom: 10px;
-  right: -10px;
+    content: "";
+    width: 10px;
+    height: 13px;
+    background: url("http://localhost:5173/images/chat-launcher-preview.png") no-repeat center center;
+    background-size: 10px;
+    position: absolute;
+    bottom: 10px;
+    right: -10px;
 }

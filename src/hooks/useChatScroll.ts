@@ -1,26 +1,20 @@
-import { useLayoutEffect, type Inputs, type MutableRef } from "preact/hooks";
+import { useLayoutEffect, type MutableRef } from "preact/hooks";
 
-type UseChatScroll = (
-  options: {
+type UseChatScrollOptions = {
     contentScrollRef: MutableRef<HTMLDivElement>;
     contentRef: MutableRef<HTMLDivElement>;
-  },
-  inputs: Inputs,
-) => void;
+};
 
-export const useChatScroll: UseChatScroll = (
-  { contentScrollRef, contentRef },
-  inputs,
-) => {
-  useLayoutEffect(() => {
-    const rect = contentRef.current?.getBoundingClientRect();
-    if (!rect) return;
+export const useChatScroll = ({ contentScrollRef, contentRef }: UseChatScrollOptions) => {
+    useLayoutEffect(() => {
+        const rect = contentRef.current?.getBoundingClientRect();
+        if (!rect) return;
 
-    const { height } = rect;
+        const { height } = rect;
 
-    contentScrollRef.current?.scrollTo({
-      top: height,
-      behavior: "smooth",
-    });
-  }, inputs);
+        contentScrollRef.current?.scrollTo({
+            top: height,
+            behavior: "smooth",
+        });
+    }, [contentRef, contentScrollRef]);
 };

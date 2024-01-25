@@ -5,9 +5,9 @@ import type { JSX } from "preact/jsx-runtime";
 interface LabelProps extends JSX.HTMLAttributes<HTMLLabelElement> {}
 
 export const Label: FC<LabelProps> = ({ className, children, ...props }) => {
-  return (
-    <label {...props} className={cn(className, "cb-font-medium")}>
-      {children}
-    </label>
-  );
+    return (
+        <label {...props} className={cn(className, "cb-font-medium")}>
+            {children}
+        </label>
+    );
 };

@@ -1,102 +1,100 @@
 import { DEFAULT_WIDGET_OPTIONS } from "@lib/config";
 import { deepMerge, mergeChatOptions } from "@lib/utils";
 import { createContext } from "preact";
-import { SetStateAction } from "preact/compat";
+import { type SetStateAction } from "preact/compat";
 import { useEffect, useState } from "preact/hooks";
-import { SubscribeableChatResponseForEndUser } from "../types/backend";
+import { type SubscribeableChatResponseForEndUser } from "../types/backend";
 import { type GrispiChatOptions } from "../types/chat-box";
-import { UserInput } from "../types/user";
+import { type UserInput } from "../types/user";
 
 type ChatBoxState = "open" | "closed" | "opening" | "closing";
 
 export interface ChatBoxContextType {
-  state: ChatBoxState;
-  options: GrispiChatOptions;
-  chat: SubscribeableChatResponseForEndUser & {
-    subscribed: boolean;
-  };
-  user: UserInput;
-  isUserFormVisible: boolean;
-  toggleState: () => void;
-  updateOptions: (newOptions: GrispiChatOptions) => void;
-  setChat: SetStateAction<ChatBoxContextType["chat"]>;
-  setUser: SetStateAction<ChatBoxContextType["user"]>;
-  setUserFormVisibility: SetStateAction<
-    ChatBoxContextType["isUserFormVisible"]
-  >;
+    state: ChatBoxState;
+    options: GrispiChatOptions;
+    chat: SubscribeableChatResponseForEndUser & {
+        subscribed: boolean;
+    };
+    user: UserInput;
+    isUserFormVisible: boolean;
+    toggleState: () => void;
+    updateOptions: (newOptions: GrispiChatOptions) => void;
+    setChat: SetStateAction<ChatBoxContextType["chat"]>;
+    setUser: SetStateAction<ChatBoxContextType["user"]>;
+    setUserFormVisibility: SetStateAction<ChatBoxContextType["isUserFormVisible"]>;
 }
 
 const ChatBoxContext = createContext<ChatBoxContextType>({
-  state: "closed",
-  options: null,
-  chat: null,
-  user: null,
-  isUserFormVisible: false,
-  toggleState: () => {},
-  updateOptions: () => {},
-  setChat: () => {},
-  setUser: () => {},
-  setUserFormVisibility: () => {},
+    state: "closed",
+    options: null,
+    chat: null,
+    user: null,
+    isUserFormVisible: false,
+    toggleState: () => {},
+    updateOptions: () => {},
+    setChat: () => {},
+    setUser: () => {},
+    setUserFormVisibility: () => {},
 });
 
 export const ChatBoxContextProvider = ({ options, children }) => {
-  const [state, setState] = useState<ChatBoxContextType["state"]>("closed");
-  const [optionsState, setOptionsState] = useState<GrispiChatOptions>(
-    mergeChatOptions(DEFAULT_WIDGET_OPTIONS, options),
-  );
-  const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
-  const [user, setUser] = useState<ChatBoxContextType["user"]>({
-    fullName: "",
-    email: "",
-  });
-  const [isUserFormVisible, setUserFormVisibility] = useState<boolean>(false);
-
-  useEffect(() => {
-    window.addEventListener("message", (event) => {
-      const { auth, data, type } = event.data;
-
-      if (type) {
-        console.log({ type });
-      }
+    const [state, setState] = useState<ChatBoxContextType["state"]>("closed");
+    const [optionsState, setOptionsState] = useState<GrispiChatOptions>(
+        mergeChatOptions(DEFAULT_WIDGET_OPTIONS, options)
+    );
+    const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
+    const [user, setUser] = useState<ChatBoxContextType["user"]>({
+        fullName: "",
+        email: "",
     });
-  }, []);
+    const [isUserFormVisible, setUserFormVisibility] = useState<boolean>(false);
 
-  const toggleState = () => {
-    if (state === "open") {
-      setState("closing");
-      setTimeout(() => {
-        setState("closed");
-      }, 100);
-    } else {
-      setState("opening");
-      setTimeout(() => {
-        setState("open");
-      }, 100);
-    }
-  };
+    useEffect(() => {
+        window.addEventListener("message", (event) => {
+            const { auth, data, type } = event.data;
 
-  const updateOptions = (newOptions: GrispiChatOptions) => {
-    setOptionsState((prevState) => deepMerge(prevState, newOptions));
-  };
+            if (type) {
+                console.log({ type });
+            }
+        });
+    }, []);
 
-  return (
-    <ChatBoxContext.Provider
-      value={{
-        state,
-        options: optionsState,
-        chat,
-        user,
-        isUserFormVisible,
-        updateOptions,
-        toggleState,
-        setChat,
-        setUser,
-        setUserFormVisibility,
-      }}
-    >
-      {children}
-    </ChatBoxContext.Provider>
-  );
+    const toggleState = () => {
+        if (state === "open") {
+            setState("closing");
+            setTimeout(() => {
+                setState("closed");
+            }, 100);
+        } else {
+            setState("opening");
+            setTimeout(() => {
+                setState("open");
+            }, 100);
+        }
+    };
+
+    const updateOptions = (newOptions: GrispiChatOptions) => {
+        setOptionsState((prevState) => deepMerge(prevState, newOptions));
+    };
+
+    return (
+        <ChatBoxContext.Provider
+            value={{
+                state,
+                options: optionsState,
+                chat,
+                user,
+                isUserFormVisible,
+                updateOptions,
+                toggleState,
+                setChat,
+                setUser,
+                setUserFormVisibility,
+            }}
+        >
+            {children}
+        </ChatBoxContext.Provider>
+    );
 };
 
 export default ChatBoxContext;

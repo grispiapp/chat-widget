@@ -1,4 +1,4 @@
 export interface UserInput {
-  fullName: string;
-  email: string;
+    fullName: string;
+    email: string;
 }
