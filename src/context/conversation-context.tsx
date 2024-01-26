@@ -1,7 +1,11 @@
 import { getFirst, uuidv4 } from "@lib/utils";
+import { sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { useCallback, useContext, useEffect, useState, type StateUpdater } from "preact/hooks";
+import { t } from "../lang";
+import { WsMessage } from "../types/backend";
 import ChatBoxContext from "./chat-box-context";
+import { useNotification } from "./notification-context";
 
 export type ConversationState = "idle" | "typing";
 export type Sender = "ai" | "user";
@@ -64,7 +68,8 @@ const setDefaultsForMessage = (message) => {
 };
 
 export const ConversationContextProvider = ({ children }) => {
-    const { options, setUserFormVisibility } = useContext(ChatBoxContext);
+    const { notify } = useNotification();
+    const { options, chat, user, setUserFormVisibility } = useContext(ChatBoxContext);
     const [state, setState] = useState<ConversationState>("idle");
     const [conversation, setConversation] = useState<Conversation>();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -86,20 +91,28 @@ export const ConversationContextProvider = ({ children }) => {
             message = setDefaultsForMessage(message);
 
             try {
-                setMessages((prev) => (withPrevious ? [...prev, message as Message] : [message as Message]));
+                setMessages((prev) =>
+                    withPrevious ? [...prev, message as Message] : [message as Message]
+                );
 
                 if (message.sender === "user") {
-                    if (message.shouldSendToApi && isFirstMessageFromEndUser(message)) {
+                    if (
+                        message.shouldSendToApi &&
+                        isFirstMessageFromEndUser(message) &&
+                        !chat?.subscribed
+                    ) {
                         setUserFormVisibility(true);
+                    } else if (message.shouldSendToApi) {
+                        sendMessage(
+                            {
+                                id: message.id,
+                                sender: user.fullName,
+                                sentAt: Date.now(),
+                                text: message.text,
+                            } as WsMessage,
+                            chat
+                        );
                     }
-
-                    // const response = await createMessage(message, conversation);
-
-                    // if (conversation === undefined) {
-                    //   setConversation({
-                    //     id: response.thread_id,
-                    //   });
-                    // }
 
                     setState("idle");
                     setReplies([]);
@@ -107,13 +120,20 @@ export const ConversationContextProvider = ({ children }) => {
 
                 return message as Message;
             } catch (err) {
-                alert("Bir sorun oluştu.");
+                notify({
+                    title: t("errors.common.title"),
+                    text: t("errors.common.text"),
+                    type: "error",
+                });
+
                 setState("idle");
+
+                console.error(err);
 
                 throw err;
             }
         },
-        [conversation, isFirstMessageFromEndUser]
+        [chat?.subscribed, isFirstMessageFromEndUser, setUserFormVisibility]
     );
 
     const selectReply = useCallback<ConversationContextType["selectReply"]>((reply) => {
@@ -168,6 +188,10 @@ export const ConversationContextProvider = ({ children }) => {
             {children}
         </ConversationContext.Provider>
     );
+};
+
+export const useConversation = () => {
+    return useContext(ConversationContext);
 };
 
 export default ConversationContext;

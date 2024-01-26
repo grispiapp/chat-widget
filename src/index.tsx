@@ -5,12 +5,14 @@ import { render } from "preact";
 import styles from "./index.css?inline";
 import { type GrispiChatOptions } from "./types/chat-box";
 
-type GrispiChat = {
+type GrispiChatType = {
     create: (options: GrispiChatOptions) => void;
     options: GrispiChatOptions | undefined;
+    hasSubscribedToChatListener?: boolean;
+    hasChatDisconnectedListener?: boolean;
 };
 
-export const GrispiChat: GrispiChat = {
+export const GrispiChat: GrispiChatType = {
     options: undefined,
 
     create: async (options: GrispiChatOptions) => {

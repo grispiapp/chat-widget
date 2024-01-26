@@ -5,13 +5,13 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "rgba(var(--color-primary), var(--tw-bg-opacity))",
-                foreground: "rgba(var(--color-foreground), var(--tw-bg-opacity))",
-                "muted-foreground": "rgba(var(--color-muted-foreground), var(--tw-bg-opacity))",
-                background: "rgba(var(--color-background), var(--tw-bg-opacity))",
-                "muted-background": "rgba(var(--color-muted-background), var(--tw-bg-opacity))",
-                success: "rgba(var(--color-success), var(--tw-bg-opacity))",
-                danger: "rgba(var(--color-danger), var(--tw-bg-opacity))",
+                primary: "rgb(var(--color-primary))",
+                foreground: "rgb(var(--color-foreground))",
+                "muted-foreground": "rgb(var(--color-muted-foreground))",
+                background: "rgb(var(--color-background))",
+                "muted-background": "rgb(var(--color-muted-background))",
+                success: "rgb(var(--color-success))",
+                danger: "rgb(var(--color-danger))",
             },
         },
     },

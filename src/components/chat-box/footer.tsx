@@ -1,25 +1,31 @@
 import { Typing } from "@components/common/typing";
 import { SendIcon } from "@components/icons";
-import ChatBoxContext from "@context/chat-box-context";
+import { useChatBox } from "@context/chat-box-context";
 import ConversationContext from "@context/conversation-context";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
 import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
+import { t } from "../../lang";
 
 export const ChatBoxFooter = () => {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState<string>("");
-    const { state: boxState, isUserFormVisible } = useContext(ChatBoxContext);
-    const { state: conversationState, addMessage, replies, selectReply } = useContext(ConversationContext);
+    const { chat, user, state: boxState, isUserFormVisible, status: boxStatus } = useChatBox();
+    const {
+        state: conversationState,
+        addMessage,
+        replies,
+        selectReply,
+    } = useContext(ConversationContext);
 
-    const isInputDisabled = isUserFormVisible;
+    const isInputDisabled = isUserFormVisible || boxStatus === "loading";
 
     useEffect(() => {
-        if (boxState === "open" && conversationState === "idle") {
+        if (boxState === "open" && conversationState === "idle" && !isInputDisabled) {
             inputRef.current?.focus();
         }
-    }, [boxState, conversationState]);
+    }, [boxState, conversationState, isInputDisabled]);
 
     const handleSubmit = useCallback(
         async (e: JSX.TargetedSubmitEvent<HTMLFormElement> | KeyboardEvent, value: string) => {
@@ -43,7 +49,7 @@ export const ChatBoxFooter = () => {
                 setValue(value);
             }
         },
-        [conversationState, addMessage, isInputDisabled]
+        [isInputDisabled, addMessage]
     );
 
     useEffect(() => {
@@ -57,9 +63,10 @@ export const ChatBoxFooter = () => {
         };
 
         inputRef.current?.addEventListener("keydown", onKeydown);
+        const inputEl = inputRef.current;
 
         return () => {
-            inputRef.current?.removeEventListener("keydown", onKeydown);
+            inputEl?.removeEventListener("keydown", onKeydown);
         };
     }, [handleSubmit]);
 
@@ -105,7 +112,7 @@ export const ChatBoxFooter = () => {
                     <textarea
                         ref={inputRef}
                         type="text"
-                        placeholder="Mesajınızı buraya yazın..."
+                        placeholder={t("footer.input.placeholder")}
                         className="cb-max-h-32 cb-w-full cb-resize-none cb-rounded-2xl cb-border cb-bg-white cb-p-3 cb-text-sm focus:cb-outline-none disabled:cb-opacity-75"
                         rows={rows}
                         disabled={isInputDisabled}

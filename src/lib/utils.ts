@@ -1,7 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
+import { SubscribeableChatResponseForEndUser } from "../types/backend";
 import { type GrispiChatOptions } from "../types/chat-box";
-import { API_URLS, BACKEND_URLS, BROKER_URLS, DEFAULT_WIDGET_OPTIONS, type ENVIRONMENTS } from "./config";
+import {
+    API_URLS,
+    BACKEND_URLS,
+    BROKER_URLS,
+    DEFAULT_WIDGET_OPTIONS,
+    type ENVIRONMENTS,
+} from "./config";
 
 const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -38,11 +45,28 @@ export const hexToRgb = (hex: string): string => {
     const result = HEX_REGEX.exec(hex);
     if (!result) return hex;
 
-    return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)].join(", ");
+    return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)].join(" ");
+};
+
+export const getTenantId = () => {
+    return window.GrispiChat.options.tenantId;
 };
 
 export const getEnvironment = (): keyof typeof ENVIRONMENTS => {
     return window.GrispiChat.options.environment || "prod";
+};
+
+export const destinationPaths = (
+    chatSessionId: SubscribeableChatResponseForEndUser["chatSessionId"]
+) => {
+    const tenantId = getTenantId();
+
+    return {
+        exchange: () => `/exchange/${tenantId}/${tenantId}.${chatSessionId}`,
+        chatMessage: () => `/app/chat/${tenantId}/${chatSessionId}`,
+        endSession: () => `/app/chat/${tenantId}/${chatSessionId}/close`,
+        chatMessageSeen: () => `/app/chat/${tenantId}/${chatSessionId}/seen`,
+    };
 };
 
 export const isDebugMode = () => {
@@ -77,7 +101,9 @@ export const uuidv4 = (): string => {
 
 export const debug = (...args) => {
     if (isDebugMode()) {
-        console.debug("[grispi]", ...args);
+        console.groupCollapsed("[grispi]", ...args);
+        console.trace();
+        console.groupEnd();
     }
 };
 
@@ -106,3 +132,24 @@ export const inputId = (name?: string | undefined) => {
 export const isEmail = (input: string): boolean => {
     return EMAIL_REGEX.test(input);
 };
+
+type EncapsulatedStringObject = Record<string, string | object>;
+export function convertKeysToDotNotation(
+    object: EncapsulatedStringObject,
+    prefix: string = ""
+): Record<string, string> {
+    const result: Record<string, string> = {};
+    Object.keys(object).forEach((key) => {
+        const newPrefix = prefix ? `${prefix}.${key}` : key;
+        const value = object[key];
+        if (typeof value === "object") {
+            Object.assign(
+                result,
+                convertKeysToDotNotation(object[key] as EncapsulatedStringObject, newPrefix)
+            );
+        } else {
+            result[newPrefix] = value;
+        }
+    });
+    return result;
+}

@@ -1,4 +1,6 @@
 import ChatBoxContext from "@context/chat-box-context";
+import { STORAGE_KEYS } from "@lib/config";
+import { isPromptDismissed } from "@lib/storage";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
 import { useContext, useState, type FC } from "preact/compat";
@@ -9,11 +11,12 @@ interface StickyCtaProps {}
 
 export const StickyCta: FC<StickyCtaProps> = () => {
     const { state, toggleState, options } = useContext(ChatBoxContext);
-    const [displayWelcomeMessage, setDisplayWelcomeMessage] = useState<boolean>(true);
+    const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
         e.stopPropagation();
-        setDisplayWelcomeMessage(false);
+        setDisplayPrompt(false);
+        localStorage.setItem(STORAGE_KEYS.DISMISS_PROMPT, "1");
     };
 
     if (state === "open") {
@@ -27,11 +30,12 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                 "cb-fixed cb-bottom-6 cb-right-6 cb-z-[1000] cb-flex cb-items-end cb-gap-4 cb-text-start cb-transition-opacity",
                 {
                     "cb-opacity-100": state === "closed",
-                    "cb-pointer-events-none cb-select-none cb-opacity-0": state === "opening" || state === "closing",
+                    "cb-pointer-events-none cb-select-none cb-opacity-0":
+                        state === "opening" || state === "closing",
                 }
             )}
         >
-            {displayWelcomeMessage && (
+            {displayPrompt && (
                 <div className="cb-message-box cb-relative cb-mb-2 cb-max-w-64 cb-rounded-xl cb-bg-white cb-p-3 cb-text-sm cb-text-gray-700 cb-shadow md:cb-max-w-80">
                     {options.popup_message}
                     <Button

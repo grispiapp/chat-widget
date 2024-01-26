@@ -5,15 +5,15 @@
 @layer base {
     :host {
         all: initial;
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-            "Noto Color Emoji";
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+            "Segoe UI Symbol", "Noto Color Emoji";
 
-        --color-foreground: 17, 24, 39;
-        --color-muted-foreground: 55, 65, 81;
-        --color-background: 255, 255, 255;
-        --color-muted-background: 243, 244, 246;
-        --color-success: 5, 150, 105;
-        --color-danger: 255, 77, 79;
+        --color-foreground: 17 24 39;
+        --color-muted-foreground: 55 65 81;
+        --color-background: 255 255 255;
+        --color-muted-background: 243 244 246;
+        --color-success: 5 150 105;
+        --color-danger: 255 77 79;
     }
 }
 
@@ -33,7 +33,8 @@
     content: "";
     width: 10px;
     height: 13px;
-    background: url("http://localhost:5173/images/chat-launcher-preview.png") no-repeat center center;
+    background: url("http://localhost:5173/images/chat-launcher-preview.png") no-repeat center
+        center;
     background-size: 10px;
     position: absolute;
     bottom: 10px;

@@ -5,7 +5,7 @@ window.GRISPI_CHAT_JS_VERSION = VERSION;
 
 export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
     colors: {
-        primary: "99, 45, 145",
+        primary: "99 45 145",
     },
     agent: {
         name: "Grispi",
@@ -23,6 +23,7 @@ export const STORAGE_KEYS = {
     DISMISS_PROMPT: "grispi.chat.dismissPrompt",
     CHAT_ID: "grispi.chat.chatId",
     LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
+    LAST_BOX_STATE: "grispi.chat.lastBoxState",
 };
 
 export const ENVIRONMENTS = {

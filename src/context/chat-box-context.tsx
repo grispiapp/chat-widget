@@ -1,16 +1,26 @@
 import { DEFAULT_WIDGET_OPTIONS } from "@lib/config";
+import { getLastBoxStateFromStorage } from "@lib/storage";
 import { deepMerge, mergeChatOptions } from "@lib/utils";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
-import { useEffect, useState } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
 import { type GrispiChatOptions } from "../types/chat-box";
 import { type UserInput } from "../types/user";
 
-type ChatBoxState = "open" | "closed" | "opening" | "closing";
+export const chatBoxStateMap = {
+    open: "open",
+    closed: "closed",
+    opening: "opening",
+    closing: "closing",
+};
+
+export type ChatBoxState = keyof typeof chatBoxStateMap;
+type ChatBoxStatus = "idle" | "loading";
 
 export interface ChatBoxContextType {
     state: ChatBoxState;
+    status: ChatBoxStatus;
     options: GrispiChatOptions;
     chat: SubscribeableChatResponseForEndUser & {
         subscribed: boolean;
@@ -18,6 +28,7 @@ export interface ChatBoxContextType {
     user: UserInput;
     isUserFormVisible: boolean;
     toggleState: () => void;
+    setStatus: SetStateAction<ChatBoxContextType["status"]>;
     updateOptions: (newOptions: GrispiChatOptions) => void;
     setChat: SetStateAction<ChatBoxContextType["chat"]>;
     setUser: SetStateAction<ChatBoxContextType["user"]>;
@@ -26,38 +37,31 @@ export interface ChatBoxContextType {
 
 const ChatBoxContext = createContext<ChatBoxContextType>({
     state: "closed",
+    status: "loading",
     options: null,
     chat: null,
     user: null,
     isUserFormVisible: false,
     toggleState: () => {},
+    setStatus: () => {},
     updateOptions: () => {},
     setChat: () => {},
     setUser: () => {},
     setUserFormVisibility: () => {},
 });
 
-export const ChatBoxContextProvider = ({ options, children }) => {
-    const [state, setState] = useState<ChatBoxContextType["state"]>("closed");
-    const [optionsState, setOptionsState] = useState<GrispiChatOptions>(
-        mergeChatOptions(DEFAULT_WIDGET_OPTIONS, options)
-    );
+export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
+    const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
+
+    const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
+    const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
+    const [options, setOptions] = useState<GrispiChatOptions>(CHAT_OPTIONS);
     const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
     const [user, setUser] = useState<ChatBoxContextType["user"]>({
         fullName: "",
         email: "",
     });
     const [isUserFormVisible, setUserFormVisibility] = useState<boolean>(false);
-
-    useEffect(() => {
-        window.addEventListener("message", (event) => {
-            const { auth, data, type } = event.data;
-
-            if (type) {
-                console.log({ type });
-            }
-        });
-    }, []);
 
     const toggleState = () => {
         if (state === "open") {
@@ -74,19 +78,21 @@ export const ChatBoxContextProvider = ({ options, children }) => {
     };
 
     const updateOptions = (newOptions: GrispiChatOptions) => {
-        setOptionsState((prevState) => deepMerge(prevState, newOptions));
+        setOptions((prevState) => deepMerge(prevState, newOptions));
     };
 
     return (
         <ChatBoxContext.Provider
             value={{
                 state,
-                options: optionsState,
+                status,
+                options,
                 chat,
                 user,
                 isUserFormVisible,
                 updateOptions,
                 toggleState,
+                setStatus,
                 setChat,
                 setUser,
                 setUserFormVisibility,
@@ -95,6 +101,10 @@ export const ChatBoxContextProvider = ({ options, children }) => {
             {children}
         </ChatBoxContext.Provider>
     );
+};
+
+export const useChatBox = () => {
+    return useContext(ChatBoxContext);
 };
 
 export default ChatBoxContext;

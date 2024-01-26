@@ -8,7 +8,7 @@ import {
 } from "../types/backend";
 import { type MediaFileMeta } from "../types/content";
 import { InternalEventTypeMap } from "./config";
-import { debug, getBrokerUrl, uuidv4 } from "./utils";
+import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
 /**
  * msgGrispiId or message id header
@@ -16,20 +16,8 @@ import { debug, getBrokerUrl, uuidv4 } from "./utils";
 const MESSAGE_ID_HEADER = "msg-grispi-id";
 const UPDATES_QUEUE_DESTINATION = `/user/queue/updates`;
 
-let END_SESSION_DESTINATION: string;
-let CHAT_MESSAGE_DESTINATION: string;
-let CHAT_MESSAGE_SEEN_DESTINATION: string;
-let CHAT_USER_ID: number;
-
-function isMessageMine(message: WsMessage): boolean {
-    return message.senderId === CHAT_USER_ID;
-}
-
-function isMessageSentByMe(message: WsMessage): boolean {
-    return isMessageMine(message) || message.senderId < 0;
-}
-
-const chatDisconnectedEvent = () => window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CHAT_DISCONNECTED));
+const chatDisconnectedEvent = () =>
+    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CHAT_DISCONNECTED));
 const myMessageSentEvent = (receiptId: string) =>
     window.dispatchEvent(new CustomEvent(InternalEventTypeMap.GOT_RECEIPT, { detail: receiptId }));
 const myMessageReceivedEvent = (messageId: string) =>
@@ -61,7 +49,7 @@ const client = new Client({
         terminateWsConnection();
         chatDisconnectedEvent();
     },
-    onDisconnect: (frame: any) => {
+    onDisconnect: (frame) => {
         client.onWebSocketClose(frame);
     },
     onStompError: (str) => {
@@ -133,15 +121,16 @@ const incomingMessageHandler = (message: IMessage) => {
     const senderId = message.headers["sender-id"];
     const msgGrispiId = message.headers[MESSAGE_ID_HEADER];
     const parsedMessage = JSON.parse(message.body);
-    parsedMessage.senderId = parseInt(senderId);
+    parsedMessage.senderId = parseInt(senderId, 10);
     parsedMessage.id = msgGrispiId; //override database id with msgGrispiId as db id is useless for us
     delete parsedMessage.msgGrispiId;
 
     debug("connection incomingMessageHandler", parsedMessage);
 
-    if (isMessageSentByMe(parsedMessage)) {
-        return;
-    }
+    // FIXME: Resolve this.
+    // if (isMessageSentByMe(parsedMessage)) {
+    //     return;
+    // }
 
     if (parsedMessage.code) {
         if (parsedMessage.code === SERVER_MESSAGE_CODE.CHAT_SESSION_CLOSED) {
@@ -205,7 +194,10 @@ const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
     }
 
     if (!subscriptionToUpdates) {
-        subscriptionToUpdates = client.subscribe(UPDATES_QUEUE_DESTINATION, incomingUpdateMessageHandler);
+        subscriptionToUpdates = client.subscribe(
+            UPDATES_QUEUE_DESTINATION,
+            incomingUpdateMessageHandler
+        );
     }
 
     window.dispatchEvent(new CustomEvent(InternalEventTypeMap.SUBSCRIBED_TO_CHAT));
@@ -213,7 +205,7 @@ const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
 //</editor-fold>
 
 //<editor-fold desc="sendMessageOverWs">
-function sendMessageOverWs(destination: string, message: WsMessage): void {
+function sendMessageOverWs(message: WsMessage, destination: string): void {
     if (!message) {
         console.error("sendMessageOverWs", 'mandatory "message" parameter is missing!');
         return;
@@ -230,19 +222,19 @@ function sendMessageOverWs(destination: string, message: WsMessage): void {
     const receiptId = message.receiptId!;
     try {
         client.watchForReceipt(receiptId, (frame) => {
+            debug("Incoming receipt", { receiptId });
             // Having a receiptId means that our message is received by the server
 
             // Implementation note:
             // here receiptId === msgGrispiId
-            const receiptId = frame.headers["receipt-id"];
-            myMessageSentEvent(receiptId);
+            myMessageSentEvent(frame.headers["receipt-id"]);
         });
+
         client.publish({
             destination,
             headers: { receipt: receiptId },
             body: JSON.stringify(message),
         });
-        return;
     } catch (error) {
         debug(error);
         //FIXME show user that the message is not sent
@@ -251,12 +243,12 @@ function sendMessageOverWs(destination: string, message: WsMessage): void {
 //</editor-fold>
 
 //<editor-fold desc="sendSeen">
-function sendSeen(messageId: string) {
+function sendSeen(messageId: string, chat: SubscribeableChatResponseForEndUser) {
     if (!client?.connected) {
         return;
     }
     client.publish({
-        destination: CHAT_MESSAGE_SEEN_DESTINATION,
+        destination: destinationPaths(chat.chatSessionId).chatMessageSeen(),
         headers: {},
         body: JSON.stringify({ seenAt: Date.now(), msgGrispiId: messageId }),
     });
@@ -264,26 +256,23 @@ function sendSeen(messageId: string) {
 //</editor-fold>
 
 //<editor-fold desc="subscribeChat">
-const subscribeChat = async (data: SubscribeableChatResponseForEndUser) => {
-    const tenantId = window.GrispiChat.options.tenantId;
-    const destination = `/exchange/${tenantId}/${tenantId}.${data.chatSessionId}`;
+const subscribeChat = async (chat: SubscribeableChatResponseForEndUser) => {
+    const destination = destinationPaths(chat.chatSessionId).exchange();
 
     try {
         await terminateWsConnection();
 
-        activateConnection({
-            token: data.token,
+        const gate = {
+            token: chat.token,
             brokerUrl: getBrokerUrl(),
             destination,
-        });
+        };
 
-        debug({
-            token: data.token,
-            brokerUrl: getBrokerUrl(),
-            destination,
-        });
+        activateConnection(gate);
 
-        debug("Creating websocket connection and subscribing to chatSession");
+        debug("Creating websocket connection and subscribing to chatSession", { gate });
+
+        return gate;
     } catch (err) {
         console.error(err);
     }
@@ -299,23 +288,31 @@ function getMediaFileMetaData(file: UploadFilesResponse) {
     };
     return JSON.stringify(metaData);
 }
-const sendMediaMessage = (uploadedFile: UploadFilesResponse, senderName: string) => {
+const sendMediaMessage = (
+    uploadedFile: UploadFilesResponse,
+    chat: SubscribeableChatResponseForEndUser
+) => {
     const text = getMediaFileMetaData(uploadedFile);
-    return sendMessage({
-        contentType: uploadedFile.mimeType,
-        id: (Date.now() * -1).toString(),
-        sender: senderName,
-        sentAt: Date.now(),
-        text,
-    } as WsMessage);
+    return sendMessage(
+        {
+            contentType: uploadedFile.mimeType,
+            id: (Date.now() * -1).toString(),
+            sender: chat.name,
+            sentAt: Date.now(),
+            text,
+        } as WsMessage,
+        chat
+    );
 };
 
-const sendMessage = (message: WsMessage) => {
-    if (!CHAT_MESSAGE_DESTINATION) {
-        console.error("CHAT_MESSAGE_DESTINATION is not set!");
+const sendMessage = (message: WsMessage, chat: SubscribeableChatResponseForEndUser) => {
+    if (!chat?.chatSessionId) {
+        console.error("chatSessionId is not set!");
         alert("Error 0");
         return;
     }
+
+    const destination = destinationPaths(chat.chatSessionId).chatMessage();
 
     message.receiptId = uuidv4();
 
@@ -325,15 +322,15 @@ const sendMessage = (message: WsMessage) => {
         })
     );
 
-    sendMessageOverWs(CHAT_MESSAGE_DESTINATION, message);
+    sendMessageOverWs(message, destination);
 };
 
-const endChatSession = (chatSessionId: string) => {
+const endChatSession = (chat: SubscribeableChatResponseForEndUser) => {
     if (subscription) {
         client.publish({
-            destination: END_SESSION_DESTINATION,
+            destination: destinationPaths(chat.chatSessionId).endSession(),
             headers: {},
-            body: chatSessionId,
+            body: chat.chatSessionId,
         });
     }
 };
@@ -354,18 +351,4 @@ function terminateWsConnection(): Promise<void> {
     return client.deactivate();
 }
 
-const setChatDestinations = (
-    destination: string,
-    closeChatSessionDestination: string,
-    chatmessageseendestination: string
-): void => {
-    CHAT_MESSAGE_DESTINATION = destination;
-    END_SESSION_DESTINATION = closeChatSessionDestination;
-    CHAT_MESSAGE_SEEN_DESTINATION = chatmessageseendestination;
-};
-
-const setChatUserId = (userId: number): void => {
-    CHAT_USER_ID = userId;
-};
-
-export { endChatSession, sendMediaMessage, sendMessage, sendSeen, setChatDestinations, setChatUserId, subscribeChat };
+export { endChatSession, sendMediaMessage, sendMessage, sendSeen, subscribeChat };
