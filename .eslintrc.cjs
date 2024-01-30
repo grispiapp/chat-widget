@@ -27,6 +27,9 @@ module.exports = {
         ecmaVersion: "latest",
         sourceType: "module",
     },
+    globals: {
+        RequestInit: true,
+    },
     plugins: ["@typescript-eslint", "react", "prettier"],
     rules: {
         "prettier/prettier": ["error"],

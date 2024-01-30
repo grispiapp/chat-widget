@@ -1,8 +1,8 @@
-import { SurveyInput } from "@components/survey-form";
+import { type SurveyInput } from "@components/survey-form";
 import { api } from "@lib/api";
 import { InternalEventTypeMap } from "@lib/config";
 import { debug, getHostUrl } from "@lib/utils";
-import { WsMessage, type SubscribeableChatResponseForEndUser } from "../types/backend";
+import { type SubscribeableChatResponseForEndUser, type WsMessage } from "../types/backend";
 import { type UserInput } from "../types/user";
 
 export const chatStatus = async () => {

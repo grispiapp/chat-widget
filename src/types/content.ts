@@ -14,8 +14,10 @@ export const acceptedAudioTypeMap = {
 
 export const acceptedFileTypeMap = {
     "application/pdf": "application/pdf",
-    "application/vnd.oasis.opendocument.presentation": "application/vnd.oasis.opendocument.presentation", // .odp
-    "application/vnd.oasis.opendocument.spreadsheet": "application/vnd.oasis.opendocument.spreadsheet", // .ods
+    "application/vnd.oasis.opendocument.presentation":
+        "application/vnd.oasis.opendocument.presentation", // .odp
+    "application/vnd.oasis.opendocument.spreadsheet":
+        "application/vnd.oasis.opendocument.spreadsheet", // .ods
     "application/vnd.oasis.opendocument.text": "application/vnd.oasis.opendocument.text", // .odt
     "application/msword": "application/msword", // .doc
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document":

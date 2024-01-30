@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
-import { SubscribeableChatResponseForEndUser } from "../types/backend";
+import { type SubscribeableChatResponseForEndUser } from "../types/backend";
 import { type GrispiChatOptions } from "../types/chat-box";
 import {
     API_URLS,
