@@ -3,19 +3,19 @@ import { forwardRef, type JSX } from "preact/compat";
 import { ErrorSpan } from "./error-span";
 import { Label } from "./label";
 
-interface InputProps extends JSX.HTMLAttributes<HTMLInputElement> {
+interface TextAreaProps extends JSX.HTMLAttributes<HTMLTextAreaElement> {
     label?: string;
     error?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ({ label, error, type, name, className, ...props }, ref) => {
         const id = inputId(name?.toString());
 
         return (
             <div className="cb-space-y-1">
                 {label && <Label for={id}>{label}</Label>}
-                <input
+                <textarea
                     {...props}
                     ref={ref}
                     id={id}

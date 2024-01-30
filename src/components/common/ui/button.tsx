@@ -6,7 +6,7 @@ interface ButtonProps extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, "icon"
     icon?: IconType;
     rounded?: "none" | "sm" | "md" | "lg" | "full";
     size?: "sm" | "md" | "lg";
-    variant?: "primary" | "secondary" | "link" | "suggest";
+    variant?: "primary" | "secondary" | "danger" | "link" | "suggest";
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -38,8 +38,11 @@ export const Button: FC<ButtonProps> = ({
                     "cb-px-4 cb-py-3 cb-text-lg": size === "lg",
                 },
                 {
-                    "cb-bg-primary cb-text-background hover:cb-bg-primary/80": variant === "primary",
-                    "cb-bg-white cb-text-zinc-600 hover:cb-bg-zinc-100 hover:cb-text-zinc-600": variant === "secondary",
+                    "cb-bg-primary cb-text-background hover:cb-bg-primary/80":
+                        variant === "primary",
+                    "cb-bg-white cb-text-zinc-600 hover:cb-bg-zinc-100 hover:cb-text-zinc-600":
+                        variant === "secondary",
+                    "cb-bg-danger cb-text-background hover:cb-bg-danger/80": variant === "danger",
                     "cb-text-muted-foreground hover:cb-text-foreground": variant === "link",
                     "cb-border-primary/60 cb-bg-background/50 cb-px-3 cb-py-2 cb-text-primary cb-backdrop-blur-lg hover:cb-bg-primary hover:cb-text-background":
                         variant === "suggest",

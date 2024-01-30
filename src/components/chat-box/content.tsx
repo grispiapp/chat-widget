@@ -1,16 +1,17 @@
+import { SurveyForm } from "@components/survey-form";
 import { UserForm } from "@components/user-form";
-import ChatBoxContext from "@context/chat-box-context";
-import ConversationContext from "@context/conversation-context";
+import { useChatBox } from "@context/chat-box-context";
+import { useConversation } from "@context/conversation-context";
 import { useChatScroll } from "@hooks/useChatScroll";
 import { LoadingSpinner } from "@ui/loading-spinner";
-import { useContext, useRef } from "preact/hooks";
+import { useRef } from "preact/hooks";
 import { MessageBox } from "./message-box";
 
 export const ChatBoxContent = () => {
     const contentScrollRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const { messages } = useContext(ConversationContext);
-    const { isUserFormVisible, status } = useContext(ChatBoxContext);
+    const { messages, state: conversationState } = useConversation();
+    const { status: boxStatus } = useChatBox();
 
     useChatScroll({
         contentScrollRef,
@@ -33,9 +34,10 @@ export const ChatBoxContent = () => {
                         />
                     ))}
                 </div>
-                {isUserFormVisible && <UserForm />}
+                {conversationState === "user-form" && <UserForm />}
+                {conversationState === "survey-form" && <SurveyForm />}
             </div>
-            {status === "loading" && <LoadingSpinner />}
+            {boxStatus === "loading" && <LoadingSpinner />}
         </div>
     );
 };

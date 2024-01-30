@@ -1,3 +1,4 @@
+import { SurveyInput } from "@components/survey-form";
 import { api } from "@lib/api";
 import { InternalEventTypeMap } from "@lib/config";
 import { debug, getHostUrl } from "@lib/utils";
@@ -32,6 +33,16 @@ export const createChat = async (user: UserInput) => {
 
 export const chatHistory = async (chatId: string) => {
     return await api<WsMessage[]>(`/chats/${chatId}/history`);
+};
+
+export const sendSurvey = async (
+    chatId: string,
+    survey: SurveyInput,
+    chat: SubscribeableChatResponseForEndUser
+) => {
+    return await api(`/chats/${chatId}/survey`, "POST", survey, {
+        Authorization: `Bearer ${chat.token}`,
+    });
 };
 
 export const windowFocusedEvent = () => {

@@ -26,13 +26,11 @@ export interface ChatBoxContextType {
         subscribed: boolean;
     };
     user: UserInput;
-    isUserFormVisible: boolean;
     toggleState: () => void;
     setStatus: SetStateAction<ChatBoxContextType["status"]>;
     updateOptions: (newOptions: GrispiChatOptions) => void;
     setChat: SetStateAction<ChatBoxContextType["chat"]>;
     setUser: SetStateAction<ChatBoxContextType["user"]>;
-    setUserFormVisibility: SetStateAction<ChatBoxContextType["isUserFormVisible"]>;
 }
 
 const ChatBoxContext = createContext<ChatBoxContextType>({
@@ -41,13 +39,11 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
     options: null,
     chat: null,
     user: null,
-    isUserFormVisible: false,
     toggleState: () => {},
     setStatus: () => {},
     updateOptions: () => {},
     setChat: () => {},
     setUser: () => {},
-    setUserFormVisibility: () => {},
 });
 
 export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
@@ -61,7 +57,6 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
         fullName: "",
         email: "",
     });
-    const [isUserFormVisible, setUserFormVisibility] = useState<boolean>(false);
 
     const toggleState = () => {
         if (state === "open") {
@@ -89,13 +84,11 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
                 options,
                 chat,
                 user,
-                isUserFormVisible,
                 updateOptions,
                 toggleState,
                 setStatus,
                 setChat,
                 setUser,
-                setUserFormVisibility,
             }}
         >
             {children}

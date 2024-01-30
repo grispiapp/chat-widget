@@ -1,25 +1,21 @@
 import { Typing } from "@components/common/typing";
 import { SendIcon } from "@components/icons";
 import { useChatBox } from "@context/chat-box-context";
-import ConversationContext from "@context/conversation-context";
+import { useConversation } from "@context/conversation-context";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
-import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
 import { t } from "../../lang";
 
 export const ChatBoxFooter = () => {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState<string>("");
-    const { chat, user, state: boxState, isUserFormVisible, status: boxStatus } = useChatBox();
-    const {
-        state: conversationState,
-        addMessage,
-        replies,
-        selectReply,
-    } = useContext(ConversationContext);
+    const { state: boxState, status: boxStatus } = useChatBox();
+    const { state: conversationState, addMessage, replies, selectReply } = useConversation();
 
-    const isInputDisabled = isUserFormVisible || boxStatus === "loading";
+    const isInputDisabled =
+        ["survey-form", "user-form"].includes(conversationState) || boxStatus === "loading";
 
     useEffect(() => {
         if (boxState === "open" && conversationState === "idle" && !isInputDisabled) {

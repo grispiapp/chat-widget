@@ -1,13 +1,14 @@
 import { getFirst, uuidv4 } from "@lib/utils";
 import { sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
-import { useCallback, useContext, useEffect, useState, type StateUpdater } from "preact/hooks";
+import { type SetStateAction } from "preact/compat";
+import { useCallback, useContext, useEffect, useState } from "preact/hooks";
 import { t } from "../lang";
-import { WsMessage } from "../types/backend";
-import ChatBoxContext from "./chat-box-context";
+import { type WsMessage } from "../types/backend";
+import { useChatBox } from "./chat-box-context";
 import { useNotification } from "./notification-context";
 
-export type ConversationState = "idle" | "typing";
+export type ConversationState = "idle" | "typing" | "survey-form" | "user-form";
 export type Sender = "ai" | "user";
 
 export interface Conversation {
@@ -39,8 +40,8 @@ interface ConversationContextType {
     conversation?: Conversation;
     messages: Message[];
     replies: Reply[];
-    setState: StateUpdater<ConversationState>;
-    setReplies: StateUpdater<Reply[]>;
+    setState: SetStateAction<ConversationState>;
+    setReplies: SetStateAction<Reply[]>;
     selectReply: (reply: Reply) => void;
     addMessage: (message: AddMessage, withPrevious?: boolean) => Promise<Message | void>;
     reset: () => void;
@@ -69,7 +70,7 @@ const setDefaultsForMessage = (message) => {
 
 export const ConversationContextProvider = ({ children }) => {
     const { notify } = useNotification();
-    const { options, chat, user, setUserFormVisibility } = useContext(ChatBoxContext);
+    const { options, chat, user } = useChatBox();
     const [state, setState] = useState<ConversationState>("idle");
     const [conversation, setConversation] = useState<Conversation>();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -101,7 +102,7 @@ export const ConversationContextProvider = ({ children }) => {
                         isFirstMessageFromEndUser(message) &&
                         !chat?.subscribed
                     ) {
-                        setUserFormVisibility(true);
+                        setState("user-form");
                     } else if (message.shouldSendToApi) {
                         sendMessage(
                             {
@@ -114,7 +115,6 @@ export const ConversationContextProvider = ({ children }) => {
                         );
                     }
 
-                    setState("idle");
                     setReplies([]);
                 }
 
@@ -133,18 +133,21 @@ export const ConversationContextProvider = ({ children }) => {
                 throw err;
             }
         },
-        [chat?.subscribed, isFirstMessageFromEndUser, setUserFormVisibility]
+        [chat, user, notify, isFirstMessageFromEndUser, setState]
     );
 
-    const selectReply = useCallback<ConversationContextType["selectReply"]>((reply) => {
-        addMessage({
-            sender: "user",
-            text: reply.text || reply.label,
-            formattedText: reply.label,
-        });
+    const selectReply = useCallback<ConversationContextType["selectReply"]>(
+        (reply) => {
+            addMessage({
+                sender: "user",
+                text: reply.text || reply.label,
+                formattedText: reply.label,
+            });
 
-        setReplies([]);
-    }, []);
+            setReplies([]);
+        },
+        [addMessage]
+    );
 
     const reset = useCallback(() => {
         setState("idle");
@@ -165,10 +168,11 @@ export const ConversationContextProvider = ({ children }) => {
         //   { label: "Nişan yapmak istiyorum." },
         //   { label: "Kına gecesi yapmak istiyorum." },
         // ]);
-    }, []);
+    }, [options, addMessage]);
 
     useEffect(() => {
         reset();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

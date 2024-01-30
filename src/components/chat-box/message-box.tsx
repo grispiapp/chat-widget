@@ -23,7 +23,7 @@ export const MessageBox: FC<MessageBoxProps> = ({ sender, text, createdAt }) => 
                 {sender === "ai" && (
                     <AgentAvatar
                         className={
-                            "cb-z-50 -cb-me-2 cb-mt-1 cb-border-2 cb-border-background cb-shadow-sm"
+                            "cb-z-10 -cb-me-2 cb-mt-1 cb-border-2 cb-border-background cb-shadow-sm"
                         }
                     />
                 )}

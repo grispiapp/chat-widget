@@ -1,16 +1,16 @@
-import ChatBoxContext from "@context/chat-box-context";
+import { useChatBox } from "@context/chat-box-context";
 import { STORAGE_KEYS } from "@lib/config";
 import { isPromptDismissed } from "@lib/storage";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
-import { useContext, useState, type FC } from "preact/compat";
+import { useState, type FC } from "preact/compat";
 import { AgentAvatar } from "./common/agent-avatar";
 import { CloseIcon } from "./icons";
 
 interface StickyCtaProps {}
 
 export const StickyCta: FC<StickyCtaProps> = () => {
-    const { state, toggleState, options } = useContext(ChatBoxContext);
+    const { state, toggleState, options } = useChatBox();
     const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {

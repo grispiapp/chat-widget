@@ -1,19 +1,46 @@
+import { t } from "@/lang";
 import { AgentAvatar } from "@components/common/agent-avatar";
-import { CloseIcon, RefreshIcon } from "@components/icons";
-import ChatBoxContext from "@context/chat-box-context";
-import ConversationContext from "@context/conversation-context";
+import { CloseIcon, MinimizeIcon } from "@components/icons";
+import { useChatBox } from "@context/chat-box-context";
+import { useConversation } from "@context/conversation-context";
+import { useModal } from "@context/modal-context";
+import { STORAGE_KEYS } from "@lib/config";
+import { blank } from "@lib/utils";
+import { endChatSession } from "@lib/websocket";
 import { Button } from "@ui/button";
-import { useContext } from "preact/hooks";
+import { useCallback } from "preact/hooks";
 
 export const ChatBoxHeader = () => {
-    const { toggleState, options } = useContext(ChatBoxContext);
-    const { reset } = useContext(ConversationContext);
+    const { chat, toggleState, options } = useChatBox();
+    const {
+        state: conversationState,
+        setState: setConversationState,
+        reset: resetConversation,
+    } = useConversation();
+    const { setModal } = useModal();
 
-    const handleRefresh = () => {
-        const confirm = window.confirm("Konuşma yeniden başlatılacak ve geçmiş konuşmalar silecek. Onaylıyor musunuz?");
+    const handleClose = useCallback(() => {
+        if (blank(chat) || conversationState === "survey-form") {
+            toggleState();
+            return;
+        }
 
-        confirm && reset();
-    };
+        setModal({
+            title: t("endSessionModal.title"),
+            text: t("endSessionModal.text"),
+            confirmFn: () => {
+                // We do not need to remove other KEYs because they have their own listener.
+                localStorage.removeItem(STORAGE_KEYS.CHAT_ID);
+
+                // terminate websocket
+                endChatSession(chat);
+
+                resetConversation();
+                setModal(null);
+                setConversationState("survey-form");
+            },
+        });
+    }, [chat, conversationState, setModal, toggleState, setConversationState, resetConversation]);
 
     return (
         <div className="cb-flex cb-items-center cb-justify-between cb-border-b cb-border-opacity-25 cb-px-3 cb-py-2">
@@ -22,8 +49,8 @@ export const ChatBoxHeader = () => {
                 <span className="cb-text-sm cb-font-bold">{options.agent.name}</span>
             </div>
             <div className="cb-flex cb-items-center cb-text-zinc-600">
-                <Button onClick={handleRefresh} variant="link" icon={RefreshIcon} />
-                <Button onClick={toggleState} variant="link" icon={CloseIcon} />
+                <Button onClick={toggleState} variant="link" icon={MinimizeIcon} />
+                <Button onClick={handleClose} variant="link" icon={CloseIcon} />
             </div>
         </div>
     );

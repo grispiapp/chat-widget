@@ -19,15 +19,48 @@ const strings = {
             email: {
                 label: "Email",
                 required: "Please enter your email.",
-                notValid: "Please enter a valid email.",
+                invalid: "Please enter a valid email.",
             },
             submit: "Connect",
+        },
+        surveyForm: {
+            title: "Rate the chat",
+            text: "Were we able to help you solve your problem?",
+            rating: {
+                invalid: "Please select a valid score.",
+            },
+            description: {
+                label: "Description (optional)",
+                max: "The description can be up to {max} characters long.",
+            },
+            submit: "Send",
+            connect: "Connect again",
+            success: {
+                text: "We have got your response, thank you.",
+            },
         },
         errors: {
             common: {
                 title: "Something wen't wrong.",
                 text: "Please refresh the page and try again.",
             },
+        },
+        modal: {
+            buttons: {
+                no: "No",
+                yes: "Yes",
+            },
+        },
+        endSessionModal: {
+            title: "Ending chat session",
+            text: "Are you sure you want to end the conversation?",
+        },
+        ratingStates: {
+            1: "Very dissatisfied",
+            2: "Dissatisfied",
+            3: "OK",
+            4: "Satisfied",
+            5: "Very satisfied",
         },
     },
     tr: {
@@ -46,7 +79,7 @@ const strings = {
             email: {
                 label: "E-Posta Adresi",
                 required: "Lütfen E-Posta adresinizi yazın.",
-                notValid: "E-Posta adresi geçersiz.",
+                invalid: "E-Posta adresi geçersiz.",
             },
             submit: "Bağlan",
         },
@@ -61,7 +94,11 @@ const strings = {
 
 const dottedStrings = convertKeysToDotNotation(strings);
 
-export const t = (key: keyof typeof dottedStrings, lang: string = undefined) => {
+export const t = (
+    key: keyof typeof dottedStrings,
+    params: Record<string, string | number> = {},
+    lang: string = undefined
+) => {
     lang = getFirst(
         lang,
         window.GrispiChat.options.language,
@@ -69,7 +106,13 @@ export const t = (key: keyof typeof dottedStrings, lang: string = undefined) => 
         FALLBACK_LOCALE
     );
 
-    return dottedStrings?.[`${lang}.${key}`] ?? dottedStrings?.[`${FALLBACK_LOCALE}.${key}`];
+    let value = dottedStrings?.[`${lang}.${key}`] ?? dottedStrings?.[`${FALLBACK_LOCALE}.${key}`];
+
+    Object.keys(params).forEach((param) => {
+        value = value.replace(new RegExp(`{${param}}`, "gi"), params[param].toString());
+    });
+
+    return value;
 };
 
 export default strings;

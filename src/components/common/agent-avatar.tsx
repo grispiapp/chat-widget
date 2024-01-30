@@ -1,11 +1,11 @@
-import ChatBoxContext from "@context/chat-box-context";
+import { useChatBox } from "@context/chat-box-context";
 import { cn } from "@lib/utils";
-import { useContext, type FC, type JSX } from "preact/compat";
+import { type FC, type JSX } from "preact/compat";
 
 interface AgentAvatarProps extends JSX.HTMLAttributes<HTMLImageElement> {}
 
 export const AgentAvatar: FC<AgentAvatarProps> = ({ className, ...props }) => {
-    const { options } = useContext(ChatBoxContext);
+    const { options } = useChatBox();
 
     return (
         <img

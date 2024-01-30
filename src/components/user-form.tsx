@@ -1,25 +1,29 @@
 import { useChatBox } from "@context/chat-box-context";
-import ConversationContext from "@context/conversation-context";
+import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
 import { blank, debug, isEmail } from "@lib/utils";
 import { sendMessage } from "@lib/websocket";
 import { Button } from "@ui/button";
+import { Card } from "@ui/card";
 import { Input } from "@ui/input";
-import { LoadingSpinner } from "@ui/loading-spinner";
-import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
 import { t } from "../lang";
-import { WsMessage } from "../types/backend";
+import { type WsMessage } from "../types/backend";
 import { type UserInput } from "../types/user";
 
 export const UserForm = () => {
     const fullNameRef = useRef<HTMLInputElement>(null);
     const { notify } = useNotification();
     const { subscribeToNewChat } = useChat();
-    const { chat, user, setUser, setChat, isUserFormVisible, setUserFormVisibility } = useChatBox();
-    const { messages } = useContext(ConversationContext);
+    const { chat, user, setUser } = useChatBox();
+    const {
+        messages,
+        state: conversationState,
+        setState: setConversationState,
+    } = useConversation();
     const { errors, setError, resetErrors } = useErrors<UserInput>();
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -39,7 +43,7 @@ export const UserForm = () => {
 
         try {
             const { chat } = await subscribeToNewChat();
-            setUserFormVisibility(false);
+            setConversationState("idle");
 
             if (!firstEndUserMessage) return;
 
@@ -63,7 +67,7 @@ export const UserForm = () => {
         } finally {
             setLoading(false);
         }
-    }, [user, chat, messages, setUserFormVisibility, subscribeToNewChat, notify]);
+    }, [user, chat, messages, setConversationState, subscribeToNewChat, notify]);
 
     const handleSubmit = useCallback(
         (e: JSX.TargetedSubmitEvent<HTMLFormElement>) => {
@@ -81,7 +85,7 @@ export const UserForm = () => {
                 setError("email", t("userForm.email.required"));
                 hasError = true;
             } else if (!isEmail(user.email)) {
-                setError("email", t("userForm.email.notValid"));
+                setError("email", t("userForm.email.invalid"));
                 hasError = true;
             }
 
@@ -93,17 +97,13 @@ export const UserForm = () => {
     );
 
     useEffect(() => {
-        if (isUserFormVisible) {
+        if (conversationState === "user-form") {
             fullNameRef.current.focus();
         }
-    }, [isUserFormVisible]);
+    }, [conversationState]);
 
     return (
-        <div className="cb-relative cb-space-y-3 cb-overflow-hidden cb-rounded-lg cb-border-2 cb-border-primary cb-bg-background cb-p-3 cb-text-sm cb-text-foreground cb-shadow-lg cb-shadow-primary/20 cb-backdrop-blur-lg">
-            <div>
-                <h3 className="cb-font-medium cb-text-primary">{t("userForm.title")}</h3>
-                <p className="cb-text-xs cb-text-muted-foreground">{t("userForm.text")}</p>
-            </div>
+        <Card title={t("userForm.title")} description={t("userForm.text")} loading={loading}>
             <form onSubmit={handleSubmit} className="cb-space-y-3">
                 <Input
                     ref={fullNameRef}
@@ -122,7 +122,6 @@ export const UserForm = () => {
                 />
                 <Button size="sm">{t("userForm.submit")}</Button>
             </form>
-            {loading && <LoadingSpinner />}
-        </div>
+        </Card>
     );
 };

@@ -1,7 +1,9 @@
 import { Notifications } from "@components/common/notifications";
-import ChatBoxContext from "@context/chat-box-context";
+import { useChatBox } from "@context/chat-box-context";
+import { useModal } from "@context/modal-context";
 import { cn } from "@lib/utils";
-import { useContext, type FC } from "preact/compat";
+import { Modal } from "@ui/modal";
+import { type FC } from "preact/compat";
 import { ChatBoxContent } from "./content";
 import { ChatBoxFooter } from "./footer";
 import { ChatBoxHeader } from "./header";
@@ -9,7 +11,8 @@ import { ChatBoxHeader } from "./header";
 interface ChatBoxProps {}
 
 export const ChatBox: FC<ChatBoxProps> = () => {
-    const { state } = useContext(ChatBoxContext);
+    const { state } = useChatBox();
+    const { modal } = useModal();
 
     if (state === "closed") {
         return null;
@@ -33,6 +36,7 @@ export const ChatBox: FC<ChatBoxProps> = () => {
             <ChatBoxContent />
             <ChatBoxFooter />
             <Notifications />
+            {modal && <Modal modal={modal} />}
         </div>
     );
 };
