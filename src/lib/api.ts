@@ -1,30 +1,49 @@
 import { getChatUrl } from "./utils";
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
+export type RequestOptions = Omit<RequestInit, "body"> & {
+    body: Record<string, unknown> | unknown;
+};
 
 export async function api<T>(
     url: string,
     method: RequestMethod = "GET",
-    body: Record<string, unknown> | unknown = {},
-    headers: Record<string, unknown> = {}
+    options: RequestOptions = undefined
 ): Promise<T> {
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
         url = `${getChatUrl()}${url}`;
     }
 
-    const init: RequestInit = {
-        method,
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json",
-            tenantId: window.GrispiChat.options.tenantId,
-            ...headers,
-        },
+    let body;
+
+    if (options?.body instanceof FormData) {
+        body = options.body;
+    } else if (options?.body) {
+        body = JSON.stringify(options.body);
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
+        tenantId: window.GrispiChat.options.tenantId,
+        ...(options?.headers || {}),
     };
 
-    if (!["GET", "HEAD"].includes(method)) {
-        init.body = JSON.stringify(body);
+    if (headers["Content-Type"] === "multipart/form-data") {
+        delete headers["Content-Type"];
     }
+
+    const formattedOptions: RequestInit = {
+        ...options,
+        body,
+        headers,
+    };
+
+    const init: RequestInit = {
+        mode: "cors",
+        method,
+        ...formattedOptions,
+    };
 
     const response = await fetch(url, init);
 

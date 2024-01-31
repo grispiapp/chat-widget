@@ -1,9 +1,10 @@
+import { chatStatus } from "@/api/chat";
 import { DEFAULT_WIDGET_OPTIONS } from "@lib/config";
 import { getLastBoxStateFromStorage } from "@lib/storage";
-import { deepMerge, mergeChatOptions } from "@lib/utils";
+import { mergeChatOptions } from "@lib/utils";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
-import { useContext, useState } from "preact/hooks";
+import { useContext, useEffect, useState } from "preact/hooks";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
 import { type GrispiChatOptions } from "../types/chat-box";
 import { type UserInput } from "../types/user";
@@ -21,6 +22,7 @@ type ChatBoxStatus = "idle" | "loading";
 export interface ChatBoxContextType {
     state: ChatBoxState;
     status: ChatBoxStatus;
+    isOnline: boolean;
     options: GrispiChatOptions;
     chat: SubscribeableChatResponseForEndUser & {
         subscribed: boolean;
@@ -36,6 +38,7 @@ export interface ChatBoxContextType {
 const ChatBoxContext = createContext<ChatBoxContextType>({
     state: "closed",
     status: "loading",
+    isOnline: false,
     options: null,
     chat: null,
     user: null,
@@ -49,14 +52,25 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
 export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
 
+    const [isOnline, setIsOnline] = useState<boolean>(false);
     const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
-    const [options, setOptions] = useState<GrispiChatOptions>(CHAT_OPTIONS);
+    const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
     const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
     const [user, setUser] = useState<ChatBoxContextType["user"]>({
         fullName: "",
         email: "",
     });
+
+    useEffect(() => {
+        const checkChatIsOnline = async () => {
+            const isOnline = await chatStatus();
+
+            setIsOnline(isOnline);
+        };
+
+        checkChatIsOnline();
+    }, []);
 
     const toggleState = () => {
         if (state === "open") {
@@ -73,7 +87,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     };
 
     const updateOptions = (newOptions: GrispiChatOptions) => {
-        setOptions((prevState) => deepMerge(prevState, newOptions));
+        setOptions((prevState) => mergeChatOptions(prevState, newOptions));
     };
 
     return (
@@ -81,6 +95,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
             value={{
                 state,
                 status,
+                isOnline,
                 options,
                 chat,
                 user,

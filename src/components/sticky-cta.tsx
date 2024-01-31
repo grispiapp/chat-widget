@@ -4,13 +4,12 @@ import { isPromptDismissed } from "@lib/storage";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
 import { useState, type FC } from "preact/compat";
-import { AgentAvatar } from "./common/agent-avatar";
-import { CloseIcon } from "./icons";
+import { CloseIcon, GrispiIcon } from "./icons";
 
 interface StickyCtaProps {}
 
 export const StickyCta: FC<StickyCtaProps> = () => {
-    const { state, toggleState, options } = useChatBox();
+    const { state, toggleState, options, isOnline } = useChatBox();
     const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
@@ -47,9 +46,13 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                     />
                 </div>
             )}
-            <div className="cb-flex cb-h-14 cb-w-14 cb-shrink-0 cb-items-center cb-justify-center cb-rounded-full cb-border-2 cb-border-primary">
-                <AgentAvatar className="cb-h-auto cb-w-auto" />
+            <div className="cb-flex cb-h-14 cb-w-14 cb-shrink-0 cb-items-center cb-justify-center cb-rounded-full cb-bg-primary cb-shadow-xl">
+                {/* <ChatSmileFillIcon className="cb-h-7 cb-w-7 cb-text-background" /> */}
+                <GrispiIcon className="cb-h-7 cb-w-7 cb-text-background" />
             </div>
+            {isOnline && (
+                <div className="cb-absolute cb-right-0 cb-top-0 cb-h-3 cb-w-3 cb-animate-pulse cb-rounded-full cb-bg-success" />
+            )}
         </button>
     );
 };

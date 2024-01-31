@@ -1,3 +1,8 @@
+import { type UploadFilesResponse } from "./backend";
+
+// 50 MB
+export const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
 export interface MediaFileMeta {
     fileName: string;
     mimeType: string;
@@ -46,7 +51,7 @@ export const acceptedVideoTypeMap = {
     "video/ogg": "video/ogg", // .ogg
 };
 
-export const ContentTypeMap = {
+export const contentTypeMap = {
     "text/plain": "text/plain",
     // 'text/html': 'text/html',
     // 'application/json': 'application/json',
@@ -56,4 +61,20 @@ export const ContentTypeMap = {
     ...acceptedVideoTypeMap,
 } as const;
 
-export type ContentType = keyof typeof ContentTypeMap;
+export const isMediaImage = (media: UploadFilesResponse) => {
+    return media.mimeType in acceptedImageTypeMap;
+};
+
+export const isMediaAudio = (media: UploadFilesResponse) => {
+    return media.mimeType in acceptedAudioTypeMap;
+};
+
+export const isMediaVideo = (media: UploadFilesResponse) => {
+    return media.mimeType in acceptedVideoTypeMap;
+};
+
+export const isMediaFile = (media: UploadFilesResponse) => {
+    return media.mimeType in acceptedFileTypeMap;
+};
+
+export type ContentType = keyof typeof contentTypeMap;

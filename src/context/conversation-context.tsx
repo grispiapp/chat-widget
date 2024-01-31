@@ -1,34 +1,50 @@
 import { getFirst, uuidv4 } from "@lib/utils";
-import { sendMessage } from "@lib/websocket";
+import { sendMediaMessage, sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
 import { useCallback, useContext, useEffect, useState } from "preact/hooks";
 import { t } from "../lang";
-import { type WsMessage } from "../types/backend";
+import { type UploadFilesResponse, type WsMessage } from "../types/backend";
 import { useChatBox } from "./chat-box-context";
 import { useNotification } from "./notification-context";
 
 export type ConversationState = "idle" | "typing" | "survey-form" | "user-form";
 export type Sender = "ai" | "user";
+export type MessageStatus = "sending" | "sent" | "seen";
 
 export interface Conversation {
     id: string;
 }
 
-export interface Message {
+export type TextMessage = {
     id: string;
     text: string;
     formattedText: string;
     sender: Sender;
     createdAt: string;
     shouldSendToApi?: boolean;
-}
+    status: MessageStatus;
+};
 
-export interface AddMessage extends Omit<Message, "id" | "formattedText" | "createdAt"> {
+export type MediaMessage = {
+    id: string;
+    sender: Sender;
+    createdAt: string;
+    shouldSendToApi?: boolean;
+    status: MessageStatus;
+    media: UploadFilesResponse;
+};
+
+export type Message = TextMessage | MediaMessage;
+
+export type AddMessage = Omit<Message, "id" | "formattedText" | "createdAt" | "status"> & {
     id?: string;
+    text?: string;
     formattedText?: string;
     createdAt?: string;
-}
+    status?: MessageStatus;
+    media?: UploadFilesResponse;
+};
 
 export interface Reply {
     label: string;
@@ -58,14 +74,23 @@ const ConversationContext = createContext<ConversationContextType>({
     reset: () => {},
 });
 
-const setDefaultsForMessage = (message) => {
+const setDefaultsForMessage = (message): Message => {
     return {
         ...message,
         id: getFirst(message.id, uuidv4),
         createdAt: getFirst(message.createdAt, () => new Date().toISOString()),
         formattedText: getFirst(message.formattedText, message.text),
         shouldSendToApi: getFirst(message.shouldSendToApi, true),
+        status: getFirst(message.status, "sent"),
     };
+};
+
+export const isMediaMessage = (message: Message): message is MediaMessage => {
+    return "media" in message;
+};
+
+export const isTextMessage = (message: Message): message is TextMessage => {
+    return "text" in message;
 };
 
 export const ConversationContextProvider = ({ children }) => {
@@ -88,22 +113,27 @@ export const ConversationContextProvider = ({ children }) => {
     );
 
     const addMessage = useCallback<ConversationContextType["addMessage"]>(
-        async (message, withPrevious = true) => {
-            message = setDefaultsForMessage(message);
+        async (messageInput, withPrevious = true) => {
+            const message = setDefaultsForMessage(messageInput);
 
             try {
-                setMessages((prev) =>
-                    withPrevious ? [...prev, message as Message] : [message as Message]
-                );
+                setMessages((prev) => (withPrevious ? [...prev, message] : [message]));
 
                 if (message.sender === "user") {
-                    if (
+                    const shouldDisplayUserForm =
                         message.shouldSendToApi &&
                         isFirstMessageFromEndUser(message) &&
-                        !chat?.subscribed
-                    ) {
+                        !chat?.subscribed;
+
+                    if (shouldDisplayUserForm) {
                         setState("user-form");
-                    } else if (message.shouldSendToApi) {
+                        setReplies([]);
+                        return;
+                    }
+
+                    if (message.shouldSendToApi && isMediaMessage(message)) {
+                        sendMediaMessage(message.media, chat);
+                    } else if (message.shouldSendToApi && isTextMessage(message)) {
                         sendMessage(
                             {
                                 id: message.id,

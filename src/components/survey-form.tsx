@@ -2,6 +2,7 @@ import { sendSurvey } from "@/api/chat";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
+import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
 import { debug, filled } from "@lib/utils";
 import { Button } from "@ui/button";
@@ -22,6 +23,7 @@ export interface SurveyInput {
 export const SurveyForm = () => {
     const { notify } = useNotification();
     const { chat, toggleState } = useChatBox();
+    const { subscribeToExistingChatFromStorage } = useChat();
     const { setState: setConversationState } = useConversation();
 
     const [rating, setRating] = useState<SurveyInput["rating"]>(null);
@@ -60,7 +62,7 @@ export const SurveyForm = () => {
             try {
                 debug("Sending survey...", { survey });
 
-                await sendSurvey(chat.chatSessionId, survey, chat);
+                await sendSurvey(survey, chat);
                 setConversationState("idle");
 
                 notify({
@@ -88,6 +90,12 @@ export const SurveyForm = () => {
         [chat, resetErrors, toggleState, setConversationState, setError, setLoading, notify]
     );
 
+    const handleReconnectChat = async () => {
+        setLoading(true);
+        await subscribeToExistingChatFromStorage();
+        setLoading(false);
+    };
+
     return (
         <Card title={t("surveyForm.title")} description={t("surveyForm.text")} loading={loading}>
             <form
@@ -106,7 +114,13 @@ export const SurveyForm = () => {
                 />
                 <div className="cb-flex cb-items-center cb-gap-2">
                     <Button size="sm">{t("surveyForm.submit")}</Button>
-                    <Button size="sm" icon={ConnectionIcon} variant="secondary">
+                    <Button
+                        type="button"
+                        onClick={handleReconnectChat}
+                        size="sm"
+                        icon={ConnectionIcon}
+                        variant="secondary"
+                    >
                         {t("surveyForm.connect")}
                     </Button>
                 </div>

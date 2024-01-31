@@ -1,6 +1,6 @@
-import { convertKeysToDotNotation, getFirst } from "@lib/utils";
+import { convertKeysToDotNotation, getPreferredLang } from "@lib/utils";
 
-const FALLBACK_LOCALE = "en";
+export const FALLBACK_LOCALE = "en";
 
 const strings = {
     en: {
@@ -62,6 +62,13 @@ const strings = {
             4: "Satisfied",
             5: "Very satisfied",
         },
+        fileUpload: {
+            validation: {
+                required: "Please select a file.",
+                invalid: "Please choose a valid file.",
+                max: "File size exceeds the maximum allowed limit of {sizeInMb} MB.",
+            },
+        },
     },
     tr: {
         footer: {
@@ -99,14 +106,9 @@ export const t = (
     params: Record<string, string | number> = {},
     lang: string = undefined
 ) => {
-    lang = getFirst(
-        lang,
-        window.GrispiChat.options.language,
-        document.documentElement.lang,
-        FALLBACK_LOCALE
-    );
-
-    let value = dottedStrings?.[`${lang}.${key}`] ?? dottedStrings?.[`${FALLBACK_LOCALE}.${key}`];
+    let value =
+        dottedStrings?.[`${getPreferredLang(lang)}.${key}`] ??
+        dottedStrings?.[`${FALLBACK_LOCALE}.${key}`];
 
     Object.keys(params).forEach((param) => {
         value = value.replace(new RegExp(`{${param}}`, "gi"), params[param].toString());

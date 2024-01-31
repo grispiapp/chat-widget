@@ -6,7 +6,7 @@ import {
     type UploadFilesResponse,
     type WsMessage,
 } from "../types/backend";
-import { type MediaFileMeta } from "../types/content";
+import { type MediaFileMeta } from "../types/file";
 import { InternalEventTypeMap } from "./config";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 

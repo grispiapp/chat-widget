@@ -1,12 +1,14 @@
-import { type IconType } from "@components/icons";
+import { LoadingIcon, type IconType } from "@components/icons";
 import { cn } from "@lib/utils";
 import type { FC, JSX } from "preact/compat";
 
-interface ButtonProps extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, "icon" | "size"> {
+interface ButtonProps
+    extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, "icon" | "size" | "loading"> {
     icon?: IconType;
     rounded?: "none" | "sm" | "md" | "lg" | "full";
     size?: "sm" | "md" | "lg";
     variant?: "primary" | "secondary" | "danger" | "link" | "suggest";
+    loading?: boolean;
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -14,11 +16,16 @@ export const Button: FC<ButtonProps> = ({
     rounded = "md",
     size = "md",
     variant = "primary",
+    loading = false,
     children,
     className,
     disabled = false,
     ...props
 }) => {
+    if (loading) {
+        icon = LoadingIcon;
+    }
+
     return (
         <button
             {...props}

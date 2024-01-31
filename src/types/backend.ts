@@ -1,4 +1,4 @@
-import { type ContentType } from "./content";
+import { type ContentType } from "./file";
 
 export enum SERVER_MESSAGE_CODE {
     CHAT_SESSION_CLOSED = "CHAT_SESSION_CLOSED",

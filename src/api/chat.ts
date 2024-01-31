@@ -1,8 +1,13 @@
+import { type GrispiChatOptions } from "@/types/chat-box";
 import { type SurveyInput } from "@components/survey-form";
 import { api } from "@lib/api";
 import { InternalEventTypeMap } from "@lib/config";
 import { debug, getHostUrl } from "@lib/utils";
-import { type SubscribeableChatResponseForEndUser, type WsMessage } from "../types/backend";
+import {
+    type SubscribeableChatResponseForEndUser,
+    type UploadFilesResponse,
+    type WsMessage,
+} from "../types/backend";
 import { type UserInput } from "../types/user";
 
 export const chatStatus = async () => {
@@ -12,7 +17,7 @@ export const chatStatus = async () => {
 
 export const chatPreferences = async () => {
     debug("chatPreferences", "Fetching preferences...");
-    return await api("/chat/preferences");
+    return await api<GrispiChatOptions>("/chat/preferences");
 };
 
 export const resumeChat = async (chatId: string) => {
@@ -21,14 +26,14 @@ export const resumeChat = async (chatId: string) => {
 };
 
 export const createChat = async (user: UserInput) => {
-    const data = {
+    const body = {
         ...user,
         url: getHostUrl(),
     };
 
-    debug("createChat", "Creating new chat with", { data });
+    debug("createChat", "Creating new chat with", { body });
 
-    return await api<SubscribeableChatResponseForEndUser>("/chats", "POST", data);
+    return await api<SubscribeableChatResponseForEndUser>("/chats", "POST", { body });
 };
 
 export const chatHistory = async (chatId: string) => {
@@ -36,12 +41,27 @@ export const chatHistory = async (chatId: string) => {
 };
 
 export const sendSurvey = async (
-    chatId: string,
     survey: SurveyInput,
     chat: SubscribeableChatResponseForEndUser
 ) => {
-    return await api(`/chats/${chatId}/survey`, "POST", survey, {
-        Authorization: `Bearer ${chat.token}`,
+    return await api(`/chats/${chat.chatSessionId}/survey`, "POST", {
+        body: survey,
+        headers: {
+            Authorization: `Bearer ${chat.token}`,
+        },
+    });
+};
+
+export const uploadAttachment = async (file: File, chat: SubscribeableChatResponseForEndUser) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return await api<UploadFilesResponse>(`/chats/${chat.chatSessionId}/attachment`, "POST", {
+        body: formData,
+        headers: {
+            Authorization: `Bearer ${chat.token}`,
+            "Content-Type": "multipart/form-data",
+        },
     });
 };
 

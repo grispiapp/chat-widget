@@ -4,23 +4,17 @@ import { CloseIcon, MinimizeIcon } from "@components/icons";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useModal } from "@context/modal-context";
-import { STORAGE_KEYS } from "@lib/config";
-import { blank } from "@lib/utils";
 import { endChatSession } from "@lib/websocket";
 import { Button } from "@ui/button";
 import { useCallback } from "preact/hooks";
 
 export const ChatBoxHeader = () => {
     const { chat, toggleState, options } = useChatBox();
-    const {
-        state: conversationState,
-        setState: setConversationState,
-        reset: resetConversation,
-    } = useConversation();
+    const { state: conversationState, setState: setConversationState } = useConversation();
     const { setModal } = useModal();
 
     const handleClose = useCallback(() => {
-        if (blank(chat) || conversationState === "survey-form") {
+        if (chat?.subscribed === false || conversationState === "survey-form") {
             toggleState();
             return;
         }
@@ -29,18 +23,14 @@ export const ChatBoxHeader = () => {
             title: t("endSessionModal.title"),
             text: t("endSessionModal.text"),
             confirmFn: () => {
-                // We do not need to remove other KEYs because they have their own listener.
-                localStorage.removeItem(STORAGE_KEYS.CHAT_ID);
-
                 // terminate websocket
                 endChatSession(chat);
 
-                resetConversation();
                 setModal(null);
                 setConversationState("survey-form");
             },
         });
-    }, [chat, conversationState, setModal, toggleState, setConversationState, resetConversation]);
+    }, [chat, conversationState, setModal, toggleState, setConversationState]);
 
     return (
         <div className="cb-flex cb-items-center cb-justify-between cb-border-b cb-border-opacity-25 cb-px-3 cb-py-2">

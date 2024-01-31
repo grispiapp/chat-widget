@@ -1,3 +1,4 @@
+import { FALLBACK_LOCALE } from "@/lang";
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
@@ -115,6 +116,43 @@ export const filled = <T = string>(value: unknown): value is Exclude<T, null | u
     return !blank(value);
 };
 
+export const tryParseJsonString = (jsonString) => {
+    try {
+        const o = JSON.parse(jsonString);
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns null, and typeof null === "object",
+        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+        if (o && typeof o === "object") {
+            return o;
+        }
+    } catch (e) {}
+
+    return false;
+};
+
+export const humanFileSize = (bytes, si = false, dp = 1) => {
+    const thresh = si ? 1000 : 1024;
+
+    if (Math.abs(bytes) < thresh) {
+        return `${bytes} B`;
+    }
+
+    const units = si
+        ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+        : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+    let u = -1;
+    const r = 10 ** dp;
+
+    do {
+        bytes /= thresh;
+        ++u;
+    } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+    return `${bytes.toFixed(dp)} ${units[u]}`;
+};
+
 export const getFirst = <T>(...values: unknown[]): T => {
     for (let value of values) {
         if (typeof value === "function") {
@@ -153,3 +191,33 @@ export function convertKeysToDotNotation(
     });
     return result;
 }
+
+export const getPreferredLang = (lang: string = undefined): string => {
+    return getFirst(
+        lang,
+        window.GrispiChat.options.language,
+        document.documentElement.lang,
+        FALLBACK_LOCALE
+    );
+};
+
+export const getLocalizedTime = (dateTimeString: string): string => {
+    const currentDate: Date = new Date();
+    const inputDate: Date = new Date(dateTimeString);
+
+    const isSameDay: boolean = currentDate.toDateString() === inputDate.toDateString();
+
+    if (isSameDay) {
+        return inputDate.toLocaleString(getPreferredLang(), {
+            hour: "numeric",
+            minute: "numeric",
+        });
+    }
+
+    return inputDate.toLocaleString(getPreferredLang(), {
+        hour: "numeric",
+        minute: "numeric",
+        day: "numeric",
+        month: "long",
+    });
+};

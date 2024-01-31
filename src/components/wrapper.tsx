@@ -1,35 +1,20 @@
 import { useChatBox } from "@context/chat-box-context";
 import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
-import { getChatIdFromStorage } from "@lib/storage";
 import { useEffect } from "preact/hooks";
 
 export const Wrapper = ({ children }) => {
-    const { options, setStatus } = useChatBox();
-    const { subscribeToExistingChat } = useChat();
+    const { options } = useChatBox();
+    const { subscribeToExistingChatFromStorage, mergeLocalPreferencesWithGrispi } = useChat();
 
-    // listen and store chat states.
+    // Listen and store chat states.
     useChatState();
 
+    // 1. Merge local preferences with Grispi API.
+    // 2. Try to subscribe to the existing chat.
     useEffect(() => {
-        const chatId = getChatIdFromStorage();
-
-        if (!chatId) {
-            setStatus("idle");
-            return;
-        }
-
-        const handleSubscription = async () => {
-            try {
-                await subscribeToExistingChat(chatId);
-                setStatus("idle");
-            } catch (err) {
-                console.error("Error when subscribing to existing chat...");
-                // TODO: We may want to create new chat session.
-            }
-        };
-
-        handleSubscription();
+        mergeLocalPreferencesWithGrispi();
+        subscribeToExistingChatFromStorage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

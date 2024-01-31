@@ -1,4 +1,5 @@
 import { Typing } from "@components/common/typing";
+import { FileUpload } from "@components/file-upload";
 import { SendIcon } from "@components/icons";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
@@ -105,11 +106,12 @@ export const ChatBoxFooter = () => {
                         "cb-items-center": rows === 1,
                     })}
                 >
+                    <FileUpload />
                     <textarea
                         ref={inputRef}
                         type="text"
                         placeholder={t("footer.input.placeholder")}
-                        className="cb-max-h-32 cb-w-full cb-resize-none cb-rounded-2xl cb-border cb-bg-white cb-p-3 cb-text-sm focus:cb-outline-none disabled:cb-opacity-75"
+                        className="cb-max-h-20 cb-w-full cb-resize-none cb-rounded-2xl cb-border cb-bg-white cb-p-3 cb-text-sm focus:cb-outline-none disabled:cb-opacity-75"
                         rows={rows}
                         disabled={isInputDisabled}
                         value={value}
