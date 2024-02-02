@@ -19,13 +19,6 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
     debug: false,
 };
 
-export const STORAGE_KEYS = {
-    DISMISS_PROMPT: "grispi.chat.dismissPrompt",
-    CHAT_ID: "grispi.chat.chatId",
-    LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
-    LAST_BOX_STATE: "grispi.chat.lastBoxState",
-};
-
 export const ENVIRONMENTS = {
     local: "local",
     staging: "staging",
@@ -54,7 +47,7 @@ export const BACKEND_URLS = {
     [ENVIRONMENTS.prod]: "https://chat.grispi.com",
 };
 
-export const InternalEventTypeMap = {
+export const internalEventTypeMap = {
     CHAT_DISCONNECTED: "chat-disconnected",
     CHAT_HISTORY_READY: "CHAT_HISTORY_READY",
     CHAT_SESSION_CLOSED: "CHAT_SESSION_CLOSED",

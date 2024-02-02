@@ -1,6 +1,5 @@
 import { useChatBox } from "@context/chat-box-context";
-import { STORAGE_KEYS } from "@lib/config";
-import { isPromptDismissed } from "@lib/storage";
+import { isPromptDismissed, STORAGE_KEYS } from "@lib/storage";
 import { cn } from "@lib/utils";
 import { Button } from "@ui/button";
 import { useState, type FC } from "preact/compat";

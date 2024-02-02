@@ -1,4 +1,4 @@
-import { getFirst, uuidv4 } from "@lib/utils";
+import { filled, getFirst, tryParseJsonString, uuidv4 } from "@lib/utils";
 import { sendMediaMessage, sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
@@ -21,7 +21,7 @@ export type TextMessage = {
     text: string;
     formattedText: string;
     sender: Sender;
-    createdAt: string;
+    createdAt: string | number;
     shouldSendToApi?: boolean;
     status: MessageStatus;
 };
@@ -29,7 +29,7 @@ export type TextMessage = {
 export type MediaMessage = {
     id: string;
     sender: Sender;
-    createdAt: string;
+    createdAt: string | number;
     shouldSendToApi?: boolean;
     status: MessageStatus;
     media: UploadFilesResponse;
@@ -39,11 +39,11 @@ export type Message = TextMessage | MediaMessage;
 
 export type AddMessage = Omit<Message, "id" | "formattedText" | "createdAt" | "status"> & {
     id?: string;
-    text?: string;
-    formattedText?: string;
-    createdAt?: string;
+    createdAt?: string | number;
     status?: MessageStatus;
     media?: UploadFilesResponse;
+    text?: string;
+    formattedText?: string;
 };
 
 export interface Reply {
@@ -53,13 +53,15 @@ export interface Reply {
 
 interface ConversationContextType {
     state: ConversationState;
-    conversation?: Conversation;
     messages: Message[];
     replies: Reply[];
     setState: SetStateAction<ConversationState>;
     setReplies: SetStateAction<Reply[]>;
     selectReply: (reply: Reply) => void;
-    addMessage: (message: AddMessage, withPrevious?: boolean) => Promise<Message | void>;
+    addMessage: (
+        message: AddMessage | WsMessage,
+        withPrevious?: boolean
+    ) => Promise<Message | void>;
     reset: () => void;
 }
 
@@ -74,22 +76,46 @@ const ConversationContext = createContext<ConversationContextType>({
     reset: () => {},
 });
 
-const setDefaultsForMessage = (message): Message => {
-    return {
-        ...message,
+const setDefaultsForMessage = (message: AddMessage | WsMessage): Message => {
+    const createdAt: string = isWsMessage(message)
+        ? getFirst(message.receivedAt, () => new Date().toISOString())
+        : getFirst(message.createdAt, () => new Date().toISOString());
+
+    const finalMessage: Partial<Message> = {
         id: getFirst(message.id, uuidv4),
-        createdAt: getFirst(message.createdAt, () => new Date().toISOString()),
-        formattedText: getFirst(message.formattedText, message.text),
+        createdAt,
         shouldSendToApi: getFirst(message.shouldSendToApi, true),
         status: getFirst(message.status, "sent"),
+        sender: message.sender as Sender,
     };
+
+    const parsedText = tryParseJsonString(message.text);
+
+    if (parsedText) {
+        parsedText.publicUrl = parsedText.url;
+        (finalMessage as MediaMessage).media = parsedText;
+    } else if (!isWsMessage(message) && isMediaMessage(message) && filled(message.media)) {
+        (finalMessage as MediaMessage).media = message.media;
+    } else if (!isWsMessage(message) && isTextMessage(message)) {
+        (finalMessage as TextMessage).text = message.text;
+        (finalMessage as TextMessage).formattedText = getFirst(
+            (finalMessage as TextMessage).formattedText,
+            (finalMessage as TextMessage).text
+        );
+    }
+
+    return finalMessage as Message;
 };
 
-export const isMediaMessage = (message: Message): message is MediaMessage => {
+export const isWsMessage = (message: AddMessage | WsMessage): message is WsMessage => {
+    return "senderId" in message;
+};
+
+export const isMediaMessage = (message: Message | AddMessage): message is MediaMessage => {
     return "media" in message;
 };
 
-export const isTextMessage = (message: Message): message is TextMessage => {
+export const isTextMessage = (message: Message | AddMessage): message is TextMessage => {
     return "text" in message;
 };
 
@@ -97,7 +123,6 @@ export const ConversationContextProvider = ({ children }) => {
     const { notify } = useNotification();
     const { options, chat, user } = useChatBox();
     const [state, setState] = useState<ConversationState>("idle");
-    const [conversation, setConversation] = useState<Conversation>();
     const [messages, setMessages] = useState<Message[]>([]);
     const [replies, setReplies] = useState<Reply[]>([]);
 
@@ -181,7 +206,6 @@ export const ConversationContextProvider = ({ children }) => {
 
     const reset = useCallback(() => {
         setState("idle");
-        setConversation(undefined);
 
         addMessage(
             {
@@ -209,7 +233,6 @@ export const ConversationContextProvider = ({ children }) => {
         <ConversationContext.Provider
             value={{
                 state,
-                conversation,
                 messages,
                 replies,
                 setReplies,

@@ -5,11 +5,16 @@ import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { Button } from "@ui/button";
+import { type FC } from "preact/compat";
 import { useCallback, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
 import { FileUploadIcon, LoadingIcon } from "./icons";
 
-export const FileUpload = () => {
+interface FileUploadProps {
+    disabled?: boolean;
+}
+
+export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
     const { notify } = useNotification();
     const { chat } = useChatBox();
     const { addMessage } = useConversation();
@@ -22,7 +27,7 @@ export const FileUpload = () => {
 
     const handleChange = useCallback(
         async (e: JSX.TargetedEvent<HTMLInputElement, Event>) => {
-            if (loading) return;
+            if (loading || disabled) return;
 
             const file = e.currentTarget.files?.[0];
 
@@ -72,7 +77,7 @@ export const FileUpload = () => {
                 setLoading(false);
             }
         },
-        [chat, loading, notify, addMessage]
+        [chat, loading, disabled, notify, addMessage]
     );
 
     return (
@@ -82,7 +87,7 @@ export const FileUpload = () => {
                 icon={loading ? LoadingIcon : FileUploadIcon}
                 variant="link"
                 size="sm"
-                disabled={loading}
+                disabled={loading || disabled}
             />
             <input
                 ref={fileInputRef}

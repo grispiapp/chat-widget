@@ -27,9 +27,7 @@ export interface UploadFilesResponse {
 
 export interface WsMessage {
     contentType: ContentType;
-    fromHistory?: boolean; // this is added to messages when they're coming from history end point
     id: string; // this is the msgGrispiId
-    isSystem?: boolean; // true if welcome or dispatch message
     msgGrispiId?: string; // this exists in messages from history or websocket. we use this value as the id property in UI.
     receiptId?: string; // this is added to outgoing messages and also exists in incoming messages that come from ws subscription
     receivedAt?: number;
@@ -40,4 +38,5 @@ export interface WsMessage {
     sentAt: number;
     status: string | undefined;
     text: string;
+    shouldSendToApi?: boolean;
 }

@@ -1,14 +1,21 @@
 import { blank, filled } from "@lib/utils";
 import { createContext } from "preact";
-import { type SetStateAction } from "preact/compat";
+import { type ReactNode, type SetStateAction } from "preact/compat";
 import { useContext, useState } from "preact/hooks";
 
-export interface ModalType {
-    title?: string;
-    text: string;
-    confirmFn: () => void;
-    dismissFn?: () => void;
-}
+export type ModalType =
+    | {
+          title?: string;
+          content: ReactNode | string;
+          type: "confirm";
+          confirmFn: () => void;
+          dismissFn?: () => void;
+      }
+    | {
+          type: "image";
+          src: string;
+          dismissFn?: () => void;
+      };
 
 interface ModalContextType {
     modal: ModalType;

@@ -1,11 +1,12 @@
+import { WsMessage } from "@/types/backend";
 import { useChatBox, type ChatBoxContextType } from "@context/chat-box-context";
-import { useConversation, type AddMessage } from "@context/conversation-context";
+import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
-import { InternalEventTypeMap } from "@lib/config";
+import { internalEventTypeMap } from "@lib/config";
 import { getChatIdFromStorage } from "@lib/storage";
-import { debug, tryParseJsonString } from "@lib/utils";
+import { debug } from "@lib/utils";
 import { subscribeChat } from "@lib/websocket";
-import { useCallback } from "preact/hooks";
+import { useCallback, useEffect } from "preact/hooks";
 import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/chat";
 import { t } from "../lang";
 
@@ -14,13 +15,49 @@ export const useChat = () => {
     const { addMessage, setState: setConversationState } = useConversation();
     const { notify } = useNotification();
 
+    useEffect(() => {
+        const handleMessageReceived = (e: CustomEvent<WsMessage>) => {
+            debug("Incoming message", { message: e.detail });
+
+            const message = {
+                id: e.detail.id,
+                text: e.detail.text,
+            };
+
+            addMessage({
+                ...message,
+                sender: e.detail.senderId === user.id ? "user" : "ai",
+                shouldSendToApi: false,
+            });
+        };
+
+        if (!window.GrispiChat.listeners.INCOMING_MESSAGE) {
+            window.addEventListener(internalEventTypeMap.INCOMING_MESSAGE, handleMessageReceived);
+            window.GrispiChat.listeners.INCOMING_MESSAGE = true;
+        }
+
+        return () => {
+            window.removeEventListener(
+                internalEventTypeMap.INCOMING_MESSAGE,
+                handleMessageReceived
+            );
+
+            window.GrispiChat.listeners.INCOMING_MESSAGE = false;
+        };
+    }, []);
+
     const mergeLocalPreferencesWithGrispi = useCallback(async () => {
-        updateOptions(await chatPreferences());
+        try {
+            const preferences = await chatPreferences();
+            updateOptions(preferences);
+        } catch (err) {
+            console.error("Failed to fetch chat preferences from Grispi.");
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadChatHistory = useCallback(
-        async (chat: ChatBoxContextType["chat"]) => {
+        async (chat: ChatBoxContextType["chat"], user: ChatBoxContextType["user"]) => {
             debug("Fetching chat history...", { chat });
 
             try {
@@ -32,21 +69,11 @@ export const useChat = () => {
                 }
 
                 history.forEach((message) => {
-                    const messageInput = {
-                        sender: chat.userId === message.senderId.toString() ? "user" : "ai",
+                    addMessage({
+                        ...message,
+                        sender: message.senderId === user.id ? "user" : "ai",
                         shouldSendToApi: false,
-                    } as AddMessage;
-
-                    const parsedText = tryParseJsonString(message.text);
-
-                    if (parsedText) {
-                        parsedText.publicUrl = parsedText.url;
-                        messageInput.media = parsedText;
-                    } else {
-                        messageInput.text = message.text;
-                    }
-
-                    addMessage(messageInput);
+                    });
                 });
             } catch (err) {
                 notify({
@@ -71,11 +98,11 @@ export const useChat = () => {
             const modes = {
                 create: {
                     fn: () => createChat(user),
-                    type: InternalEventTypeMap.NEW_CHAT_CREATED,
+                    type: internalEventTypeMap.NEW_CHAT_CREATED,
                 },
                 resume: {
                     fn: () => resumeChat(options?.chatId),
-                    type: InternalEventTypeMap.RESUME_CHAT,
+                    type: internalEventTypeMap.RESUME_CHAT,
                 },
             };
 
@@ -89,6 +116,7 @@ export const useChat = () => {
             };
 
             const newUserState = {
+                id: Number(newChatState.userId),
                 fullName: newChatState.name,
                 email: newChatState.email,
             };
@@ -99,7 +127,7 @@ export const useChat = () => {
             setConversationState("idle");
 
             if (mode === "resume") {
-                await loadChatHistory(newChatState);
+                await loadChatHistory(newChatState, newUserState);
             }
 
             return {

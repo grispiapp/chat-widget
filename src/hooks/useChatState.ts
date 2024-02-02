@@ -1,5 +1,6 @@
 import { useChatBox } from "@context/chat-box-context";
-import { InternalEventTypeMap, STORAGE_KEYS } from "@lib/config";
+import { internalEventTypeMap } from "@lib/config";
+import { STORAGE_KEYS } from "@lib/storage";
 import { useEffect } from "preact/hooks";
 
 export const useChatState = () => {
@@ -22,28 +23,28 @@ export const useChatState = () => {
             setChat((prev) => ({ ...prev, subscribed: false }));
         };
 
-        if (!window.GrispiChat.hasSubscribedToChatListener) {
+        if (!window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT) {
             window.addEventListener(
-                InternalEventTypeMap.SUBSCRIBED_TO_CHAT,
+                internalEventTypeMap.SUBSCRIBED_TO_CHAT,
                 subscribedToChatHandler
             );
-            window.GrispiChat.hasSubscribedToChatListener = true;
+            window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT = true;
         }
 
-        if (!window.GrispiChat.hasChatDisconnectedListener) {
-            window.addEventListener(InternalEventTypeMap.CHAT_DISCONNECTED, disconnectHandler);
-            window.GrispiChat.hasChatDisconnectedListener = true;
+        if (!window.GrispiChat.listeners.CHAT_DISCONNECTED) {
+            window.addEventListener(internalEventTypeMap.CHAT_DISCONNECTED, disconnectHandler);
+            window.GrispiChat.listeners.CHAT_DISCONNECTED = true;
         }
 
         return () => {
-            window.removeEventListener(InternalEventTypeMap.CHAT_DISCONNECTED, disconnectHandler);
+            window.removeEventListener(internalEventTypeMap.CHAT_DISCONNECTED, disconnectHandler);
             window.removeEventListener(
-                InternalEventTypeMap.SUBSCRIBED_TO_CHAT,
+                internalEventTypeMap.SUBSCRIBED_TO_CHAT,
                 subscribedToChatHandler
             );
 
-            window.GrispiChat.hasSubscribedToChatListener = false;
-            window.GrispiChat.hasChatDisconnectedListener = false;
+            window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT = false;
+            window.GrispiChat.listeners.CHAT_DISCONNECTED = false;
         };
     }, [setChat]);
 };

@@ -7,7 +7,7 @@ import {
     type WsMessage,
 } from "../types/backend";
 import { type MediaFileMeta } from "../types/file";
-import { InternalEventTypeMap } from "./config";
+import { internalEventTypeMap } from "./config";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
 /**
@@ -17,18 +17,18 @@ const MESSAGE_ID_HEADER = "msg-grispi-id";
 const UPDATES_QUEUE_DESTINATION = `/user/queue/updates`;
 
 const chatDisconnectedEvent = () =>
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CHAT_DISCONNECTED));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.CHAT_DISCONNECTED));
 const myMessageSentEvent = (receiptId: string) =>
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.GOT_RECEIPT, { detail: receiptId }));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.GOT_RECEIPT, { detail: receiptId }));
 const myMessageReceivedEvent = (messageId: string) =>
     window.dispatchEvent(
-        new CustomEvent(InternalEventTypeMap.MESSAGE_RECEIVED, {
+        new CustomEvent(internalEventTypeMap.MESSAGE_RECEIVED, {
             detail: messageId,
         })
     );
 const myMessageSeenEvent = (messageId: string) =>
     window.dispatchEvent(
-        new CustomEvent(InternalEventTypeMap.MESSAGE_SEEN, {
+        new CustomEvent(internalEventTypeMap.MESSAGE_SEEN, {
             detail: messageId,
         })
     );
@@ -136,13 +136,13 @@ const incomingMessageHandler = (message: IMessage) => {
         if (parsedMessage.code === SERVER_MESSAGE_CODE.CHAT_SESSION_CLOSED) {
             terminateWsConnection();
             chatDisconnectedEvent();
-            window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CHAT_SESSION_CLOSED));
+            window.dispatchEvent(new CustomEvent(internalEventTypeMap.CHAT_SESSION_CLOSED));
             return;
         }
     } else {
         // incoming regular message from an agent
         window.dispatchEvent(
-            new CustomEvent(InternalEventTypeMap.INCOMING_MESSAGE, {
+            new CustomEvent(internalEventTypeMap.INCOMING_MESSAGE, {
                 detail: parsedMessage,
             })
         );
@@ -200,7 +200,7 @@ const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
         );
     }
 
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.SUBSCRIBED_TO_CHAT));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.SUBSCRIBED_TO_CHAT));
 };
 //</editor-fold>
 
@@ -293,10 +293,11 @@ const sendMediaMessage = (
     chat: SubscribeableChatResponseForEndUser
 ) => {
     const text = getMediaFileMetaData(uploadedFile);
+
     return sendMessage(
         {
             contentType: uploadedFile.mimeType,
-            id: (Date.now() * -1).toString(),
+            id: uuidv4(),
             sender: chat.name,
             sentAt: Date.now(),
             text,
@@ -315,12 +316,6 @@ const sendMessage = (message: WsMessage, chat: SubscribeableChatResponseForEndUs
     const destination = destinationPaths(chat.chatSessionId).chatMessage();
 
     message.receiptId = uuidv4();
-
-    window.dispatchEvent(
-        new CustomEvent(InternalEventTypeMap.INCOMING_MESSAGE, {
-            detail: { id: Date.now() * -1, ...message },
-        })
-    );
 
     sendMessageOverWs(message, destination);
 };

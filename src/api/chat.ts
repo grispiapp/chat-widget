@@ -1,7 +1,7 @@
 import { type GrispiChatOptions } from "@/types/chat-box";
 import { type SurveyInput } from "@components/survey-form";
 import { api } from "@lib/api";
-import { InternalEventTypeMap } from "@lib/config";
+import { internalEventTypeMap } from "@lib/config";
 import { debug, getHostUrl } from "@lib/utils";
 import {
     type SubscribeableChatResponseForEndUser,
@@ -66,11 +66,11 @@ export const uploadAttachment = async (file: File, chat: SubscribeableChatRespon
 };
 
 export const windowFocusedEvent = () => {
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.WINDOW_FOCUSED));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.WINDOW_FOCUSED));
 };
 export const windowBlurredEvent = () => {
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.WINDOW_BLURRED));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.WINDOW_BLURRED));
 };
 
 export const websocketConnectionReadyEvent = () =>
-    window.dispatchEvent(new CustomEvent(InternalEventTypeMap.CONNECTION_READY));
+    window.dispatchEvent(new CustomEvent(internalEventTypeMap.CONNECTION_READY));

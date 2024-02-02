@@ -58,6 +58,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
     const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
     const [user, setUser] = useState<ChatBoxContextType["user"]>({
+        id: -1,
         fullName: "",
         email: "",
     });

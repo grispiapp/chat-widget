@@ -106,7 +106,7 @@ export const ChatBoxFooter = () => {
                         "cb-items-center": rows === 1,
                     })}
                 >
-                    <FileUpload />
+                    <FileUpload disabled={isInputDisabled} />
                     <textarea
                         ref={inputRef}
                         type="text"

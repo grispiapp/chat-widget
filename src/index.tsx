@@ -1,5 +1,5 @@
 import { Widget } from "@components/widget";
-import { VERSION } from "@lib/config";
+import { VERSION, type internalEventTypeMap } from "@lib/config";
 import { debug } from "@lib/utils";
 import { render } from "preact";
 import styles from "./index.css?inline";
@@ -8,12 +8,12 @@ import { type GrispiChatOptions } from "./types/chat-box";
 type GrispiChatType = {
     create: (options: GrispiChatOptions) => void;
     options: GrispiChatOptions | undefined;
-    hasSubscribedToChatListener?: boolean;
-    hasChatDisconnectedListener?: boolean;
+    listeners: Partial<Record<keyof typeof internalEventTypeMap, boolean>>;
 };
 
 export const GrispiChat: GrispiChatType = {
     options: undefined,
+    listeners: {},
 
     create: async (options: GrispiChatOptions) => {
         if (GrispiChat.options) {

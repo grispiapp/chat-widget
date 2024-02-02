@@ -21,7 +21,8 @@ export const ChatBoxHeader = () => {
 
         setModal({
             title: t("endSessionModal.title"),
-            text: t("endSessionModal.text"),
+            content: t("endSessionModal.text"),
+            type: "confirm",
             confirmFn: () => {
                 // terminate websocket
                 endChatSession(chat);

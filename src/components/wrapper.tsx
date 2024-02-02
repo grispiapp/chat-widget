@@ -10,10 +10,10 @@ export const Wrapper = ({ children }) => {
     // Listen and store chat states.
     useChatState();
 
-    // 1. Merge local preferences with Grispi API.
-    // 2. Try to subscribe to the existing chat.
     useEffect(() => {
+        // Merge local preferences with Grispi API.
         mergeLocalPreferencesWithGrispi();
+        // Try to subscribe to the existing chat.
         subscribeToExistingChatFromStorage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

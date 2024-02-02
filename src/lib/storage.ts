@@ -3,7 +3,13 @@ import {
     type ChatBoxContextType,
     type ChatBoxState,
 } from "@context/chat-box-context";
-import { STORAGE_KEYS } from "./config";
+
+export const STORAGE_KEYS = {
+    DISMISS_PROMPT: "grispi.chat.dismissPrompt",
+    CHAT_ID: "grispi.chat.chatId",
+    LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
+    LAST_BOX_STATE: "grispi.chat.lastBoxState",
+};
 
 export const getLastBoxStateFromStorage = (): ChatBoxState => {
     const lastBoxState = localStorage.getItem(STORAGE_KEYS.LAST_BOX_STATE);

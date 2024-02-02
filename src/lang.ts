@@ -90,10 +90,50 @@ const strings = {
             },
             submit: "Bağlan",
         },
+        surveyForm: {
+            title: "Sohbeti puanlayın",
+            text: "Probleminizi çözmenize yardımcı olabildik mi?",
+            rating: {
+                invalid: "Lütfen geçerli bir puan seçin.",
+            },
+            description: {
+                label: "Açıkalma (zorunlu değil)",
+                max: "Açıklama en fazla {maksimum} karakter uzunluğunda olabilir.",
+            },
+            submit: "Gönder",
+            connect: "Tekrar bağlan",
+            success: {
+                text: "Geri bildiriminiz için teşekkürler, hoça kalın.",
+            },
+        },
         errors: {
             common: {
                 title: "Bir hata oldu.",
                 text: "Lütfen sayfayı yenileyip tekrar deneyin.",
+            },
+        },
+        modal: {
+            buttons: {
+                no: "Hayır",
+                yes: "Evet",
+            },
+        },
+        endSessionModal: {
+            title: "Oturum sonlandırılıyor",
+            text: "Bu konuşmayı sonlandırmak istediğine emin misin?",
+        },
+        ratingStates: {
+            1: "Hiç memnun kalmadım",
+            2: "Memnun kalmadım",
+            3: "İdare eder",
+            4: "Memnun kaldım",
+            5: "Çok memnun kaldım",
+        },
+        fileUpload: {
+            validation: {
+                required: "Lütfen bir dosya seçin.",
+                invalid: "Lütfen geçerli bir dosya seçin.",
+                max: "Dosya boyutu izin verilen maksimum {sizeInMb} MB sınırını aşıyor.",
             },
         },
     },
