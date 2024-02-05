@@ -45,18 +45,6 @@ export interface GrispiChatOptions {
     element?: string;
 
     /**
-     * Configuration for the colors used in the chat interface.
-     */
-    colors: {
-        primary: string;
-    };
-
-    /**
-     * Localizable texts.
-     */
-    texts: Record<string, LocalizableTexts>;
-
-    /**
      * Optional. Specifies the environment in which the chat is running.
      * Should be one of the values defined in the ENVIRONMENTS object.
      */
@@ -66,4 +54,25 @@ export interface GrispiChatOptions {
      * Optional. If set to true, enables debug mode for additional logging and debugging information.
      */
     debug?: boolean;
+
+    /**
+     * Optional. When set to true, the chat interface is configured to appear
+     * "always online" providing a continuous and responsive user experience.
+     *
+     * This setting ensures that the chat interface remains accessible to users at all times,
+     * creating a perception of constant availability.
+     */
+    always_online?: boolean;
+
+    /**
+     * Configuration for the colors used in the chat interface.
+     */
+    colors: {
+        primary: string;
+    };
+
+    /**
+     * Localizable texts.
+     */
+    texts: Record<string, Partial<LocalizableTexts>>;
 }

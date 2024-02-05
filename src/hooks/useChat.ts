@@ -12,7 +12,7 @@ import { useTranslation } from "./useTranslation";
 
 export const useChat = () => {
     const { t } = useTranslation();
-    const { setStatus: setChatBoxStatus, user, setChat, setUser, updateOptions } = useChatBox();
+    const { user, setStatus: setChatBoxStatus, setChat, setUser, updateOptions } = useChatBox();
     const { addMessage, updateMessage, setState: setConversationState } = useConversation();
     const { notify } = useNotification();
 
@@ -114,7 +114,6 @@ export const useChat = () => {
 
     const mergeLocalPreferencesWithGrispi = useCallback(async () => {
         try {
-            throw new Error("hop");
             const preferences = await chatPreferences();
             updateOptions(preferences);
         } catch (err) {

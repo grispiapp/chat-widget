@@ -1,10 +1,12 @@
 import { useChatBox } from "@context/chat-box-context";
 import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
+import { internalEventTypeMap } from "@lib/config";
+import { debug } from "@lib/utils";
 import { useEffect } from "preact/hooks";
 
 export const Wrapper = ({ children }) => {
-    const { options, setIsAuthorized, setStatus } = useChatBox();
+    const { options, chat, isAuthorized, setIsAuthorized, setStatus } = useChatBox();
     const { subscribeToExistingChatFromStorage, mergeLocalPreferencesWithGrispi } = useChat();
 
     // Listen and store chat states.
@@ -28,6 +30,26 @@ export const Wrapper = ({ children }) => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const ensureWsSubscription = async () => {
+            if (!isAuthorized) return;
+            if (chat?.subscribed === true) return;
+
+            await subscribeToExistingChatFromStorage();
+
+            debug("Re-subscribed to websocket.");
+        };
+
+        window.addEventListener(internalEventTypeMap.ENSURE_WS_SUBSCRIPTION, ensureWsSubscription);
+
+        return () => {
+            window.removeEventListener(
+                internalEventTypeMap.ENSURE_WS_SUBSCRIPTION,
+                ensureWsSubscription
+            );
+        };
+    }, [isAuthorized, chat?.subscribed]);
 
     return <div style={{ "--color-primary": options.colors.primary }}>{children}</div>;
 };

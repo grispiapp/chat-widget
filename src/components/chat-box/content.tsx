@@ -21,10 +21,7 @@ export const ChatBoxContent = () => {
     );
 
     return (
-        <div
-            ref={contentScrollRef}
-            className="cb-relative cb-min-h-[400px] cb-flex-1 cb-overflow-auto"
-        >
+        <div ref={contentScrollRef} className="cb-relative cb-flex-1 cb-overflow-auto">
             <div ref={contentRef} className="cb-space-y-3 cb-p-3">
                 {isAuthorized ? <ContentAuthorized /> : <ContentForbidden />}
             </div>

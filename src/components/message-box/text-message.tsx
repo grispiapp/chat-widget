@@ -1,4 +1,5 @@
 import { type TextMessage as TextMessageType } from "@context/conversation-context";
+import { sanitizeHtml } from "@lib/sanitized-html";
 import { cn } from "@lib/utils";
 import { type FC } from "preact/compat";
 import { MessageBoxCard } from "./message-box-card";
@@ -15,7 +16,8 @@ export const TextMessage: FC<TextMessageProps> = ({ message }) => {
                     "cb-text-foreground": message.sender === "ai",
                     "cb-text-background": message.sender === "user",
                 })}
-                dangerouslySetInnerHTML={{ __html: message.formattedText }}
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(message.formattedText) }}
             />
         </MessageBoxCard>
     );

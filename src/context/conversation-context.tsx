@@ -128,7 +128,7 @@ export const isTextMessage = (
 export const ConversationContextProvider = ({ children }) => {
     const { t } = useTranslation();
     const { notify } = useNotification();
-    const { chat, user } = useChatBox();
+    const { chat, user, isOnline } = useChatBox();
     const [state, setState] = useState<ConversationState>("idle");
     const [messages, setMessages] = useState<Message[]>([]);
     const [replies, setReplies] = useState<Reply[]>([]);
@@ -203,7 +203,7 @@ export const ConversationContextProvider = ({ children }) => {
                 throw err;
             }
         },
-        [chat, user, notify, isFirstMessageFromEndUser, setState]
+        [chat, user, notify, t, isFirstMessageFromEndUser, setState]
     );
 
     const updateMessage = useCallback((id: Message["id"], message: Partial<AddMessage>) => {
@@ -249,7 +249,7 @@ export const ConversationContextProvider = ({ children }) => {
             {
                 id: "starter",
                 sender: "ai",
-                text: t("welcome_message"),
+                text: isOnline ? t("welcome_message") : t("offline_message"),
                 shouldSendToApi: false,
             },
             false
@@ -260,7 +260,7 @@ export const ConversationContextProvider = ({ children }) => {
         //   { label: "Nişan yapmak istiyorum." },
         //   { label: "Kına gecesi yapmak istiyorum." },
         // ]);
-    }, [t, addMessage]);
+    }, [isOnline, t, addMessage]);
 
     useEffect(() => {
         reset();

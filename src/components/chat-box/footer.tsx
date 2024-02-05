@@ -1,6 +1,7 @@
 import { Typing } from "@components/common/typing";
 import { FileUpload } from "@components/file-upload";
 import { SendIcon } from "@components/icons";
+import { PoweredBy } from "@components/powered-by";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useTranslation } from "@hooks/useTranslation";
@@ -74,7 +75,7 @@ export const ChatBoxFooter = () => {
 
     return (
         <div className="cb-relative">
-            {(conversationState === "typing" || replies.length > 0) && (
+            {(conversationState === "typing" || replies.length > 0 || true) && (
                 <div className="cb-absolute cb-bottom-0 cb-left-0 cb-right-0 cb-z-50">
                     {conversationState === "typing" ? (
                         <div className="cb-px-3">
@@ -101,10 +102,10 @@ export const ChatBoxFooter = () => {
                     )}
                 </div>
             )}
-            <div className="cb-rounded-b-xl cb-bg-background/50 cb-p-3 cb-backdrop-blur-lg">
+            <div className="cb-space-y-2 cb-rounded-b-xl cb-bg-background/50 cb-backdrop-blur-lg">
                 <form
                     onSubmit={(e) => handleSubmit(e, value)}
-                    className={cn("cb-flex cb-gap-3", {
+                    className={cn("cb-flex cb-gap-3 cb-px-3 cb-pt-3", {
                         "cb-items-end": rows > 1,
                         "cb-items-center": rows === 1,
                     })}
@@ -124,6 +125,7 @@ export const ChatBoxFooter = () => {
                         <Button size="sm" icon={SendIcon} disabled={isInputDisabled} />
                     </div>
                 </form>
+                <PoweredBy />
             </div>
         </div>
     );

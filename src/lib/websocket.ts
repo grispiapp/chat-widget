@@ -220,29 +220,26 @@ function sendMessageOverWs(message: WsMessage, destination: string): void {
         return;
     }
 
-    //FIXME check connection, subscription. if closed, call resume chat
+    // FIXME check connection, subscription. if closed, call resume chat
 
     debug("Sending message...", message);
+
     const receiptId = message.receiptId!;
-    try {
-        client.watchForReceipt(receiptId, (frame) => {
-            debug("Incoming receipt", { receiptId });
-            // Having a receiptId means that our message is received by the server
 
-            // Implementation note:
-            // here receiptId === msgGrispiId
-            myMessageSentEvent(frame.headers["receipt-id"]);
-        });
+    client.watchForReceipt(receiptId, (frame) => {
+        debug("Incoming receipt", { receiptId });
+        // Having a receiptId means that our message is received by the server
 
-        client.publish({
-            destination,
-            headers: { receipt: receiptId },
-            body: JSON.stringify(message),
-        });
-    } catch (error) {
-        debug(error);
-        //FIXME show user that the message is not sent
-    }
+        // Implementation note:
+        // here receiptId === msgGrispiId
+        myMessageSentEvent(frame.headers["receipt-id"]);
+    });
+
+    client.publish({
+        destination,
+        headers: { receipt: receiptId },
+        body: JSON.stringify(message),
+    });
 }
 //</editor-fold>
 

@@ -69,14 +69,18 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     });
 
     useEffect(() => {
+        if (options.always_online) {
+            setIsOnline(true);
+            return;
+        }
+
         const checkChatIsOnline = async () => {
             const isOnline = await chatStatus();
-
             setIsOnline(isOnline);
         };
 
         checkChatIsOnline();
-    }, []);
+    }, [options.always_online]);
 
     const toggleState = () => {
         if (state === "open") {

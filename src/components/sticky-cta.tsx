@@ -59,8 +59,9 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                 <div className="cb-absolute cb-right-0 cb-top-0 cb-h-3 cb-w-3 cb-animate-pulse cb-rounded-full cb-bg-success" />
             )}
             {!isAuthorized && (
-                <div className="cb-absolute cb-left-0 cb-top-0 cb-flex cb-h-8 cb-w-8 -cb-translate-x-1/2 cb-items-center cb-justify-center cb-rounded-full cb-bg-danger">
+                <div className="cb-absolute cb-left-0 cb-top-0 cb-flex cb-h-6 cb-min-w-6 -cb-translate-x-1/2 cb-items-center cb-justify-center cb-rounded-full cb-bg-danger">
                     <ErrorOutlineIcon className="cb-h-6 cb-w-6 cb-text-background" />
+                    {/* <span className="cb-px-1 cb-text-sm cb-text-background">256</span> */}
                 </div>
             )}
         </button>

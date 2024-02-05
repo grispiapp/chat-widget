@@ -5,9 +5,12 @@ import { ConversationContextProvider } from "@context/conversation-context";
 import { LocalizationContextProvider } from "@context/localization-context";
 import { ModalContextProvider } from "@context/modal-context";
 import { NotificationContextProvider } from "@context/notification-context";
+import { VisitorIdle } from "@lib/visitor-idle";
 import { type FC } from "preact/compat";
 import { type GrispiChatOptions } from "../types/chat-box";
 import { Wrapper } from "./wrapper";
+
+VisitorIdle.start();
 
 export interface WidgetProps {
     options: GrispiChatOptions;

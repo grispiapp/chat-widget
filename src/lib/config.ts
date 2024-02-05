@@ -14,10 +14,8 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                 name: "Grispi",
                 avatar: DefaultAgentAvatarImage,
             },
-            popup_message:
-                "Hey! Ben Leyla, (tamamen ücretsiz) sanal düğün planlama asistanınız. Size yardımcı olmamı ister misiniz?",
-            welcome_message:
-                "Merhaba, ben Leyla. Sizin için en uygun mekanları bulmada yardımcı olabilirim. Nasıl bir etkinlik yapmak istiyorsunuz?",
+            popup_message: "Hey! Yardım lazım mı?",
+            welcome_message: "Selam! Bugün size nasıl yardımcı olabiliriz?",
         },
     },
     environment: "prod",
