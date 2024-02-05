@@ -106,6 +106,30 @@ export const CheckAllIcon: IconType = (props) => {
     );
 };
 
+export const HourglassBottomIcon: IconType = (props) => {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" {...props}>
+            <path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5m2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.491v.702s.18.149.5.149.5-.15.5-.15v-.7c0-.701.478-1.236 1.011-1.492A3.5 3.5 0 0 0 11.5 3V2z" />
+        </svg>
+    );
+};
+
+export const ErrorOutlineIcon: IconType = (props) => {
+    return (
+        <svg
+            stroke="currentColor"
+            fill="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+        >
+            <path fill="none" d="M0 0h24v24H0V0z" />
+            <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+        </svg>
+    );
+};
+
 export const ChatSmileFillIcon: IconType = (props) => {
     return (
         <svg
@@ -145,6 +169,32 @@ export const GrispiIcon: IconType = (props) => {
                 fill="currentColor"
             />
             <path
+                d="M0 315C0 489.6 140.4 630 315 630C488.5 630 630 489.6 630 315C630 248.8 609.5 187.2 574.1 137C574.1 135.9 630 0 630 0H315C141.5 0 0 140.3 0 315ZM469.1 312.7C469.1 398.3 400.6 466.8 315 466.8C230.5 466.8 160.9 398.3 160.9 312.7C160.9 228.2 229.4 158.6 315 158.6C399.5 158.6 469.1 227.1 469.1 312.7Z"
+                fill="currentColor"
+            />
+        </svg>
+    );
+};
+
+export const AnimatedGrispiIcon: IconType = ({ className, ...props }) => {
+    return (
+        <svg
+            viewBox="0 0 630 917"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+            className={cn(
+                className,
+                " cb-relative cb-left-1 cb-origin-center cb-rotate-[220deg] cb-transition-all cb-duration-500 group-hover:cb-left-0 group-hover:cb-rotate-0"
+            )}
+        >
+            <path
+                className="cb-opacity-0 cb-transition-opacity cb-duration-300 group-hover:cb-opacity-100"
+                d="M315 761.201C246.5 761.201 178 742.901 119.8 705.301L37.5996 837.701C120.9 889.101 216.8 916.401 314.9 916.401C413 916.401 508.9 889.001 592.2 837.701L510 705.301C452 743.001 384.6 761.201 315 761.201Z"
+                fill="currentColor"
+            />
+            <path
+                className="cb-scale-125 cb-transition-transform group-hover:cb-scale-100"
                 d="M0 315C0 489.6 140.4 630 315 630C488.5 630 630 489.6 630 315C630 248.8 609.5 187.2 574.1 137C574.1 135.9 630 0 630 0H315C141.5 0 0 140.3 0 315ZM469.1 312.7C469.1 398.3 400.6 466.8 315 466.8C230.5 466.8 160.9 398.3 160.9 312.7C160.9 228.2 229.4 158.6 315 158.6C399.5 158.6 469.1 227.1 469.1 312.7Z"
                 fill="currentColor"
             />

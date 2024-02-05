@@ -11,6 +11,10 @@ import { internalEventTypeMap } from "./config";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
 /**
+ * this will be overridden in backend
+ */
+export const CURRENT_USER_TEMP_MESSAGE_ID = "0";
+/**
  * msgGrispiId or message id header
  */
 const MESSAGE_ID_HEADER = "msg-grispi-id";
@@ -297,7 +301,7 @@ const sendMediaMessage = (
     return sendMessage(
         {
             contentType: uploadedFile.mimeType,
-            id: uuidv4(),
+            id: CURRENT_USER_TEMP_MESSAGE_ID,
             sender: chat.name,
             sentAt: Date.now(),
             text,

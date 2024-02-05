@@ -33,8 +33,9 @@
     content: "";
     width: 10px;
     height: 13px;
-    background: url("http://localhost:5173/images/chat-launcher-preview.png") no-repeat center
-        center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: var(--chat-launcher-preview);
     background-size: 10px;
     position: absolute;
     bottom: 10px;

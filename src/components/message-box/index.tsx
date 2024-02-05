@@ -1,6 +1,6 @@
 import { isMediaAudio, isMediaFile, isMediaImage, isMediaVideo } from "@/types/file";
 import { AgentAvatar } from "@components/common/agent-avatar";
-import { CheckAllIcon, CheckIcon, LoadingIcon } from "@components/icons";
+import { CheckAllIcon, CheckIcon, HourglassBottomIcon } from "@components/icons";
 import { isMediaMessage, isTextMessage, type Message } from "@context/conversation-context";
 import { cn, getLocalizedTime } from "@lib/utils";
 import { type FC } from "preact/compat";
@@ -50,7 +50,7 @@ export const MessageBox: FC<MessageBoxProps> = ({ message }) => {
                         <span>{getLocalizedTime(message.createdAt)}</span>
                         {message.sender === "user" &&
                             {
-                                sending: <LoadingIcon className="cb-ms-1 cb-h-3 cb-w-3" />,
+                                sending: <HourglassBottomIcon className="cb-ms-1 cb-h-3 cb-w-3" />,
                                 sent: <CheckIcon className="cb-h-5 cb-w-5" />,
                                 seen: (
                                     <CheckAllIcon className="cb-ms-1 cb-h-5 cb-w-5 cb-text-primary" />

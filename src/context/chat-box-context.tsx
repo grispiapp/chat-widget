@@ -23,6 +23,7 @@ export interface ChatBoxContextType {
     state: ChatBoxState;
     status: ChatBoxStatus;
     isOnline: boolean;
+    isAuthorized: boolean;
     options: GrispiChatOptions;
     chat: SubscribeableChatResponseForEndUser & {
         subscribed: boolean;
@@ -30,6 +31,7 @@ export interface ChatBoxContextType {
     user: UserInput;
     toggleState: () => void;
     setStatus: SetStateAction<ChatBoxContextType["status"]>;
+    setIsAuthorized: SetStateAction<ChatBoxContextType["isAuthorized"]>;
     updateOptions: (newOptions: GrispiChatOptions) => void;
     setChat: SetStateAction<ChatBoxContextType["chat"]>;
     setUser: SetStateAction<ChatBoxContextType["user"]>;
@@ -39,11 +41,13 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
     state: "closed",
     status: "loading",
     isOnline: false,
+    isAuthorized: true,
     options: null,
     chat: null,
     user: null,
     toggleState: () => {},
     setStatus: () => {},
+    setIsAuthorized: () => {},
     updateOptions: () => {},
     setChat: () => {},
     setUser: () => {},
@@ -53,6 +57,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
 
     const [isOnline, setIsOnline] = useState<boolean>(false);
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
     const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
@@ -97,12 +102,14 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
                 state,
                 status,
                 isOnline,
+                isAuthorized,
                 options,
                 chat,
                 user,
                 updateOptions,
                 toggleState,
                 setStatus,
+                setIsAuthorized,
                 setChat,
                 setUser,
             }}

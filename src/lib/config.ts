@@ -1,3 +1,4 @@
+import DefaultAgentAvatarImage from "@resources/images/default-agent-avatar.png";
 import { type GrispiChatOptions } from "../types/chat-box";
 
 export const VERSION = "0.2.0";
@@ -7,14 +8,18 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
     colors: {
         primary: "99 45 145",
     },
-    agent: {
-        name: "Grispi",
-        avatar: "https://i.ibb.co/7tGKGvb/grispi.png",
+    texts: {
+        en: {
+            agent: {
+                name: "Grispi",
+                avatar: DefaultAgentAvatarImage,
+            },
+            popup_message:
+                "Hey! Ben Leyla, (tamamen ücretsiz) sanal düğün planlama asistanınız. Size yardımcı olmamı ister misiniz?",
+            welcome_message:
+                "Merhaba, ben Leyla. Sizin için en uygun mekanları bulmada yardımcı olabilirim. Nasıl bir etkinlik yapmak istiyorsunuz?",
+        },
     },
-    popup_message:
-        "Hey! Ben Leyla, (tamamen ücretsiz) sanal düğün planlama asistanınız. Size yardımcı olmamı ister misiniz?",
-    welcome_message:
-        "Merhaba, ben Leyla. Sizin için en uygun mekanları bulmada yardımcı olabilirim. Nasıl bir etkinlik yapmak istiyorsunuz?",
     environment: "prod",
     debug: false,
 };

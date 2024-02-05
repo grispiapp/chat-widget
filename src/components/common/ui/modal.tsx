@@ -1,6 +1,6 @@
-import { t } from "@/lang";
 import { CloseIcon } from "@components/icons";
 import { type ModalType } from "@context/modal-context";
+import { useTranslation } from "@hooks/useTranslation";
 import { type FC, type JSX } from "preact/compat";
 import { Button } from "./button";
 
@@ -19,6 +19,8 @@ interface ModalContentProps extends JSX.HTMLAttributes<HTMLDivElement> {}
 interface ModalFooterProps extends JSX.HTMLAttributes<HTMLDivElement> {}
 
 export const Modal: FC<ModalProps> = ({ modal }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="cb-absolute cb-inset-0 cb-z-30 cb-flex cb-items-center cb-justify-center cb-rounded-xl cb-bg-foreground/30">
             <ModalDialog>

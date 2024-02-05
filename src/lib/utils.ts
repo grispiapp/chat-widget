@@ -1,4 +1,4 @@
-import { FALLBACK_LOCALE } from "@/lang";
+import { FALLBACK_LOCALE } from "@hooks/useTranslation";
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
@@ -24,7 +24,7 @@ export const deepMerge = (target, source) => {
         if (source[key] instanceof Object) {
             source[key] = {
                 ...source[key],
-                ...deepMerge(target[key], source[key]),
+                ...deepMerge(target[key] || {}, source[key]),
             };
         }
     }
@@ -201,7 +201,7 @@ export const getPreferredLang = (lang: string = undefined): string => {
     );
 };
 
-export const getLocalizedTime = (dateTimeString: string): string => {
+export const getLocalizedTime = (dateTimeString: string | number): string => {
     const currentDate: Date = new Date();
     const inputDate: Date = new Date(dateTimeString);
 

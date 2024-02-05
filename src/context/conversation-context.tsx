@@ -1,9 +1,9 @@
+import { useTranslation } from "@hooks/useTranslation";
 import { filled, getFirst, tryParseJsonString, uuidv4 } from "@lib/utils";
 import { sendMediaMessage, sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
 import { useCallback, useContext, useEffect, useState } from "preact/hooks";
-import { t } from "../lang";
 import { type UploadFilesResponse, type WsMessage } from "../types/backend";
 import { useChatBox } from "./chat-box-context";
 import { useNotification } from "./notification-context";
@@ -62,6 +62,7 @@ interface ConversationContextType {
         message: AddMessage | WsMessage,
         withPrevious?: boolean
     ) => Promise<Message | void>;
+    updateMessage: (id: Message["id"], message: Partial<AddMessage>) => void;
     reset: () => void;
 }
 
@@ -73,19 +74,20 @@ const ConversationContext = createContext<ConversationContextType>({
     setReplies: () => {},
     selectReply: () => {},
     addMessage: async () => {},
+    updateMessage: () => {},
     reset: () => {},
 });
 
 const setDefaultsForMessage = (message: AddMessage | WsMessage): Message => {
     const createdAt: string = isWsMessage(message)
-        ? getFirst(message.receivedAt, () => new Date().toISOString())
+        ? getFirst(message.sentAt, () => new Date().toISOString())
         : getFirst(message.createdAt, () => new Date().toISOString());
 
     const finalMessage: Partial<Message> = {
         id: getFirst(message.id, uuidv4),
         createdAt,
         shouldSendToApi: getFirst(message.shouldSendToApi, true),
-        status: getFirst(message.status, "sent"),
+        status: getFirst(message.status, "sending"),
         sender: message.sender as Sender,
     };
 
@@ -94,9 +96,9 @@ const setDefaultsForMessage = (message: AddMessage | WsMessage): Message => {
     if (parsedText) {
         parsedText.publicUrl = parsedText.url;
         (finalMessage as MediaMessage).media = parsedText;
-    } else if (!isWsMessage(message) && isMediaMessage(message) && filled(message.media)) {
+    } else if (isMediaMessage(message) && filled(message.media)) {
         (finalMessage as MediaMessage).media = message.media;
-    } else if (!isWsMessage(message) && isTextMessage(message)) {
+    } else if (isTextMessage(message)) {
         (finalMessage as TextMessage).text = message.text;
         (finalMessage as TextMessage).formattedText = getFirst(
             (finalMessage as TextMessage).formattedText,
@@ -111,17 +113,22 @@ export const isWsMessage = (message: AddMessage | WsMessage): message is WsMessa
     return "senderId" in message;
 };
 
-export const isMediaMessage = (message: Message | AddMessage): message is MediaMessage => {
+export const isMediaMessage = (
+    message: Message | AddMessage | WsMessage
+): message is MediaMessage => {
     return "media" in message;
 };
 
-export const isTextMessage = (message: Message | AddMessage): message is TextMessage => {
+export const isTextMessage = (
+    message: Message | AddMessage | WsMessage
+): message is TextMessage => {
     return "text" in message;
 };
 
 export const ConversationContextProvider = ({ children }) => {
+    const { t } = useTranslation();
     const { notify } = useNotification();
-    const { options, chat, user } = useChatBox();
+    const { chat, user } = useChatBox();
     const [state, setState] = useState<ConversationState>("idle");
     const [messages, setMessages] = useState<Message[]>([]);
     const [replies, setReplies] = useState<Reply[]>([]);
@@ -157,17 +164,25 @@ export const ConversationContextProvider = ({ children }) => {
                     }
 
                     if (message.shouldSendToApi && isMediaMessage(message)) {
-                        sendMediaMessage(message.media, chat);
+                        try {
+                            sendMediaMessage(message.media, chat);
+                        } catch (err) {
+                            console.error("Failed to sending media message", err);
+                        }
                     } else if (message.shouldSendToApi && isTextMessage(message)) {
-                        sendMessage(
-                            {
-                                id: message.id,
-                                sender: user.fullName,
-                                sentAt: Date.now(),
-                                text: message.text,
-                            } as WsMessage,
-                            chat
-                        );
+                        try {
+                            sendMessage(
+                                {
+                                    id: message.id,
+                                    sender: user.fullName,
+                                    sentAt: Date.now(),
+                                    text: message.text,
+                                } as WsMessage,
+                                chat
+                            );
+                        } catch (err) {
+                            console.error("Failed to sending text message", err);
+                        }
                     }
 
                     setReplies([]);
@@ -191,6 +206,29 @@ export const ConversationContextProvider = ({ children }) => {
         [chat, user, notify, isFirstMessageFromEndUser, setState]
     );
 
+    const updateMessage = useCallback((id: Message["id"], message: Partial<AddMessage>) => {
+        /**
+         * When the user sends consecutive messages, the message ID we defined
+         * temporarily becomes duplicated and updates all associated messages.
+         *
+         * Just to update the first message he finds:
+         */
+        let isMessageUpdated = false;
+
+        setMessages((prevMessages) => [
+            ...prevMessages.map((item) => {
+                if (isMessageUpdated) return;
+
+                if (item.id === id) {
+                    item = { ...item, ...message };
+                    isMessageUpdated = true;
+                }
+
+                return item;
+            }),
+        ]);
+    }, []);
+
     const selectReply = useCallback<ConversationContextType["selectReply"]>(
         (reply) => {
             addMessage({
@@ -211,7 +249,7 @@ export const ConversationContextProvider = ({ children }) => {
             {
                 id: "starter",
                 sender: "ai",
-                text: options.welcome_message,
+                text: t("welcome_message"),
                 shouldSendToApi: false,
             },
             false
@@ -222,7 +260,7 @@ export const ConversationContextProvider = ({ children }) => {
         //   { label: "Nişan yapmak istiyorum." },
         //   { label: "Kına gecesi yapmak istiyorum." },
         // ]);
-    }, [options, addMessage]);
+    }, [t, addMessage]);
 
     useEffect(() => {
         reset();
@@ -239,6 +277,7 @@ export const ConversationContextProvider = ({ children }) => {
                 selectReply,
                 setState,
                 addMessage,
+                updateMessage,
                 reset,
             }}
         >

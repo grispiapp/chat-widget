@@ -3,6 +3,7 @@ import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
+import { useTranslation } from "@hooks/useTranslation";
 import { blank, debug, isEmail } from "@lib/utils";
 import { sendMessage } from "@lib/websocket";
 import { Button } from "@ui/button";
@@ -10,12 +11,12 @@ import { Card } from "@ui/card";
 import { Input } from "@ui/input";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
-import { t } from "../lang";
 import { type WsMessage } from "../types/backend";
 import { type UserInput } from "../types/user";
 
 export const UserForm = () => {
     const fullNameRef = useRef<HTMLInputElement>(null);
+    const { t } = useTranslation();
     const { notify } = useNotification();
     const { subscribeToNewChat } = useChat();
     const { chat, user, setUser } = useChatBox();

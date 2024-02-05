@@ -1,14 +1,17 @@
 import { useChatBox } from "@context/chat-box-context";
+import { useTranslation } from "@hooks/useTranslation";
 import { isPromptDismissed, STORAGE_KEYS } from "@lib/storage";
 import { cn } from "@lib/utils";
+import ChatLauncherPreviewImage from "@resources/images/chat-launcher-preview.png";
 import { Button } from "@ui/button";
 import { useState, type FC } from "preact/compat";
-import { CloseIcon, GrispiIcon } from "./icons";
+import { AnimatedGrispiIcon, CloseIcon, ErrorOutlineIcon } from "./icons";
 
 interface StickyCtaProps {}
 
 export const StickyCta: FC<StickyCtaProps> = () => {
-    const { state, toggleState, options, isOnline } = useChatBox();
+    const { t } = useTranslation();
+    const { state, toggleState, isOnline, isAuthorized } = useChatBox();
     const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
@@ -25,7 +28,7 @@ export const StickyCta: FC<StickyCtaProps> = () => {
         <button
             onClick={toggleState}
             className={cn(
-                "cb-fixed cb-bottom-6 cb-right-6 cb-z-[1000] cb-flex cb-items-end cb-gap-4 cb-text-start cb-transition-opacity",
+                "cb-group cb-fixed cb-bottom-6 cb-right-6 cb-z-[1000] cb-flex cb-items-end cb-gap-4 cb-text-start cb-transition-opacity",
                 {
                     "cb-opacity-100": state === "closed",
                     "cb-pointer-events-none cb-select-none cb-opacity-0":
@@ -33,9 +36,12 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                 }
             )}
         >
-            {displayPrompt && (
-                <div className="cb-message-box cb-relative cb-mb-2 cb-max-w-64 cb-rounded-xl cb-bg-white cb-p-3 cb-text-sm cb-text-gray-700 cb-shadow md:cb-max-w-80">
-                    {options.popup_message}
+            {displayPrompt && isAuthorized && (
+                <div
+                    style={{ "--chat-launcher-preview": `url(${ChatLauncherPreviewImage})` }}
+                    className="cb-message-box cb-relative cb-mb-2 cb-max-w-64 cb-rounded-xl cb-bg-white cb-p-3 cb-text-sm cb-text-gray-700 cb-shadow md:cb-max-w-80"
+                >
+                    {t("popup_message")}
                     <Button
                         onClick={handleCloseWelcomeMessage}
                         variant="secondary"
@@ -47,10 +53,15 @@ export const StickyCta: FC<StickyCtaProps> = () => {
             )}
             <div className="cb-flex cb-h-14 cb-w-14 cb-shrink-0 cb-items-center cb-justify-center cb-rounded-full cb-bg-primary cb-shadow-xl">
                 {/* <ChatSmileFillIcon className="cb-h-7 cb-w-7 cb-text-background" /> */}
-                <GrispiIcon className="cb-h-7 cb-w-7 cb-text-background" />
+                <AnimatedGrispiIcon className="cb-h-7 cb-w-7 cb-text-background" />
             </div>
-            {isOnline && (
+            {isOnline && isAuthorized && (
                 <div className="cb-absolute cb-right-0 cb-top-0 cb-h-3 cb-w-3 cb-animate-pulse cb-rounded-full cb-bg-success" />
+            )}
+            {!isAuthorized && (
+                <div className="cb-absolute cb-left-0 cb-top-0 cb-flex cb-h-8 cb-w-8 -cb-translate-x-1/2 cb-items-center cb-justify-center cb-rounded-full cb-bg-danger">
+                    <ErrorOutlineIcon className="cb-h-6 cb-w-6 cb-text-background" />
+                </div>
             )}
         </button>
     );

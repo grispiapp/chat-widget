@@ -11,7 +11,7 @@ import { ChatBoxHeader } from "./header";
 interface ChatBoxProps {}
 
 export const ChatBox: FC<ChatBoxProps> = () => {
-    const { state } = useChatBox();
+    const { state, isAuthorized } = useChatBox();
     const { modal } = useModal();
 
     if (state === "closed") {
@@ -34,7 +34,7 @@ export const ChatBox: FC<ChatBoxProps> = () => {
         >
             <ChatBoxHeader />
             <ChatBoxContent />
-            <ChatBoxFooter />
+            {isAuthorized && <ChatBoxFooter />}
             <Notifications />
             {modal && <Modal modal={modal} />}
         </div>

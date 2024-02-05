@@ -2,6 +2,7 @@ import { ChatBox } from "@components/chat-box";
 import { StickyCta } from "@components/sticky-cta";
 import { ChatBoxContextProvider } from "@context/chat-box-context";
 import { ConversationContextProvider } from "@context/conversation-context";
+import { LocalizationContextProvider } from "@context/localization-context";
 import { ModalContextProvider } from "@context/modal-context";
 import { NotificationContextProvider } from "@context/notification-context";
 import { type FC } from "preact/compat";
@@ -14,17 +15,19 @@ export interface WidgetProps {
 
 export const Widget: FC<WidgetProps> = ({ options }) => {
     return (
-        <NotificationContextProvider>
-            <ModalContextProvider>
-                <ChatBoxContextProvider options={options}>
-                    <ConversationContextProvider>
-                        <Wrapper>
-                            <ChatBox />
-                            <StickyCta />
-                        </Wrapper>
-                    </ConversationContextProvider>
-                </ChatBoxContextProvider>
-            </ModalContextProvider>
-        </NotificationContextProvider>
+        <LocalizationContextProvider>
+            <NotificationContextProvider>
+                <ModalContextProvider>
+                    <ChatBoxContextProvider options={options}>
+                        <ConversationContextProvider>
+                            <Wrapper>
+                                <ChatBox />
+                                <StickyCta />
+                            </Wrapper>
+                        </ConversationContextProvider>
+                    </ChatBoxContextProvider>
+                </ModalContextProvider>
+            </NotificationContextProvider>
+        </LocalizationContextProvider>
     );
 };

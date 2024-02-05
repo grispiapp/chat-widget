@@ -1,5 +1,5 @@
-import { t } from "@/lang";
 import { RatingIcons } from "@components/icons";
+import { useTranslation } from "@hooks/useTranslation";
 import { cn, getFirst } from "@lib/utils";
 import { type FC } from "preact/compat";
 import { useState } from "preact/hooks";
@@ -51,6 +51,7 @@ interface RatingProps {
 }
 
 export const Rating: FC<RatingProps> = ({ value, onChange }) => {
+    const { t } = useTranslation();
     const [hoverState, setHoverState] = useState<RatingValue>(null);
 
     const handleMouseEnter = (e: JSX.TargetedMouseEvent<SVGElement>) => {

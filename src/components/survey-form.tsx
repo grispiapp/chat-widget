@@ -4,6 +4,7 @@ import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
+import { useTranslation } from "@hooks/useTranslation";
 import { debug, filled } from "@lib/utils";
 import { Button } from "@ui/button";
 import { Card } from "@ui/card";
@@ -12,7 +13,6 @@ import { Rating, type RatingValue } from "@ui/rating";
 import { TextArea } from "@ui/textarea";
 import { useCallback, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
-import { t } from "../lang";
 import { ConnectionIcon } from "./icons";
 
 export interface SurveyInput {
@@ -22,6 +22,7 @@ export interface SurveyInput {
 
 export const SurveyForm = () => {
     const { notify } = useNotification();
+    const { t } = useTranslation();
     const { chat, toggleState } = useChatBox();
     const { subscribeToExistingChatFromStorage } = useChat();
     const { setState: setConversationState } = useConversation();
@@ -90,11 +91,11 @@ export const SurveyForm = () => {
         [chat, resetErrors, toggleState, setConversationState, setError, setLoading, notify]
     );
 
-    const handleReconnectChat = async () => {
+    const handleReconnectChat = useCallback(async () => {
         setLoading(true);
         await subscribeToExistingChatFromStorage();
         setLoading(false);
-    };
+    }, [subscribeToExistingChatFromStorage]);
 
     return (
         <Card title={t("surveyForm.title")} description={t("surveyForm.text")} loading={loading}>

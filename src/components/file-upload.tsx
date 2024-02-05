@@ -1,9 +1,10 @@
 import { uploadAttachment } from "@/api/chat";
-import { t } from "@/lang";
 import { MAX_FILE_SIZE, contentTypeMap } from "@/types/file";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
+import { useTranslation } from "@hooks/useTranslation";
+import { CURRENT_USER_TEMP_MESSAGE_ID } from "@lib/websocket";
 import { Button } from "@ui/button";
 import { type FC } from "preact/compat";
 import { useCallback, useRef, useState } from "preact/hooks";
@@ -15,6 +16,7 @@ interface FileUploadProps {
 }
 
 export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
+    const { t } = useTranslation();
     const { notify } = useNotification();
     const { chat } = useChatBox();
     const { addMessage } = useConversation();
@@ -64,6 +66,7 @@ export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
                 const media = await uploadAttachment(file, chat);
 
                 await addMessage({
+                    id: CURRENT_USER_TEMP_MESSAGE_ID,
                     media,
                     sender: "user",
                 });
@@ -77,7 +80,7 @@ export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
                 setLoading(false);
             }
         },
-        [chat, loading, disabled, notify, addMessage]
+        [chat, loading, disabled, notify, addMessage, t]
     );
 
     return (

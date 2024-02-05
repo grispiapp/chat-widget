@@ -1,5 +1,32 @@
 import { type ENVIRONMENTS } from "@lib/config";
 
+interface LocalizableTexts {
+    /**
+     * Configuration for the chat agent's details.
+     */
+    agent: {
+        /**
+         * Name of the chat agent.
+         */
+        name: string;
+
+        /**
+         * URL or path to the avatar image for the chat agent.
+         */
+        avatar: string;
+    };
+
+    /**
+     * Welcome message displayed when the chat is initialized.
+     */
+    welcome_message: string;
+
+    /**
+     * Popup message displayed on the first page load.
+     */
+    popup_message: string;
+}
+
 export interface GrispiChatOptions {
     /**
      * Unique identifier for the tenant on the {tenantId}.grispi.com domain.
@@ -25,29 +52,9 @@ export interface GrispiChatOptions {
     };
 
     /**
-     * Configuration for the chat agent's details.
+     * Localizable texts.
      */
-    agent: {
-        /**
-         * Name of the chat agent.
-         */
-        name: string;
-
-        /**
-         * URL or path to the avatar image for the chat agent.
-         */
-        avatar: string;
-    };
-
-    /**
-     * Welcome message displayed when the chat is initialized.
-     */
-    welcome_message: string;
-
-    /**
-     * Popup message displayed on the first page load.
-     */
-    popup_message: string;
+    texts: Record<string, LocalizableTexts>;
 
     /**
      * Optional. Specifies the environment in which the chat is running.

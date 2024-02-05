@@ -3,13 +3,15 @@ import { FileUpload } from "@components/file-upload";
 import { SendIcon } from "@components/icons";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
+import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/utils";
+import { CURRENT_USER_TEMP_MESSAGE_ID } from "@lib/websocket";
 import { Button } from "@ui/button";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
-import { t } from "../../lang";
 
 export const ChatBoxFooter = () => {
+    const { t } = useTranslation();
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState<string>("");
     const { state: boxState, status: boxStatus } = useChatBox();
@@ -37,6 +39,7 @@ export const ChatBoxFooter = () => {
 
             try {
                 await addMessage({
+                    id: CURRENT_USER_TEMP_MESSAGE_ID,
                     text: value,
                     sender: "user",
                 });
@@ -98,7 +101,7 @@ export const ChatBoxFooter = () => {
                     )}
                 </div>
             )}
-            <div className="cb-bg-background/50 cb-p-3 cb-backdrop-blur-lg">
+            <div className="cb-rounded-b-xl cb-bg-background/50 cb-p-3 cb-backdrop-blur-lg">
                 <form
                     onSubmit={(e) => handleSubmit(e, value)}
                     className={cn("cb-flex cb-gap-3", {
