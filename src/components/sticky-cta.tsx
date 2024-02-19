@@ -2,7 +2,7 @@ import { useChatBox } from "@context/chat-box-context";
 import { useTranslation } from "@hooks/useTranslation";
 import { isPromptDismissed, STORAGE_KEYS } from "@lib/storage";
 import { cn } from "@lib/utils";
-import ChatLauncherPreviewImage from "@resources/images/chat-launcher-preview.png";
+import ChatLauncherPreviewImage from "@resources/images/chat-launcher-preview.png?raw";
 import { Button } from "@ui/button";
 import { useState, type FC } from "preact/compat";
 import { AnimatedGrispiIcon, CloseIcon, ErrorOutlineIcon } from "./icons";
