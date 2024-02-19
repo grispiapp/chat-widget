@@ -1,3 +1,4 @@
+import { asset } from "@lib/utils";
 import GrispiLogo from "@resources/images/grispi.svg";
 
 export const PoweredBy = () => {
@@ -10,7 +11,7 @@ export const PoweredBy = () => {
                 className="cb-flex cb-items-center cb-justify-center cb-gap-1 cb-text-xs cb-text-muted-foreground"
             >
                 <div className="cb-flex cb-items-center cb-gap-1">
-                    Powered by <img className="cb-w-10" src={GrispiLogo} alt="Grispi Logo" />
+                    Powered by <img className="cb-w-10" src={asset(GrispiLogo)} alt="Grispi Logo" />
                 </div>
             </a>
         </div>

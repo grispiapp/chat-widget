@@ -19,8 +19,5 @@ export default ({ mode }) => {
                 "@": path.resolve(__dirname, "./src"),
             },
         },
-        server: {
-            origin: process.env.VITE_APP_URL,
-        },
     });
 };

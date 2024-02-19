@@ -78,6 +78,10 @@ export const isDebugMode = () => {
         : DEFAULT_WIDGET_OPTIONS.debug;
 };
 
+export const asset = (path: string) => {
+    return import.meta.env.VITE_BASE_URL + path;
+};
+
 export const getChatUrl = (environment?: GrispiChatOptions["environment"]): string => {
     return API_URLS[environment || getEnvironment()];
 };

@@ -12,7 +12,7 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
         en: {
             agent: {
                 name: "Grispi",
-                avatar: DefaultAgentAvatarImage,
+                avatar: import.meta.env.VITE_BASE_URL + DefaultAgentAvatarImage,
             },
             popup_message: "Hey! Need some help?",
             welcome_message: "Hi! How can we help you today?",
@@ -89,10 +89,6 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
             },
         },
         tr: {
-            agent: {
-                name: "Grispi",
-                avatar: DefaultAgentAvatarImage,
-            },
             popup_message: "Hey! Yardım lazım mı?",
             welcome_message: "Selam! Bugün size nasıl yardımcı olabiliriz?",
             offline_message:
