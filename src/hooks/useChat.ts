@@ -1,11 +1,11 @@
-import { type WsMessage } from "@/types/backend";
+import type { SubscribeableChatResponseForEndUser, WsMessage } from "@/types/backend";
 import { useChatBox, type ChatBoxContextType } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { internalEventTypeMap } from "@lib/config";
 import { getChatIdFromStorage } from "@lib/storage";
 import { blank, debug } from "@lib/utils";
-import { CURRENT_USER_TEMP_MESSAGE_ID, subscribeChat } from "@lib/websocket";
+import { CURRENT_USER_TEMP_MESSAGE_ID, sendMessage, subscribeChat } from "@lib/websocket";
 import { useCallback, useEffect } from "preact/hooks";
 import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/chat";
 import { useTranslation } from "./useTranslation";
@@ -13,7 +13,12 @@ import { useTranslation } from "./useTranslation";
 export const useChat = () => {
     const { t } = useTranslation();
     const { user, setStatus: setChatBoxStatus, setChat, setUser, updateOptions } = useChatBox();
-    const { addMessage, updateMessage, setState: setConversationState } = useConversation();
+    const {
+        messages,
+        addMessage,
+        updateMessage,
+        setState: setConversationState,
+    } = useConversation();
     const { notify } = useNotification();
 
     // Handle incoming messages
@@ -112,6 +117,52 @@ export const useChat = () => {
         };
     }, [user, updateMessage]);
 
+    // Send the first awaited user message
+    useEffect(() => {
+        const sendAwaitingMessages = async (
+            e: CustomEvent<{ chat: SubscribeableChatResponseForEndUser }>
+        ) => {
+            setConversationState("idle");
+
+            const awaitingMessages = messages.filter(
+                (message) =>
+                    message.sender === "user" &&
+                    message.shouldSendToApi === true &&
+                    message.status === "sending"
+            );
+
+            debug("Try to send awaiting messages...", { awaitingMessages });
+
+            awaitingMessages.forEach((message) => {
+                if (blank(message) || !("text" in message)) return;
+
+                const wsMessage = {
+                    id: message.id,
+                    sender: user.fullName,
+                    sentAt: Date.now(),
+                    text: message.text,
+                } as WsMessage;
+
+                debug("Sending awaiting message...", { wsMessage });
+                sendMessage(wsMessage, e.detail.chat);
+            });
+        };
+
+        if (!window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT) {
+            window.addEventListener(internalEventTypeMap.SUBSCRIBED_TO_CHAT, sendAwaitingMessages);
+            window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT = true;
+        }
+
+        return () => {
+            window.removeEventListener(
+                internalEventTypeMap.SUBSCRIBED_TO_CHAT,
+                sendAwaitingMessages
+            );
+
+            window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT = false;
+        };
+    }, [messages, user, setConversationState]);
+
     const mergeLocalPreferencesWithGrispi = useCallback(async () => {
         try {
             const preferences = await chatPreferences();
@@ -136,10 +187,10 @@ export const useChat = () => {
                     throw new Error("Chat history is not an array.");
                 }
 
-                history
+                const formattedMessages = history
                     .sort((a, b) => (a.sentAt >= b.sentAt ? 1 : -1))
-                    .forEach((message) => {
-                        addMessage({
+                    .map((message) => {
+                        return addMessage({
                             ...message,
                             id: message.msgGrispiId,
                             sender: message.senderId === user.id ? "user" : "ai",
@@ -147,6 +198,10 @@ export const useChat = () => {
                             shouldSendToApi: false,
                         });
                     });
+
+                Promise.all(formattedMessages).then((messages) => {
+                    debug("The formatted messages loaded from history", { messages });
+                });
             } catch (err) {
                 notify({
                     title: t("errors.common.title"),
