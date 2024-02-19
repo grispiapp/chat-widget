@@ -243,6 +243,8 @@ export const ConversationContextProvider = ({ children }) => {
     );
 
     const reset = useCallback(() => {
+        if (isOnline === null) return;
+
         setState("idle");
 
         addMessage(
@@ -265,7 +267,7 @@ export const ConversationContextProvider = ({ children }) => {
     useEffect(() => {
         reset();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isOnline]);
 
     return (
         <ConversationContext.Provider

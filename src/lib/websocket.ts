@@ -10,6 +10,12 @@ import { type MediaFileMeta } from "../types/file";
 import { internalEventTypeMap } from "./config";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
+interface Gate {
+    destination: string;
+    brokerUrl: string;
+    token: string;
+}
+
 /**
  * this will be overridden in backend
  */
@@ -94,25 +100,17 @@ Async activateConnection function takes destination (destination to subscribe) ,
 Creates Connection to Websocket through Stomp , subscribes to destination and starts listening.
 Every websocket message processed and sends internal events to react application.
 */
-const activateConnection = async ({
-    destination,
-    brokerUrl,
-    token,
-}: {
-    destination: string;
-    brokerUrl: string;
-    token: string;
-}) => {
+const activateConnection = async (chat: SubscribeableChatResponseForEndUser, gate: Gate) => {
     client.beforeConnect = () => {
         client.activate();
     };
-    client.brokerURL = brokerUrl;
+    client.brokerURL = gate.brokerUrl;
     client.connectHeaders = {
-        token,
+        token: gate.token,
     };
     client.onConnect = () => {
         websocketConnectionReadyEvent();
-        ensureWsSubscriptions({ destination });
+        ensureWsSubscriptions({ chat, destination: gate.destination });
     };
 
     client.activate();
@@ -189,7 +187,13 @@ const incomingUpdateMessageHandler = (message: IMessage) => {
  * @param destination chat channel destination. (no need for updates channel destination as it's a fixed string)
  * @param endUserName
  */
-const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
+const ensureWsSubscriptions = ({
+    chat,
+    destination,
+}: {
+    chat: SubscribeableChatResponseForEndUser;
+    destination: string;
+}) => {
     if (!subscription) {
         debug("Subscribed to chatSession waiting for messages");
         subscription = client.subscribe(destination, incomingMessageHandler, {
@@ -204,7 +208,11 @@ const ensureWsSubscriptions = ({ destination }: { destination: string }) => {
         );
     }
 
-    window.dispatchEvent(new CustomEvent(internalEventTypeMap.SUBSCRIBED_TO_CHAT));
+    window.dispatchEvent(
+        new CustomEvent(internalEventTypeMap.SUBSCRIBED_TO_CHAT, {
+            detail: { chat },
+        })
+    );
 };
 //</editor-fold>
 
@@ -269,9 +277,9 @@ const subscribeChat = async (chat: SubscribeableChatResponseForEndUser) => {
             destination,
         };
 
-        activateConnection(gate);
-
         debug("Creating websocket connection and subscribing to chatSession", { gate });
+
+        await activateConnection(chat, gate);
 
         return gate;
     } catch (err) {

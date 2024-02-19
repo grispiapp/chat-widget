@@ -40,7 +40,7 @@ export interface ChatBoxContextType {
 const ChatBoxContext = createContext<ChatBoxContextType>({
     state: "closed",
     status: "loading",
-    isOnline: false,
+    isOnline: null,
     isAuthorized: true,
     options: null,
     chat: null,
@@ -56,7 +56,7 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
 export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
 
-    const [isOnline, setIsOnline] = useState<boolean>(false);
+    const [isOnline, setIsOnline] = useState<boolean>(null);
     const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
     const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
