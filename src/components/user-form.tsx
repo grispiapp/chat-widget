@@ -4,27 +4,21 @@ import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
 import { useTranslation } from "@hooks/useTranslation";
-import { blank, debug, isEmail } from "@lib/utils";
-import { sendMessage } from "@lib/websocket";
+import { blank, isEmail } from "@lib/utils";
 import { Button } from "@ui/button";
 import { Card } from "@ui/card";
 import { Input } from "@ui/input";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { type JSX } from "preact/jsx-runtime";
-import { type WsMessage } from "../types/backend";
-import { type UserInput } from "../types/user";
+import type { UserInput } from "../types/user";
 
 export const UserForm = () => {
-    const fullNameRef = useRef<HTMLInputElement>(null);
+    const inputRefs = useRef<HTMLInputElement[]>([]);
     const { t } = useTranslation();
     const { notify } = useNotification();
     const { subscribeToNewChat } = useChat();
-    const { chat, user, setUser } = useChatBox();
-    const {
-        messages,
-        state: conversationState,
-        setState: setConversationState,
-    } = useConversation();
+    const { options, chat, user, setUser } = useChatBox();
+    const { state: conversationState } = useConversation();
     const { errors, setError, resetErrors } = useErrors<UserInput>();
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -38,25 +32,8 @@ export const UserForm = () => {
 
         setLoading(true);
 
-        const firstEndUserMessage = messages.filter(
-            (message) => message.sender === "user" && message.shouldSendToApi === true
-        )?.[0];
-
         try {
-            const { chat } = await subscribeToNewChat();
-            setConversationState("idle");
-
-            if (!firstEndUserMessage) return;
-
-            const wsMessage = {
-                id: firstEndUserMessage.id,
-                sender: user.fullName,
-                sentAt: Date.now(),
-                text: firstEndUserMessage.text,
-            } as WsMessage;
-
-            debug("Sending first message...", { wsMessage });
-            sendMessage(wsMessage, chat);
+            await subscribeToNewChat();
         } catch (err) {
             notify({
                 title: t("errors.common.title"),
@@ -68,7 +45,7 @@ export const UserForm = () => {
         } finally {
             setLoading(false);
         }
-    }, [user, chat, messages, setConversationState, subscribeToNewChat, notify]);
+    }, [user, chat, t, subscribeToNewChat, notify]);
 
     const handleSubmit = useCallback(
         (e: JSX.TargetedSubmitEvent<HTMLFormElement>) => {
@@ -77,50 +54,47 @@ export const UserForm = () => {
 
             resetErrors();
 
-            if (blank(user.fullName)) {
-                setError("fullName", t("userForm.fullName.required"));
-                hasError = true;
-            }
+            options.forms.userForm.fields.forEach((field) => {
+                if (blank(field.rules)) return;
 
-            if (blank(user.email)) {
-                setError("email", t("userForm.email.required"));
-                hasError = true;
-            } else if (!isEmail(user.email)) {
-                setError("email", t("userForm.email.invalid"));
-                hasError = true;
-            }
+                if (field.rules.includes("required") && blank(user[field.name])) {
+                    setError(field.name, t(`userForm.${field.name}.required`));
+                    hasError = true;
+                }
+
+                if (field.rules.includes("email") && !isEmail(user[field.name].toString())) {
+                    setError(field.name, t(`userForm.${field.name}.invalid`));
+                    hasError = true;
+                }
+            });
 
             if (hasError) return;
 
             handleSubscribeChat();
         },
-        [user, setError, handleSubscribeChat, resetErrors]
+        [options, user, t, setError, handleSubscribeChat, resetErrors]
     );
 
     useEffect(() => {
         if (conversationState === "user-form") {
-            fullNameRef.current.focus();
+            inputRefs.current?.[0]?.focus();
         }
     }, [conversationState]);
 
     return (
         <Card title={t("userForm.title")} description={t("userForm.text")} loading={loading}>
             <form onSubmit={handleSubmit} className="cb-space-y-3">
-                <Input
-                    ref={fullNameRef}
-                    name="fullName"
-                    onChange={handleInputChange}
-                    value={user.fullName}
-                    label={t("userForm.fullName.label")}
-                    error={errors?.fullName}
-                />
-                <Input
-                    name="email"
-                    onChange={handleInputChange}
-                    value={user.email}
-                    label={t("userForm.email.label")}
-                    error={errors?.email}
-                />
+                {options.forms.userForm.fields.map((field, i) => (
+                    <Input
+                        ref={(el) => (inputRefs.current[i] = el)}
+                        key={field.name}
+                        name={field.name}
+                        onChange={handleInputChange}
+                        value={user[field.name]}
+                        label={t(field.label)}
+                        error={errors?.[field.name]}
+                    />
+                ))}
                 <Button size="sm">{t("userForm.submit")}</Button>
             </form>
         </Card>

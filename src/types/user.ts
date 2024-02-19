@@ -1,5 +1,1 @@
-export interface UserInput {
-    id: number;
-    fullName: string;
-    email: string;
-}
+export type UserInput = { id: number; [key: string]: string | number };
