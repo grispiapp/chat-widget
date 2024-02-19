@@ -1,6 +1,17 @@
 import { type ENVIRONMENTS } from "@lib/config";
 
-interface LocalizableTexts {
+interface Form {
+    fields: FormField[];
+}
+
+interface FormField {
+    type: "text" | "email";
+    name: string;
+    label: string;
+    rules?: string[];
+}
+
+interface LocalizableTexts extends Record<string, unknown> {
     /**
      * Configuration for the chat agent's details.
      */
@@ -17,9 +28,14 @@ interface LocalizableTexts {
     };
 
     /**
-     * Welcome message displayed when the chat is initialized.
+     * The welcome message is displayed when agents are `online` and the chat is initialized.
      */
     welcome_message: string;
+
+    /**
+     * The welcome message is displayed when agents are `offline` and the chat is initialized.
+     */
+    offline_message: string;
 
     /**
      * Popup message displayed on the first page load.
@@ -35,6 +51,11 @@ export interface GrispiChatOptions {
 
     /**
      * Optional. Language code for the chat interface.
+     *
+     * Preferred language priority:
+     *  1. window.GrispiChat.options.language,
+     *  2. document.documentElement.lang,
+     *  3. FALLBACK_LOCALE
      */
     language?: string;
 
@@ -63,6 +84,16 @@ export interface GrispiChatOptions {
      * creating a perception of constant availability.
      */
     always_online?: boolean;
+
+    /**
+     * Optional. When set to true, displays a "Powered by" attribution in the chat interface.
+     */
+    powered_by?: boolean;
+
+    /**
+     * Contains configurations for different forms within the chat interface.
+     */
+    forms: Record<string, Form>;
 
     /**
      * Configuration for the colors used in the chat interface.

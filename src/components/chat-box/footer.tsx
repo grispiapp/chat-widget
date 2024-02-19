@@ -15,7 +15,7 @@ export const ChatBoxFooter = () => {
     const { t } = useTranslation();
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = useState<string>("");
-    const { state: boxState, status: boxStatus } = useChatBox();
+    const { options, state: boxState, status: boxStatus } = useChatBox();
     const { state: conversationState, addMessage, replies, selectReply } = useConversation();
 
     const isInputDisabled =
@@ -102,10 +102,10 @@ export const ChatBoxFooter = () => {
                     )}
                 </div>
             )}
-            <div className="cb-space-y-2 cb-rounded-b-xl cb-bg-background/50 cb-backdrop-blur-lg">
+            <div className="cb-rounded-b-xl cb-bg-background/50 cb-backdrop-blur-lg">
                 <form
                     onSubmit={(e) => handleSubmit(e, value)}
-                    className={cn("cb-flex cb-gap-3 cb-px-3 cb-pt-3", {
+                    className={cn("cb-flex cb-gap-3 cb-p-3", {
                         "cb-items-end": rows > 1,
                         "cb-items-center": rows === 1,
                     })}
@@ -125,7 +125,11 @@ export const ChatBoxFooter = () => {
                         <Button size="sm" icon={SendIcon} disabled={isInputDisabled} />
                     </div>
                 </form>
-                <PoweredBy />
+                {options.powered_by && (
+                    <div className="-cb-mt-1">
+                        <PoweredBy />
+                    </div>
+                )}
             </div>
         </div>
     );
