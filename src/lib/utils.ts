@@ -21,11 +21,13 @@ export const cn = (...args: ClassValue[]) =>
 
 export const deepMerge = (target, source) => {
     for (const key of Object.keys(source)) {
-        if (source[key] instanceof Object) {
+        if (source[key] instanceof Object && !Array.isArray(source[key])) {
             source[key] = {
                 ...source[key],
                 ...deepMerge(target[key] || {}, source[key]),
             };
+        } else if (Array.isArray(source[key])) {
+            source[key] = [...(target[key] || []), ...source[key]];
         }
     }
 
