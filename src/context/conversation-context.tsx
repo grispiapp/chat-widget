@@ -256,12 +256,6 @@ export const ConversationContextProvider = ({ children }) => {
             },
             false
         );
-
-        // setReplies([
-        //   { label: "Düğün yapmak istiyorum." },
-        //   { label: "Nişan yapmak istiyorum." },
-        //   { label: "Kına gecesi yapmak istiyorum." },
-        // ]);
     }, [isOnline, t, addMessage]);
 
     useEffect(() => {
