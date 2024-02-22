@@ -11,17 +11,45 @@ export const useTranslation = () => {
 
     const dottedStrings = useMemo(() => convertKeysToDotNotation(options.texts), [options.texts]);
 
+    const getPreferredLocales = useCallback(
+        (lang: string = undefined) => {
+            const preferredLocales = [
+                getPreferredLang(lang),
+                getPreferredLang(locale),
+                FALLBACK_LOCALE,
+            ];
+
+            preferredLocales.forEach((locale, i) => {
+                locale = locale.toLowerCase().replace("-", "_");
+
+                if (locale.includes("_")) {
+                    const splitLocale = locale.split("_");
+                    preferredLocales.splice(i + 1, 0, splitLocale[0]);
+                }
+            });
+
+            return Array.from(new Set(preferredLocales));
+        },
+        [locale]
+    );
+
     const t = useCallback(
         (
             key: keyof typeof dottedStrings,
             params: Record<string, string | number> = {},
             lang: string = undefined
         ) => {
-            const preferredLocale = getPreferredLang(lang || locale);
+            const preferredLocales = getPreferredLocales(lang);
+            let value;
 
-            let value =
-                dottedStrings?.[`${preferredLocale}.${key}`] ??
-                dottedStrings?.[`${FALLBACK_LOCALE}.${key}`];
+            for (let i = 0; i < preferredLocales.length; i++) {
+                const foundValue = dottedStrings?.[`${preferredLocales[i]}.${key}`];
+
+                if (foundValue) {
+                    value = foundValue;
+                    break;
+                }
+            }
 
             Object.keys(params).forEach((param) => {
                 value = value.replace(new RegExp(`{${param}}`, "gi"), params[param].toString());
@@ -29,7 +57,7 @@ export const useTranslation = () => {
 
             return value;
         },
-        [dottedStrings, locale]
+        [dottedStrings, getPreferredLocales]
     );
 
     return { t, locale, setLocale };

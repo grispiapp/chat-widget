@@ -199,7 +199,7 @@ export function convertKeysToDotNotation(
 }
 
 export const getPreferredLang = (lang: string = undefined): string => {
-    return getFirst(
+    return getFirst<string>(
         lang,
         window.GrispiChat.options.language,
         document.documentElement.lang,
@@ -212,15 +212,16 @@ export const getLocalizedTime = (dateTimeString: string | number): string => {
     const inputDate: Date = new Date(dateTimeString);
 
     const isSameDay: boolean = currentDate.toDateString() === inputDate.toDateString();
+    const preferredLang = getPreferredLang().replace("_", "-").toLowerCase();
 
     if (isSameDay) {
-        return inputDate.toLocaleString(getPreferredLang(), {
+        return inputDate.toLocaleString(preferredLang, {
             hour: "numeric",
             minute: "numeric",
         });
     }
 
-    return inputDate.toLocaleString(getPreferredLang(), {
+    return inputDate.toLocaleString(preferredLang, {
         hour: "numeric",
         minute: "numeric",
         day: "numeric",
