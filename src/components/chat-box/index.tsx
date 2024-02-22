@@ -1,3 +1,4 @@
+import { ConfigurationStatusEnum } from "@/types/chat-box";
 import { Notifications } from "@components/common/notifications";
 import { useChatBox } from "@context/chat-box-context";
 import { useModal } from "@context/modal-context";
@@ -11,7 +12,7 @@ import { ChatBoxHeader } from "./header";
 interface ChatBoxProps {}
 
 export const ChatBox: FC<ChatBoxProps> = () => {
-    const { state, isAuthorized } = useChatBox();
+    const { state, configurationStatus } = useChatBox();
     const { modal } = useModal();
 
     if (state === "closed") {
@@ -34,7 +35,7 @@ export const ChatBox: FC<ChatBoxProps> = () => {
         >
             <ChatBoxHeader />
             <ChatBoxContent />
-            {isAuthorized && <ChatBoxFooter />}
+            {configurationStatus === ConfigurationStatusEnum.AUTHORIZED && <ChatBoxFooter />}
             <Notifications />
             {modal && <Modal modal={modal} />}
         </div>

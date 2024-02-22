@@ -1,47 +1,5 @@
+import { chatBoxStateMap } from "@context/chat-box-context";
 import { type ENVIRONMENTS } from "@lib/config";
-
-interface Form {
-    fields: FormField[];
-}
-
-interface FormField {
-    type: "text" | "email";
-    name: string;
-    label: string;
-    rules?: string[];
-}
-
-interface LocalizableTexts extends Record<string, unknown> {
-    /**
-     * Configuration for the chat agent's details.
-     */
-    agent: {
-        /**
-         * Name of the chat agent.
-         */
-        name: string;
-
-        /**
-         * URL or path to the avatar image for the chat agent.
-         */
-        avatar: string;
-    };
-
-    /**
-     * The welcome message is displayed when agents are `online` and the chat is initialized.
-     */
-    welcome_message: string;
-
-    /**
-     * The welcome message is displayed when agents are `offline` and the chat is initialized.
-     */
-    offline_message: string;
-
-    /**
-     * Popup message displayed on the first page load.
-     */
-    popup_message: string;
-}
 
 export interface GrispiChatOptions {
     /**
@@ -107,3 +65,55 @@ export interface GrispiChatOptions {
      */
     texts: Record<string, Partial<LocalizableTexts>>;
 }
+
+interface Form {
+    fields: FormField[];
+}
+
+interface FormField {
+    type: "text" | "email";
+    name: string;
+    label: string;
+    rules?: string[];
+}
+
+interface LocalizableTexts extends Record<string, unknown> {
+    /**
+     * Configuration for the chat agent's details.
+     */
+    agent: {
+        /**
+         * Name of the chat agent.
+         */
+        name: string;
+
+        /**
+         * URL or path to the avatar image for the chat agent.
+         */
+        avatar: string;
+    };
+
+    /**
+     * The welcome message is displayed when agents are `online` and the chat is initialized.
+     */
+    welcome_message: string;
+
+    /**
+     * The welcome message is displayed when agents are `offline` and the chat is initialized.
+     */
+    offline_message: string;
+
+    /**
+     * Popup message displayed on the first page load.
+     */
+    popup_message: string;
+}
+
+export enum ConfigurationStatusEnum {
+    AUTHORIZED = "authorized",
+    FORBIDDEN = "forbidden",
+    COMMON_ERROR = "common_error",
+}
+
+export type ChatBoxState = keyof typeof chatBoxStateMap;
+export type ChatBoxStatus = "idle" | "loading";

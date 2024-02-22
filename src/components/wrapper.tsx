@@ -1,3 +1,4 @@
+import { ConfigurationStatusEnum } from "@/types/chat-box";
 import { useChatBox } from "@context/chat-box-context";
 import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
@@ -6,7 +7,7 @@ import { debug } from "@lib/utils";
 import { useEffect } from "preact/hooks";
 
 export const Wrapper = ({ children }) => {
-    const { options, chat, isAuthorized, setIsAuthorized, setStatus } = useChatBox();
+    const { options, chat, configurationStatus, setConfigurationStatus, setStatus } = useChatBox();
     const { subscribeToExistingChatFromStorage, mergeLocalPreferencesWithGrispi } = useChat();
 
     // Listen and store chat states.
@@ -21,7 +22,12 @@ export const Wrapper = ({ children }) => {
                 // Try to subscribe to the existing chat.
                 await subscribeToExistingChatFromStorage();
             } catch (err) {
-                setIsAuthorized(false);
+                if (err.response.status === 403) {
+                    setConfigurationStatus(ConfigurationStatusEnum.FORBIDDEN);
+                } else {
+                    setConfigurationStatus(ConfigurationStatusEnum.COMMON_ERROR);
+                }
+
                 setStatus("idle");
             }
         };
@@ -33,7 +39,7 @@ export const Wrapper = ({ children }) => {
 
     useEffect(() => {
         const ensureWsSubscription = async () => {
-            if (!isAuthorized) return;
+            if (configurationStatus !== ConfigurationStatusEnum.AUTHORIZED) return;
             if (chat?.subscribed === true) return;
 
             await subscribeToExistingChatFromStorage();
@@ -49,7 +55,7 @@ export const Wrapper = ({ children }) => {
                 ensureWsSubscription
             );
         };
-    }, [isAuthorized, chat?.subscribed]);
+    }, [configurationStatus, chat?.subscribed]);
 
     return <div style={{ "--color-primary": options.colors.primary }}>{children}</div>;
 };

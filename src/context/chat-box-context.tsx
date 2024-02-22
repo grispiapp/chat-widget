@@ -6,7 +6,12 @@ import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
 import { useContext, useEffect, useState } from "preact/hooks";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
-import { type GrispiChatOptions } from "../types/chat-box";
+import {
+    ChatBoxState,
+    ChatBoxStatus,
+    ConfigurationStatusEnum,
+    GrispiChatOptions,
+} from "../types/chat-box";
 import { type UserInput } from "../types/user";
 
 export const chatBoxStateMap = {
@@ -16,14 +21,11 @@ export const chatBoxStateMap = {
     closing: "closing",
 };
 
-export type ChatBoxState = keyof typeof chatBoxStateMap;
-type ChatBoxStatus = "idle" | "loading";
-
 export interface ChatBoxContextType {
     state: ChatBoxState;
     status: ChatBoxStatus;
     isOnline: boolean;
-    isAuthorized: boolean;
+    configurationStatus: ConfigurationStatusEnum;
     options: GrispiChatOptions;
     chat: SubscribeableChatResponseForEndUser & {
         subscribed: boolean;
@@ -31,7 +33,7 @@ export interface ChatBoxContextType {
     user: UserInput;
     toggleState: () => void;
     setStatus: SetStateAction<ChatBoxContextType["status"]>;
-    setIsAuthorized: SetStateAction<ChatBoxContextType["isAuthorized"]>;
+    setConfigurationStatus: SetStateAction<ChatBoxContextType["configurationStatus"]>;
     updateOptions: (newOptions: GrispiChatOptions) => void;
     setChat: SetStateAction<ChatBoxContextType["chat"]>;
     setUser: SetStateAction<ChatBoxContextType["user"]>;
@@ -41,13 +43,13 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
     state: "closed",
     status: "loading",
     isOnline: null,
-    isAuthorized: true,
+    configurationStatus: null,
     options: null,
     chat: null,
     user: null,
     toggleState: () => {},
     setStatus: () => {},
-    setIsAuthorized: () => {},
+    setConfigurationStatus: () => {},
     updateOptions: () => {},
     setChat: () => {},
     setUser: () => {},
@@ -57,7 +59,9 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
 
     const [isOnline, setIsOnline] = useState<boolean>(null);
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
+    const [configurationStatus, setConfigurationStatus] = useState<
+        ChatBoxContextType["configurationStatus"]
+    >(ConfigurationStatusEnum.AUTHORIZED);
     const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
@@ -106,14 +110,14 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
                 state,
                 status,
                 isOnline,
-                isAuthorized,
+                configurationStatus,
                 options,
                 chat,
                 user,
                 updateOptions,
                 toggleState,
                 setStatus,
-                setIsAuthorized,
+                setConfigurationStatus,
                 setChat,
                 setUser,
             }}

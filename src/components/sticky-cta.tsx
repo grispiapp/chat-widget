@@ -1,3 +1,4 @@
+import { ConfigurationStatusEnum } from "@/types/chat-box";
 import { useChatBox } from "@context/chat-box-context";
 import { useTranslation } from "@hooks/useTranslation";
 import { isPromptDismissed, STORAGE_KEYS } from "@lib/storage";
@@ -11,7 +12,7 @@ interface StickyCtaProps {}
 
 export const StickyCta: FC<StickyCtaProps> = () => {
     const { t } = useTranslation();
-    const { state, toggleState, isOnline, isAuthorized } = useChatBox();
+    const { state, toggleState, isOnline, configurationStatus } = useChatBox();
     const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
@@ -19,6 +20,8 @@ export const StickyCta: FC<StickyCtaProps> = () => {
         setDisplayPrompt(false);
         localStorage.setItem(STORAGE_KEYS.DISMISS_PROMPT, "1");
     };
+
+    const isAuthorized = configurationStatus === ConfigurationStatusEnum.AUTHORIZED;
 
     if (state === "open") {
         return null;

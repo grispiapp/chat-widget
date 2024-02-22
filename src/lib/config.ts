@@ -58,9 +58,9 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     title: "Something wen't wrong.",
                     text: "Please refresh the page and try again.",
                 },
-                unauthorized: {
-                    title: "Something's wrong.",
-                    text: "Failed to configure the chat interface, please consult your Grispi administrator.",
+                forbidden: {
+                    title: "Authorisation failure.",
+                    text: "<b>{host}</b> does not have permission to use this interface. Please consult your Grispi administrator.",
                 },
             },
             modal: {
@@ -133,9 +133,9 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     title: "Bir hata oldu.",
                     text: "Lütfen sayfayı yenileyip tekrar deneyin.",
                 },
-                unauthorized: {
-                    title: "Bir sorun var.",
-                    text: "Sohbet arayüzü yapılandırılamadı, lütfen Grispi yöneticinize danışınız.",
+                forbidden: {
+                    title: "Yetkilendirme hatası oldu.",
+                    text: "<b>{host}</b> bu arayüzü kullanma iznine sahip değil. Lütfen Grispi yöneticinize danışın.",
                 },
             },
             modal: {
