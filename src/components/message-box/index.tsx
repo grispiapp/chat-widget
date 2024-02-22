@@ -32,7 +32,7 @@ export const MessageBox: FC<MessageBoxProps> = ({ message }) => {
                         }
                     />
                 )}
-                <div className="cb-space-y-1">
+                <div className="cb-flex cb-flex-col cb-items-end cb-space-y-1">
                     {isTextMessage(message) && <TextMessage message={message} />}
                     {isMediaMessage(message) && isMediaImage(message.media) && (
                         <ImageMessage message={message} />
