@@ -4,11 +4,12 @@ import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
 import { internalEventTypeMap } from "@lib/config";
 import { debug } from "@lib/utils";
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 export const Wrapper = ({ children }) => {
     const { options, chat, configurationStatus, setConfigurationStatus, setStatus } = useChatBox();
     const { subscribeToExistingChatFromStorage, mergeLocalPreferencesWithGrispi } = useChat();
+    const [display, setDisplay] = useState<boolean>(false);
 
     // Listen and store chat states.
     useChatState();
@@ -18,6 +19,8 @@ export const Wrapper = ({ children }) => {
             try {
                 // Merge local preferences with Grispi API.
                 await mergeLocalPreferencesWithGrispi();
+
+                setDisplay(true);
 
                 // Try to subscribe to the existing chat.
                 await subscribeToExistingChatFromStorage();
@@ -57,5 +60,9 @@ export const Wrapper = ({ children }) => {
         };
     }, [configurationStatus, chat?.subscribed]);
 
-    return <div style={{ "--color-primary": options.colors.primary }}>{children}</div>;
+    console.log({ options });
+
+    return display ? (
+        <div style={{ "--color-primary": options.colors.primary }}>{children}</div>
+    ) : null;
 };

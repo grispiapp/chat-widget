@@ -19,7 +19,7 @@ export const cn = (...args: ClassValue[]) =>
         prefix: "cb-",
     })(clsx(args));
 
-export const deepMerge = (target, source) => {
+export const deepMerge = (target: any, source: any) => {
     for (const key of Object.keys(source)) {
         if (source[key] instanceof Object && !Array.isArray(source[key])) {
             source[key] = {
@@ -28,6 +28,9 @@ export const deepMerge = (target, source) => {
             };
         } else if (Array.isArray(source[key])) {
             source[key] = [...(target[key] || []), ...source[key]];
+        } else if (source[key] === null && target && target[key] !== undefined) {
+            // Preserve the value from target if source is null
+            source[key] = target[key];
         }
     }
 

@@ -21,6 +21,7 @@ export const useTranslation = () => {
 
             preferredLocales.forEach((locale, i) => {
                 locale = locale.toLowerCase().replace("-", "_");
+                preferredLocales[i] = locale;
 
                 if (locale.includes("_")) {
                     const splitLocale = locale.split("_");
