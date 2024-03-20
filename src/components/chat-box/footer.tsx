@@ -6,6 +6,7 @@ import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useTranslation } from "@hooks/useTranslation";
 import { cn } from "@lib/utils";
+import { VisitorIdle } from "@lib/visitor-idle";
 import { CURRENT_USER_TEMP_MESSAGE_ID } from "@lib/websocket";
 import { Button } from "@ui/button";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
@@ -120,6 +121,7 @@ export const ChatBoxFooter = () => {
                         disabled={isInputDisabled}
                         value={value}
                         onChange={(e) => setValue(e.currentTarget.value)}
+                        onFocus={VisitorIdle.callback}
                     />
                     <div className="cb-flex cb-items-center cb-justify-center">
                         <Button size="sm" icon={SendIcon} disabled={isInputDisabled} />

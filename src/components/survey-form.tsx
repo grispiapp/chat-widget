@@ -93,7 +93,9 @@ export const SurveyForm = () => {
 
     const handleReconnectChat = useCallback(async () => {
         setLoading(true);
-        await subscribeToExistingChatFromStorage();
+        await subscribeToExistingChatFromStorage({
+            loadChatHistory: false,
+        });
         setLoading(false);
     }, [subscribeToExistingChatFromStorage]);
 

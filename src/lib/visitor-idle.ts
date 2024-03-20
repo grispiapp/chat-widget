@@ -1,21 +1,20 @@
 import { internalEventTypeMap } from "./config";
 import { debug } from "./utils";
 
-const IDLE_DURATION = 10 * 1000; // 10 seconds
+const IDLE_DURATION = 3 * 1000; // 10 seconds
 
 export const VisitorIdle = {
-    timeout: null,
-    since: Date.now(),
+    lastActiveTime: Date.now(),
 
     start: () => {
-        window.addEventListener("load", VisitorIdle.cycle);
-        window.addEventListener("mousemove", VisitorIdle.cycle);
-        window.addEventListener("mousedown", VisitorIdle.cycle); // catches touchscreen presses as well
-        window.addEventListener("touchstart", VisitorIdle.cycle); // catches touchscreen swipes as well
-        window.addEventListener("touchmove", VisitorIdle.cycle); // required by some devices
-        window.addEventListener("click", VisitorIdle.cycle); // catches touchpad clicks as well
-        window.addEventListener("keydown", VisitorIdle.cycle);
-        window.addEventListener("scroll", VisitorIdle.cycle, true); // improved; see comments
+        window.addEventListener("load", VisitorIdle.resetTimer);
+        window.addEventListener("mousemove", VisitorIdle.resetTimer);
+        window.addEventListener("mousedown", VisitorIdle.resetTimer); // catches touchscreen presses as well
+        window.addEventListener("touchstart", VisitorIdle.resetTimer); // catches touchscreen swipes as well
+        window.addEventListener("touchmove", VisitorIdle.resetTimer); // required by some devices
+        window.addEventListener("click", VisitorIdle.resetTimer); // catches touchpad clicks as well
+        window.addEventListener("keydown", VisitorIdle.resetTimer);
+        window.addEventListener("scroll", VisitorIdle.resetTimer, true); // improved; see comments
     },
 
     callback: () => {
@@ -23,9 +22,13 @@ export const VisitorIdle = {
         window.dispatchEvent(new CustomEvent(internalEventTypeMap.ENSURE_WS_SUBSCRIPTION));
     },
 
-    cycle: () => {
-        clearTimeout(VisitorIdle.timeout);
-        VisitorIdle.since = Date.now();
-        VisitorIdle.timeout = setTimeout(VisitorIdle.callback, IDLE_DURATION);
+    resetTimer: () => {
+        const currentTime = Date.now();
+
+        if (currentTime - VisitorIdle.lastActiveTime >= IDLE_DURATION) {
+            VisitorIdle.callback();
+        }
+
+        VisitorIdle.lastActiveTime = currentTime;
     },
 };

@@ -10,6 +10,10 @@ import { useCallback, useEffect } from "preact/hooks";
 import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/chat";
 import { useTranslation } from "./useTranslation";
 
+interface SubscribeOptions {
+    loadChatHistory: boolean;
+}
+
 export const useChat = () => {
     const { t } = useTranslation();
     const { user, setStatus: setChatBoxStatus, setChat, setUser, updateOptions } = useChatBox();
@@ -190,6 +194,10 @@ export const useChat = () => {
                 const formattedMessages = history
                     .sort((a, b) => (a.sentAt >= b.sentAt ? 1 : -1))
                     .map((message) => {
+                        if (messages.find((m) => m.id === message.msgGrispiId)) {
+                            return;
+                        }
+
                         return addMessage({
                             ...message,
                             id: message.msgGrispiId,
@@ -198,6 +206,8 @@ export const useChat = () => {
                             shouldSendToApi: false,
                         });
                     });
+
+                console.log({ messages });
 
                 Promise.all(formattedMessages).then((messages) => {
                     debug("The formatted messages loaded from history", { messages });
@@ -218,7 +228,7 @@ export const useChat = () => {
     const subscribe = useCallback(
         async (
             mode: "create" | "resume",
-            options?: {
+            options?: SubscribeOptions & {
                 chatId: ChatBoxContextType["chat"]["chatId"];
             }
         ) => {
@@ -253,7 +263,7 @@ export const useChat = () => {
             setUser(newUserState);
             setConversationState("idle");
 
-            if (mode === "resume") {
+            if (mode === "resume" && (options?.loadChatHistory ?? true)) {
                 await loadChatHistory(newChatState, newUserState);
             }
 
@@ -270,28 +280,31 @@ export const useChat = () => {
     }, [subscribe]);
 
     const subscribeToExistingChat = useCallback(
-        async (chatId: ChatBoxContextType["chat"]["chatId"]) => {
-            return await subscribe("resume", { chatId });
+        async (chatId: ChatBoxContextType["chat"]["chatId"], options?: SubscribeOptions) => {
+            return await subscribe("resume", { chatId, ...options });
         },
         [subscribe]
     );
 
-    const subscribeToExistingChatFromStorage = useCallback(async () => {
-        const chatId = getChatIdFromStorage();
+    const subscribeToExistingChatFromStorage = useCallback(
+        async (options?: SubscribeOptions) => {
+            const chatId = getChatIdFromStorage();
 
-        if (!chatId) {
-            setChatBoxStatus("idle");
-            return;
-        }
+            if (!chatId) {
+                setChatBoxStatus("idle");
+                return;
+            }
 
-        try {
-            await subscribeToExistingChat(chatId);
-            setChatBoxStatus("idle");
-        } catch (err) {
-            console.error("Error when subscribing to existing chat...");
-            // TODO: We may want to create new chat session.
-        }
-    }, [subscribeToExistingChat, setChatBoxStatus]);
+            try {
+                await subscribeToExistingChat(chatId, options);
+                setChatBoxStatus("idle");
+            } catch (err) {
+                console.error("Error when subscribing to existing chat...");
+                // TODO: We may want to create new chat session.
+            }
+        },
+        [subscribeToExistingChat, setChatBoxStatus]
+    );
 
     return {
         subscribeToNewChat,

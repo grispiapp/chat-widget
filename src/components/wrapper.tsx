@@ -47,7 +47,7 @@ export const Wrapper = ({ children }) => {
 
             await subscribeToExistingChatFromStorage();
 
-            debug("Re-subscribed to websocket.");
+            debug("Re-subscribed to websocket. DADA");
         };
 
         window.addEventListener(internalEventTypeMap.ENSURE_WS_SUBSCRIPTION, ensureWsSubscription);
@@ -59,8 +59,6 @@ export const Wrapper = ({ children }) => {
             );
         };
     }, [configurationStatus, chat?.subscribed]);
-
-    console.log({ options });
 
     return display ? (
         <div style={{ "--color-primary": options.colors.primary }}>{children}</div>
