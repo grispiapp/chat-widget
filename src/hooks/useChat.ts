@@ -207,8 +207,6 @@ export const useChat = () => {
                         });
                     });
 
-                console.log({ messages });
-
                 Promise.all(formattedMessages).then((messages) => {
                     debug("The formatted messages loaded from history", { messages });
                 });
