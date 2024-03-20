@@ -47,7 +47,7 @@ export const Wrapper = ({ children }) => {
 
             await subscribeToExistingChatFromStorage();
 
-            debug("Re-subscribed to websocket. DADA");
+            debug("Re-subscribed to websocket.");
         };
 
         window.addEventListener(internalEventTypeMap.ENSURE_WS_SUBSCRIPTION, ensureWsSubscription);
