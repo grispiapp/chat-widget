@@ -232,7 +232,15 @@ export const useChat = () => {
         ) => {
             const modes = {
                 create: {
-                    fn: () => createChat(user),
+                    fn: () => {
+                        Object.keys(user).forEach((key) => {
+                            if (typeof user[key] === "string") {
+                                user[key] = user[key].toString().trim().replace(/\s\s+/g, " ");
+                            }
+                        });
+
+                        return createChat(user);
+                    },
                     type: internalEventTypeMap.NEW_CHAT_CREATED,
                 },
                 resume: {
