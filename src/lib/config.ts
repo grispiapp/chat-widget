@@ -35,6 +35,11 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     required: "Please enter your email.",
                     invalid: "Please enter a valid email.",
                 },
+                errors: {
+                    422: {
+                        text: "Fullname or email address invalid.",
+                    },
+                },
                 submit: "Connect",
             },
             surveyForm: {
@@ -109,6 +114,11 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     label: "E-Posta Adresi",
                     required: "Lütfen E-Posta adresinizi yazın.",
                     invalid: "E-Posta adresi geçersiz.",
+                },
+                errors: {
+                    422: {
+                        text: "Ad soyad veya e-posta adresi geçersiz.",
+                    },
                 },
                 submit: "Bağlan",
             },
@@ -226,6 +236,7 @@ export const internalEventTypeMap = {
     GOT_RECEIPT: "GOT_RECEIPT",
     MESSAGE_RECEIVED: "MESSAGE_RECEIVED",
     MESSAGE_SEEN: "MESSAGE_SEEN",
+    MESSAGE_INVALID: "MESSAGE_INVALID",
     INCOMING_MESSAGE: "INCOMING_MESSAGE",
     NEED_SCROLL_TO_BOTTOM: "NEED_SCROLL_TO_BOTTOM",
     NEED_TO_FOCUS_INPUT: "NEED_TO_FOCUS_INPUT",

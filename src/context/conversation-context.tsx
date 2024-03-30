@@ -63,6 +63,7 @@ interface ConversationContextType {
         withPrevious?: boolean
     ) => Promise<Message | void>;
     updateMessage: (id: Message["id"], message: Partial<AddMessage>) => void;
+    deleteMessage: (id: Message["id"]) => void;
     reset: () => void;
 }
 
@@ -75,6 +76,7 @@ const ConversationContext = createContext<ConversationContextType>({
     selectReply: () => {},
     addMessage: async () => {},
     updateMessage: () => {},
+    deleteMessage: () => {},
     reset: () => {},
 });
 
@@ -211,7 +213,7 @@ export const ConversationContextProvider = ({ children }) => {
          * When the user sends consecutive messages, the message ID we defined
          * temporarily becomes duplicated and updates all associated messages.
          *
-         * Just to update the first message he finds:
+         * Just to update the first message it finds:
          */
         let isMessageUpdated = false;
 
@@ -225,6 +227,29 @@ export const ConversationContextProvider = ({ children }) => {
                 }
 
                 return item;
+            }),
+        ]);
+    }, []);
+
+    const deleteMessage = useCallback((id: Message["id"]) => {
+        /**
+         * When the user sends consecutive messages, the message ID we defined
+         * temporarily becomes duplicated and deletes all associated messages.
+         *
+         * Just to delete the first message it finds:
+         */
+        let isMessageDeleted = false;
+
+        setMessages((prevMessages) => [
+            ...prevMessages.filter((item) => {
+                if (isMessageDeleted) return true;
+
+                if (item.id === id) {
+                    isMessageDeleted = true;
+                    return false;
+                }
+
+                return true;
             }),
         ]);
     }, []);
@@ -274,6 +299,7 @@ export const ConversationContextProvider = ({ children }) => {
                 setState,
                 addMessage,
                 updateMessage,
+                deleteMessage,
                 reset,
             }}
         >

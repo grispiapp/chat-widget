@@ -84,7 +84,7 @@ export const Rating: FC<RatingProps> = ({ value, onChange }) => {
                     />
                 ))}
             </div>
-            <span className="cb-font-medium">
+            <span className="cb-text-xs cb-font-medium">
                 {t(`ratingStates.${getFirst(hoverState, value)}`)}
             </span>
         </div>

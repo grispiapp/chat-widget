@@ -1,7 +1,6 @@
 import { type UploadFilesResponse } from "./backend";
 
-// 50 MB
-export const MAX_FILE_SIZE = 50 * 1024 * 1024;
+export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
 export interface MediaFileMeta {
     fileName: string;
@@ -34,6 +33,7 @@ export const acceptedFileTypeMap = {
     "application/x-tar": "application/x-tar", // .tar
     "application/zip": "application/zip", // .zip
     "application/x-7z-compressed": "application/x-7z-compressed", // .7z
+    "text/plain": "text/plain", // .txt
 };
 
 export const acceptedImageTypeMap = {

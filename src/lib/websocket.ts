@@ -42,6 +42,12 @@ const myMessageSeenEvent = (messageId: string) =>
             detail: messageId,
         })
     );
+const myMessageInvalidEvent = (messageId: string) =>
+    window.dispatchEvent(
+        new CustomEvent(internalEventTypeMap.MESSAGE_INVALID, {
+            detail: messageId,
+        })
+    );
 
 const WebSocketErrorMessages = {
     tokenIsMissing: "TOKEN_IS_MISSING",
@@ -165,7 +171,7 @@ const incomingUpdateMessageHandler = (message: IMessage) => {
         subscription = undefined;
         chatDisconnectedEvent();
     } else if (parsedMessage.code === SERVER_MESSAGE_CODE.INVALID_MESSAGE) {
-        //TODO what should we do?
+        myMessageInvalidEvent("0");
         console.error("INVALID_MESSAGE", parsedMessage, message);
     } else if (parsedMessage.code === SERVER_MESSAGE_CODE.MESSAGE_RECEIVED) {
         myMessageReceivedEvent(parsedMessage.msgGrispiId);

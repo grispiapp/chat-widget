@@ -33,6 +33,9 @@ export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
 
             const file = e.currentTarget.files?.[0];
 
+            // Clear input value after selecting a file to ensure the input is ready for the next selection.
+            fileInputRef.current.value = "";
+
             if (!file) {
                 notify({
                     text: t("fileUpload.validation.required"),
@@ -53,7 +56,7 @@ export const FileUpload: FC<FileUploadProps> = ({ disabled = false }) => {
 
             if (file.size > MAX_FILE_SIZE) {
                 notify({
-                    text: t("fileUpload.validation.max", { sizeInMb: MAX_FILE_SIZE }),
+                    text: t("fileUpload.validation.max", { sizeInMb: MAX_FILE_SIZE / 1024 / 1024 }),
                     type: "error",
                 });
 

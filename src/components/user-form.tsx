@@ -35,11 +35,19 @@ export const UserForm = () => {
         try {
             await subscribeToNewChat();
         } catch (err) {
-            notify({
-                title: t("errors.common.title"),
-                text: t("errors.common.text"),
-                type: "error",
-            });
+            console.log(err?.response?.status);
+            if (err?.response?.status === 422) {
+                notify({
+                    text: t("userForm.errors.422.text"),
+                    type: "error",
+                });
+            } else {
+                notify({
+                    title: t("errors.common.title"),
+                    text: t("errors.common.text"),
+                    type: "error",
+                });
+            }
 
             console.error(`Failed when subscribing chat...`, err);
         } finally {

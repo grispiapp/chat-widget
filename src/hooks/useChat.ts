@@ -21,6 +21,7 @@ export const useChat = () => {
         messages,
         addMessage,
         updateMessage,
+        deleteMessage,
         setState: setConversationState,
     } = useConversation();
     const { notify } = useNotification();
@@ -116,10 +117,37 @@ export const useChat = () => {
 
         return () => {
             window.removeEventListener(internalEventTypeMap.MESSAGE_SEEN, handleMessageSeen);
-
             window.GrispiChat.listeners.MESSAGE_SEEN = false;
         };
     }, [user, updateMessage]);
+
+    // Handle invalid messages
+    useEffect(() => {
+        if (blank(user) || user.id.toString() === CURRENT_USER_TEMP_MESSAGE_ID) {
+            return;
+        }
+
+        const handleInvalidMessage = (e: CustomEvent<string>) => {
+            debug("Delete invalid message from client", e.detail);
+
+            notify({
+                text: t("fileUpload.validation.invalid"),
+                type: "error",
+            });
+
+            deleteMessage(e.detail);
+        };
+
+        if (!window.GrispiChat.listeners.MESSAGE_INVALID) {
+            window.addEventListener(internalEventTypeMap.MESSAGE_INVALID, handleInvalidMessage);
+            window.GrispiChat.listeners.MESSAGE_INVALID = true;
+        }
+
+        return () => {
+            window.removeEventListener(internalEventTypeMap.MESSAGE_INVALID, handleInvalidMessage);
+            window.GrispiChat.listeners.MESSAGE_INVALID = false;
+        };
+    }, [user, deleteMessage]);
 
     // Send the first awaited user message
     useEffect(() => {

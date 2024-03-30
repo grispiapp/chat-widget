@@ -59,7 +59,10 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                 <AnimatedGrispiIcon className="cb-h-7 cb-w-7 cb-text-background" />
             </div>
             {isOnline && isAuthorized && (
-                <div className="cb-absolute cb-right-0 cb-top-0 cb-h-3 cb-w-3 cb-animate-pulse cb-rounded-full cb-bg-success" />
+                <div className="cb-absolute cb-right-0 cb-top-0">
+                    <div className="cb-absolute cb-right-0 cb-top-0 cb-z-20 cb-h-3 cb-w-3 cb-animate-ping cb-rounded-full cb-bg-success" />
+                    <div className="cb-absolute cb-right-0 cb-top-0 cb-z-10 cb-h-3 cb-w-3 cb-rounded-full cb-bg-success" />
+                </div>
             )}
             {!isAuthorized && (
                 <div className="cb-absolute cb-left-0 cb-top-0 cb-flex cb-h-6 cb-min-w-6 -cb-translate-x-1/2 cb-items-center cb-justify-center cb-rounded-full cb-bg-danger">
