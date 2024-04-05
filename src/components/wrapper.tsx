@@ -76,7 +76,11 @@ export const Wrapper = ({ children }) => {
 
     return display ? (
         <div style={{ "--color-primary": options.colors.primary }}>
-            <audio ref={notificationAudioRef} src={incomingMessageSfx} preload="auto" />
+            <audio
+                ref={notificationAudioRef}
+                src={import.meta.env.VITE_BASE_URL + incomingMessageSfx}
+                preload="auto"
+            />
             {children}
         </div>
     ) : null;
