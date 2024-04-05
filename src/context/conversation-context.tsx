@@ -3,7 +3,7 @@ import { filled, getFirst, tryParseJsonString, uuidv4 } from "@lib/utils";
 import { sendMediaMessage, sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
-import { useCallback, useContext, useEffect, useState } from "preact/hooks";
+import { useCallback, useContext, useEffect, useState, type Dispatch } from "preact/hooks";
 import { type UploadFilesResponse, type WsMessage } from "../types/backend";
 import { useChatBox } from "./chat-box-context";
 import { useNotification } from "./notification-context";
@@ -55,8 +55,8 @@ interface ConversationContextType {
     state: ConversationState;
     messages: Message[];
     replies: Reply[];
-    setState: SetStateAction<ConversationState>;
-    setReplies: SetStateAction<Reply[]>;
+    setState: Dispatch<SetStateAction<ConversationState>>;
+    setReplies: Dispatch<SetStateAction<Reply[]>>;
     selectReply: (reply: Reply) => void;
     addMessage: (
         message: AddMessage | WsMessage,

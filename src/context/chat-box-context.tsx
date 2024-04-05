@@ -4,13 +4,13 @@ import { getLastBoxStateFromStorage } from "@lib/storage";
 import { mergeChatOptions } from "@lib/utils";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
-import { useContext, useEffect, useState } from "preact/hooks";
+import { useContext, useEffect, useState, type Dispatch } from "preact/hooks";
 import { type SubscribeableChatResponseForEndUser } from "../types/backend";
 import {
-    ChatBoxState,
-    ChatBoxStatus,
     ConfigurationStatusEnum,
-    GrispiChatOptions,
+    type ChatBoxState,
+    type ChatBoxStatus,
+    type GrispiChatOptions,
 } from "../types/chat-box";
 import { type UserInput } from "../types/user";
 
@@ -29,14 +29,15 @@ export interface ChatBoxContextType {
     options: GrispiChatOptions;
     chat: SubscribeableChatResponseForEndUser & {
         subscribed: boolean;
+        ended: boolean;
     };
     user: UserInput;
     toggleState: () => void;
-    setStatus: SetStateAction<ChatBoxContextType["status"]>;
-    setConfigurationStatus: SetStateAction<ChatBoxContextType["configurationStatus"]>;
+    setStatus: Dispatch<SetStateAction<ChatBoxContextType["status"]>>;
+    setConfigurationStatus: Dispatch<SetStateAction<ChatBoxContextType["configurationStatus"]>>;
     updateOptions: (newOptions: GrispiChatOptions) => void;
-    setChat: SetStateAction<ChatBoxContextType["chat"]>;
-    setUser: SetStateAction<ChatBoxContextType["user"]>;
+    setChat: Dispatch<SetStateAction<ChatBoxContextType["chat"]>>;
+    setUser: Dispatch<SetStateAction<ChatBoxContextType["user"]>>;
 }
 
 const ChatBoxContext = createContext<ChatBoxContextType>({
@@ -65,7 +66,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
-    const [chat, setChat] = useState<ChatBoxContextType["chat"]>(null);
+    const [chat, setChat] = useState<ChatBoxContextType["chat"]>();
     const [user, setUser] = useState<ChatBoxContextType["user"]>({
         id: -1,
         fullName: "",

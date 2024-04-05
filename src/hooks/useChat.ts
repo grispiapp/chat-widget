@@ -3,10 +3,10 @@ import { useChatBox, type ChatBoxContextType } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { internalEventTypeMap } from "@lib/config";
-import { getChatIdFromStorage } from "@lib/storage";
+import { STORAGE_KEYS, getChatIdFromStorage } from "@lib/storage";
 import { blank, debug } from "@lib/utils";
 import { CURRENT_USER_TEMP_MESSAGE_ID, sendMessage, subscribeChat } from "@lib/websocket";
-import { useCallback, useEffect } from "preact/hooks";
+import { useCallback, useEffect, useRef } from "preact/hooks";
 import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/chat";
 import { useTranslation } from "./useTranslation";
 
@@ -15,6 +15,7 @@ interface SubscribeOptions {
 }
 
 export const useChat = () => {
+    const notificationAudioRef = useRef<HTMLAudioElement>(null);
     const { t } = useTranslation();
     const { user, setStatus: setChatBoxStatus, setChat, setUser, updateOptions } = useChatBox();
     const {
@@ -79,6 +80,10 @@ export const useChat = () => {
                 id: e.detail,
                 status: "sent",
             });
+
+            if (document.hidden) {
+                notificationAudioRef.current?.play();
+            }
         };
 
         if (!window.GrispiChat.listeners.MESSAGE_RECEIVED) {
@@ -154,6 +159,12 @@ export const useChat = () => {
         const sendAwaitingMessages = async (
             e: CustomEvent<{ chat: SubscribeableChatResponseForEndUser }>
         ) => {
+            const isChatEnded = localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1";
+
+            if (isChatEnded) {
+                return;
+            }
+
             setConversationState("idle");
 
             const awaitingMessages = messages.filter(
@@ -248,7 +259,7 @@ export const useChat = () => {
                 console.error("Error when fetching chat history...", err);
             }
         },
-        [addMessage, notify, t]
+        [messages, addMessage, notify, t]
     );
 
     const subscribe = useCallback(
@@ -277,13 +288,19 @@ export const useChat = () => {
                 },
             };
 
+            const isChatEnded = localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1";
+
             const response = await modes[mode].fn();
             window.dispatchEvent(new CustomEvent(modes[mode].type, { detail: response }));
-            await subscribeChat(response);
+
+            if (!isChatEnded) {
+                await subscribeChat(response);
+            }
 
             const newChatState: ChatBoxContextType["chat"] = {
                 ...response,
-                subscribed: true,
+                subscribed: !isChatEnded,
+                ended: isChatEnded,
             };
 
             const newUserState = {
@@ -295,7 +312,7 @@ export const useChat = () => {
             debug("setChat", newChatState);
             setChat(newChatState);
             setUser(newUserState);
-            setConversationState("idle");
+            setConversationState(isChatEnded ? "survey-form" : "idle");
 
             if (mode === "resume" && (options?.loadChatHistory ?? true)) {
                 await loadChatHistory(newChatState, newUserState);
@@ -341,6 +358,7 @@ export const useChat = () => {
     );
 
     return {
+        notificationAudioRef,
         subscribeToNewChat,
         subscribeToExistingChat,
         loadChatHistory,

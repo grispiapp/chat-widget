@@ -4,11 +4,16 @@ import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
 import { internalEventTypeMap } from "@lib/config";
 import { debug } from "@lib/utils";
+import incomingMessageSfx from "@resources/incoming-message.mp3";
 import { useEffect, useState } from "preact/hooks";
 
 export const Wrapper = ({ children }) => {
     const { options, chat, configurationStatus, setConfigurationStatus, setStatus } = useChatBox();
-    const { subscribeToExistingChatFromStorage, mergeLocalPreferencesWithGrispi } = useChat();
+    const {
+        subscribeToExistingChatFromStorage,
+        mergeLocalPreferencesWithGrispi,
+        notificationAudioRef,
+    } = useChat();
     const [display, setDisplay] = useState<boolean>(false);
 
     // Listen and store chat states.
@@ -43,7 +48,16 @@ export const Wrapper = ({ children }) => {
     useEffect(() => {
         const ensureWsSubscription = async () => {
             if (configurationStatus !== ConfigurationStatusEnum.AUTHORIZED) return;
-            if (chat?.subscribed === true) return;
+
+            if (chat?.subscribed === true) {
+                debug("Already subscribed.");
+                return;
+            }
+
+            if (chat?.ended) {
+                debug("Chat has ended. No need to ensure websocket connection.");
+                return;
+            }
 
             await subscribeToExistingChatFromStorage();
 
@@ -58,9 +72,12 @@ export const Wrapper = ({ children }) => {
                 ensureWsSubscription
             );
         };
-    }, [configurationStatus, chat?.subscribed]);
+    }, [configurationStatus, chat?.subscribed, chat?.ended]);
 
     return display ? (
-        <div style={{ "--color-primary": options.colors.primary }}>{children}</div>
+        <div style={{ "--color-primary": options.colors.primary }}>
+            <audio ref={notificationAudioRef} src={incomingMessageSfx} preload="auto" />
+            {children}
+        </div>
     ) : null;
 };
