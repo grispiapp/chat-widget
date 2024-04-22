@@ -1,3 +1,4 @@
+import { type ConversationState } from "@context/conversation-context";
 import { FALLBACK_LOCALE } from "@hooks/useTranslation";
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
@@ -200,6 +201,24 @@ export function convertKeysToDotNotation(
     });
     return result;
 }
+
+export const detectConversationState = ({
+    isChatEnded,
+    isSurveySent,
+}: {
+    isChatEnded: boolean;
+    isSurveySent: boolean;
+}): ConversationState => {
+    if (isSurveySent) {
+        return "ended";
+    }
+
+    if (isChatEnded) {
+        return "survey-form";
+    }
+
+    return "idle";
+};
 
 export const getPreferredLang = (lang: string = undefined): string => {
     return getFirst<string>(

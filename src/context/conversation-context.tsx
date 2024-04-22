@@ -8,7 +8,7 @@ import { type UploadFilesResponse, type WsMessage } from "../types/backend";
 import { useChatBox } from "./chat-box-context";
 import { useNotification } from "./notification-context";
 
-export type ConversationState = "idle" | "typing" | "survey-form" | "user-form";
+export type ConversationState = "idle" | "typing" | "survey-form" | "user-form" | "ended";
 export type Sender = "ai" | "user";
 export type MessageStatus = "sending" | "sent" | "seen";
 
@@ -137,9 +137,9 @@ export const ConversationContextProvider = ({ children }) => {
 
     const isFirstMessageFromEndUser = useCallback(
         (message: AddMessage) => {
-            const mergedMessages = [...messages, message];
-
-            const endUserMessages = mergedMessages.filter((message) => message.sender === "user");
+            const endUserMessages = [...messages, message].filter(
+                (message) => message?.sender === "user"
+            );
 
             return endUserMessages.length === 1;
         },
@@ -221,7 +221,7 @@ export const ConversationContextProvider = ({ children }) => {
             ...prevMessages.map((item) => {
                 if (isMessageUpdated) return;
 
-                if (item.id === id) {
+                if (item?.id === id) {
                     item = { ...item, ...message };
                     isMessageUpdated = true;
                 }

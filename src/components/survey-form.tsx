@@ -65,7 +65,9 @@ export const SurveyForm = () => {
                 debug("Sending survey...", { survey });
 
                 await sendSurvey(survey, chat);
-                setConversationState("idle");
+
+                localStorage.setItem(STORAGE_KEYS.IS_SURVEY_SENT, "1");
+                setConversationState("ended");
 
                 notify({
                     text: t("surveyForm.success.text"),
@@ -94,10 +96,14 @@ export const SurveyForm = () => {
 
     const handleReconnectChat = useCallback(async () => {
         setLoading(true);
+
         localStorage.removeItem(STORAGE_KEYS.IS_CHAT_ENDED);
+        localStorage.removeItem(STORAGE_KEYS.IS_SURVEY_SENT);
+
         await subscribeToExistingChatFromStorage({
             loadChatHistory: false,
         });
+
         setLoading(false);
     }, [subscribeToExistingChatFromStorage]);
 

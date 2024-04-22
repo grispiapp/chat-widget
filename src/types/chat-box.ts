@@ -1,4 +1,4 @@
-import { chatBoxStateMap } from "@context/chat-box-context";
+import { type chatBoxStateMap } from "@context/chat-box-context";
 import { type ENVIRONMENTS } from "@lib/config";
 
 export interface GrispiChatOptions {

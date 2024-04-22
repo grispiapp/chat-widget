@@ -58,6 +58,10 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     text: "We have got your response, thank you.",
                 },
             },
+            reConnectCard: {
+                title: "The conversation ended",
+                text: "Is there anything else you want to ask?",
+            },
             errors: {
                 common: {
                     title: "Something wen't wrong.",
@@ -137,6 +141,10 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                 success: {
                     text: "Geri bildiriminiz için teşekkürler, hoça kalın.",
                 },
+            },
+            reConnectCard: {
+                title: "Sohbet sona erdi",
+                text: "Sormak istediğiniz başka bir şey var mı?",
             },
             errors: {
                 common: {

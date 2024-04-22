@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
     LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
     LAST_BOX_STATE: "grispi.chat.lastBoxState",
     IS_CHAT_ENDED: "grispi.chat.ended",
+    IS_SURVEY_SENT: "grispi.chat.survey_sent",
 };
 
 export const getLastBoxStateFromStorage = (): ChatBoxState => {

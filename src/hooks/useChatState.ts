@@ -1,3 +1,4 @@
+import { type SubscribeableChatResponseForEndUser } from "@/types/backend";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { internalEventTypeMap } from "@lib/config";
@@ -37,6 +38,10 @@ export const useChatState = () => {
             setChat((prev) => ({ ...prev, subscribed: false, ended: true }));
         };
 
+        const resumeChatHandler = (e: CustomEvent<SubscribeableChatResponseForEndUser>) => {
+            setChat((prev) => ({ ...prev, chatSessionId: e.detail.chatSessionId }));
+        };
+
         if (!window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT) {
             window.addEventListener(
                 internalEventTypeMap.SUBSCRIBED_TO_CHAT,
@@ -50,15 +55,22 @@ export const useChatState = () => {
             window.GrispiChat.listeners.CHAT_DISCONNECTED = true;
         }
 
+        if (!window.GrispiChat.listeners.RESUME_CHAT) {
+            window.addEventListener(internalEventTypeMap.RESUME_CHAT, resumeChatHandler);
+            window.GrispiChat.listeners.RESUME_CHAT = true;
+        }
+
         return () => {
             window.removeEventListener(internalEventTypeMap.CHAT_DISCONNECTED, disconnectHandler);
             window.removeEventListener(
                 internalEventTypeMap.SUBSCRIBED_TO_CHAT,
                 subscribedToChatHandler
             );
+            window.removeEventListener(internalEventTypeMap.RESUME_CHAT, resumeChatHandler);
 
             window.GrispiChat.listeners.SUBSCRIBED_TO_CHAT = false;
             window.GrispiChat.listeners.CHAT_DISCONNECTED = false;
+            window.GrispiChat.listeners.RESUME_CHAT = false;
         };
     }, [setChat]);
 };

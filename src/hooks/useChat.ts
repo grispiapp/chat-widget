@@ -4,7 +4,7 @@ import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { internalEventTypeMap } from "@lib/config";
 import { STORAGE_KEYS, getChatIdFromStorage } from "@lib/storage";
-import { blank, debug } from "@lib/utils";
+import { blank, debug, detectConversationState } from "@lib/utils";
 import { CURRENT_USER_TEMP_MESSAGE_ID, sendMessage, subscribeChat } from "@lib/websocket";
 import { useCallback, useEffect, useRef } from "preact/hooks";
 import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/chat";
@@ -36,19 +36,31 @@ export const useChat = () => {
         const handleIncomingMessage = (e: CustomEvent<WsMessage>) => {
             debug("Incoming message", { message: e.detail });
 
-            const message = {
-                id: e.detail.id,
-                text: e.detail.text,
-            };
-
             if (e.detail.senderId === user.id) {
+                debug("Replacing existing message id with", e.detail.id);
+
+                updateMessage(CURRENT_USER_TEMP_MESSAGE_ID, {
+                    id: e.detail.id,
+                    status: "sent",
+                    shouldSendToApi: false,
+                    createdAt: e.detail.sentAt,
+                });
+
                 return;
             }
 
+            if (document.hidden) {
+                notificationAudioRef.current.pause();
+                notificationAudioRef.current.currentTime = 0; // to start over again
+                notificationAudioRef.current.play();
+            }
+
             addMessage({
-                ...message,
+                id: e.detail.id,
+                text: e.detail.text,
                 sender: e.detail.senderId === user.id ? "user" : "ai",
                 shouldSendToApi: false,
+                createdAt: e.detail.sentAt,
             });
         };
 
@@ -65,41 +77,7 @@ export const useChat = () => {
 
             window.GrispiChat.listeners.INCOMING_MESSAGE = false;
         };
-    }, [user, addMessage]);
-
-    // Handle received messages
-    useEffect(() => {
-        if (blank(user) || user.id.toString() === CURRENT_USER_TEMP_MESSAGE_ID) {
-            return;
-        }
-
-        const handleReceivedMessage = (e: CustomEvent<string>) => {
-            debug("Replacing existing message id with", e.detail);
-
-            updateMessage(CURRENT_USER_TEMP_MESSAGE_ID, {
-                id: e.detail,
-                status: "sent",
-            });
-
-            if (document.hidden) {
-                notificationAudioRef.current?.play();
-            }
-        };
-
-        if (!window.GrispiChat.listeners.MESSAGE_RECEIVED) {
-            window.addEventListener(internalEventTypeMap.MESSAGE_RECEIVED, handleReceivedMessage);
-            window.GrispiChat.listeners.MESSAGE_RECEIVED = true;
-        }
-
-        return () => {
-            window.removeEventListener(
-                internalEventTypeMap.MESSAGE_RECEIVED,
-                handleReceivedMessage
-            );
-
-            window.GrispiChat.listeners.MESSAGE_RECEIVED = false;
-        };
-    }, [user, updateMessage]);
+    }, [user]);
 
     // Handle seen messages
     useEffect(() => {
@@ -289,6 +267,7 @@ export const useChat = () => {
             };
 
             const isChatEnded = localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1";
+            const isSurveySent = localStorage.getItem(STORAGE_KEYS.IS_SURVEY_SENT) === "1";
 
             const response = await modes[mode].fn();
             window.dispatchEvent(new CustomEvent(modes[mode].type, { detail: response }));
@@ -312,7 +291,7 @@ export const useChat = () => {
             debug("setChat", newChatState);
             setChat(newChatState);
             setUser(newUserState);
-            setConversationState(isChatEnded ? "survey-form" : "idle");
+            setConversationState(detectConversationState({ isChatEnded, isSurveySent }));
 
             if (mode === "resume" && (options?.loadChatHistory ?? true)) {
                 await loadChatHistory(newChatState, newUserState);
