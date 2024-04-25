@@ -55,17 +55,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (!script) return;
 
-    const url = new URLSearchParams(script.getAttribute("src"));
-    const parameters = Object.fromEntries(url.entries());
+    const [_, encodedParameters] = script.getAttribute("src").split("?", 2);
+    const params = Object.fromEntries(new URLSearchParams(encodedParameters).entries());
 
-    if (!parameters.tenantId) {
+    if (!("tenantId" in params)) {
         return;
     }
 
     GrispiChat.create({
-        tenantId: parameters.tenantId,
-        debug: parameters.debug === "true" || parameters.debug === "1",
-        environment: parameters.environment ?? "prod",
+        tenantId: params.tenantId,
+        debug: params.debug === "true" || params.debug === "1",
+        environment: params.environment ?? "prod",
     });
 });
 
