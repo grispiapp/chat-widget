@@ -3,7 +3,10 @@
 To add the widget to your site, simply copy and paste this code snippet into the </body> section of your website.
 
 ```html
-<script src="https://grispi.app/chat-widget/chat-widget.js?tenantId={TENANT_ID}&debug=true|false&environment=preprod"></script>
+<script
+    src="https://grispi.app/chat-widget/chat-widget.js?tenantId={TENANT_ID}&debug=true|false&environment=preprod"
+    data-grispi-chat-widget
+></script>
 ```
 
 Also replace `{TENANT_ID}` with your own **Tenant ID**.
