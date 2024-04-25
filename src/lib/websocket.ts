@@ -8,6 +8,7 @@ import {
 } from "../types/backend";
 import { type MediaFileMeta } from "../types/file";
 import { internalEventTypeMap } from "./config";
+import { STORAGE_KEYS } from "./storage";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
 interface Gate {
@@ -62,6 +63,13 @@ let subscriptionToUpdates: StompSubscription | undefined;
 const client = new Client({
     reconnectDelay: 0,
     onWebSocketClose: (frame: any) => {
+        const chatSessionId = localStorage.getItem(STORAGE_KEYS.CHAT_SESSION_ID);
+
+        if (chatSessionId) {
+            debug("Ending chat session because websocket is closing...");
+            endChatSession({ chatSessionId });
+        }
+
         terminateWsConnection();
         chatDisconnectedEvent();
     },
@@ -335,7 +343,7 @@ const sendMessage = (message: WsMessage, chat: SubscribeableChatResponseForEndUs
     sendMessageOverWs(message, destination);
 };
 
-const endChatSession = (chat: SubscribeableChatResponseForEndUser) => {
+const endChatSession = (chat: Pick<SubscribeableChatResponseForEndUser, "chatSessionId">) => {
     if (subscription) {
         client.publish({
             destination: destinationPaths(chat.chatSessionId).endSession(),

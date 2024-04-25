@@ -24,7 +24,7 @@ export interface SurveyInput {
 export const SurveyForm = () => {
     const { notify } = useNotification();
     const { t } = useTranslation();
-    const { chat, toggleState } = useChatBox();
+    const { chat } = useChatBox();
     const { subscribeToExistingChatFromStorage } = useChat();
     const { setState: setConversationState } = useConversation();
 
@@ -74,10 +74,6 @@ export const SurveyForm = () => {
                     type: "success",
                 });
 
-                setTimeout(() => {
-                    toggleState();
-                }, 3000);
-
                 debug("Survey sent.");
             } catch (err) {
                 notify({
@@ -91,7 +87,7 @@ export const SurveyForm = () => {
                 setLoading(false);
             }
         },
-        [chat, t, resetErrors, toggleState, setConversationState, setError, setLoading, notify]
+        [chat, t, resetErrors, setConversationState, setError, setLoading, notify]
     );
 
     const handleReconnectChat = useCallback(async () => {

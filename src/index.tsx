@@ -50,4 +50,23 @@ export const GrispiChat: GrispiChatType = {
     },
 };
 
+window.addEventListener("DOMContentLoaded", () => {
+    const script = document.querySelector("[data-grispi-chat-widget]");
+
+    if (!script) return;
+
+    const url = new URLSearchParams(script.getAttribute("src"));
+    const parameters = Object.fromEntries(url.entries());
+
+    if (!parameters.tenantId) {
+        return;
+    }
+
+    GrispiChat.create({
+        tenantId: parameters.tenantId,
+        debug: parameters.debug === "true" || parameters.debug === "1",
+        environment: parameters.environment ?? "prod",
+    });
+});
+
 window.GrispiChat = GrispiChat;

@@ -14,6 +14,11 @@ export const useChatState = () => {
     }, [chat?.chatId]);
 
     useEffect(() => {
+        chat?.chatSessionId &&
+            localStorage.setItem(STORAGE_KEYS.CHAT_SESSION_ID, chat.chatSessionId);
+    }, [chat?.chatSessionId]);
+
+    useEffect(() => {
         localStorage.setItem(STORAGE_KEYS.LAST_BOX_STATE, state);
     }, [state]);
 

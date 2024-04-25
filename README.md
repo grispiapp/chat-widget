@@ -2,7 +2,13 @@
 
 To add the widget to your site, simply copy and paste this code snippet into the </body> section of your website.
 
+```html
+<script src="https://grispi.app/chat-widget/chat-widget.js?tenantId={TENANT_ID}&debug=true|false&environment=preprod"></script>
+```
+
 Also replace `{TENANT_ID}` with your own **Tenant ID**.
+
+If you want to use it in a more advanced way, you can create chat interface with the `window.GrispiChat` API.
 
 ```html
 <script src="https://grispi.app/chat-widget/chat-widget.js"></script>

@@ -4,6 +4,7 @@ import { chatBoxStateMap, type ChatBoxContextType } from "@context/chat-box-cont
 export const STORAGE_KEYS = {
     DISMISS_PROMPT: "grispi.chat.dismissPrompt",
     CHAT_ID: "grispi.chat.chatId",
+    CHAT_SESSION_ID: "grispi.chat.chatSessionId",
     LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
     LAST_BOX_STATE: "grispi.chat.lastBoxState",
     IS_CHAT_ENDED: "grispi.chat.ended",
