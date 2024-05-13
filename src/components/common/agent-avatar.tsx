@@ -10,7 +10,7 @@ export const AgentAvatar: FC<AgentAvatarProps> = ({ className, ...props }) => {
     return (
         <img
             {...props}
-            className={cn("cb-h-8 cb-w-8 cb-rounded-full", className)}
+            className={cn("cb-h-8 cb-w-8 cb-rounded-full cb-object-cover", className)}
             src={t("agent.avatar")}
             alt={t("agent.name")}
         />

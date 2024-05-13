@@ -130,7 +130,7 @@ export const isTextMessage = (
 export const ConversationContextProvider = ({ children }) => {
     const { t } = useTranslation();
     const { notify } = useNotification();
-    const { chat, user, isOnline } = useChatBox();
+    const { chat, options, user, isOnline } = useChatBox();
     const [state, setState] = useState<ConversationState>("idle");
     const [messages, setMessages] = useState<Message[]>([]);
     const [replies, setReplies] = useState<Reply[]>([]);
@@ -286,7 +286,7 @@ export const ConversationContextProvider = ({ children }) => {
     useEffect(() => {
         reset();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOnline]);
+    }, [isOnline, options]);
 
     return (
         <ConversationContext.Provider

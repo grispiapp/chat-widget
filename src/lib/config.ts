@@ -5,6 +5,10 @@ export const VERSION = "0.2.0";
 window.GRISPI_CHAT_JS_VERSION = VERSION;
 
 export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
+    account: {
+        title: "Grispi",
+        logo: import.meta.env.VITE_BASE_URL + DefaultAgentAvatarImage,
+    },
     colors: {
         primary: "99 45 145",
     },

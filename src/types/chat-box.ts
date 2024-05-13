@@ -54,6 +54,14 @@ export interface GrispiChatOptions {
     forms: Record<string, Form>;
 
     /**
+     * The title and logo fields for the header section.
+     */
+    account: {
+        title: string;
+        logo: string;
+    };
+
+    /**
      * Configuration for the colors used in the chat interface.
      */
     colors: {

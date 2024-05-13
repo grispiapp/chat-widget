@@ -1,7 +1,7 @@
 import { blank, filled } from "@lib/utils";
 import { createContext } from "preact";
-import { type ReactNode, type SetStateAction } from "preact/compat";
-import { useContext, useState } from "preact/hooks";
+import { type ReactNode } from "preact/compat";
+import { useContext, useState, type Dispatch } from "preact/hooks";
 
 export type ModalType =
     | {
@@ -19,7 +19,7 @@ export type ModalType =
 
 interface ModalContextType {
     modal: ModalType;
-    setModal: SetStateAction<ModalType>;
+    setModal: Dispatch<ModalType>;
 }
 
 const ModalContext = createContext<ModalContextType>({

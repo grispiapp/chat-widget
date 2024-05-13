@@ -1,4 +1,4 @@
-import { AgentAvatar } from "@components/common/agent-avatar";
+import { AccountLogo } from "@components/common/account-logo";
 import { CloseIcon, MinimizeIcon } from "@components/icons";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
@@ -10,7 +10,7 @@ import { useCallback } from "preact/hooks";
 
 export const ChatBoxHeader = () => {
     const { t } = useTranslation();
-    const { chat, toggleState } = useChatBox();
+    const { chat, options, toggleState } = useChatBox();
     const { state: conversationState, setState: setConversationState } = useConversation();
     const { setModal } = useModal();
 
@@ -37,8 +37,8 @@ export const ChatBoxHeader = () => {
     return (
         <div className="cb-flex cb-items-center cb-justify-between cb-border-b cb-border-opacity-25 cb-px-3 cb-py-2">
             <div className="cb-flex cb-items-center cb-gap-2">
-                <AgentAvatar />
-                <span className="cb-text-sm cb-font-bold">{t("agent.name")}</span>
+                <AccountLogo />
+                <span className="cb-text-sm cb-font-bold">{options.account.title}</span>
             </div>
             <div className="cb-flex cb-items-center cb-text-zinc-600">
                 <Button onClick={toggleState} variant="link" icon={MinimizeIcon} />
