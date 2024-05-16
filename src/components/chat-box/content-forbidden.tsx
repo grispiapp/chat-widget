@@ -1,7 +1,7 @@
 import { ErrorOutlineIcon } from "@components/icons";
 import { useTranslation } from "@hooks/useTranslation";
 import { sanitizeHtml } from "@lib/sanitized-html";
-import { getHostUrl } from "@lib/utils";
+import { getOrigin } from "@lib/utils";
 
 export const ContentForbidden = () => {
     const { t } = useTranslation();
@@ -16,7 +16,7 @@ export const ContentForbidden = () => {
                 dangerouslySetInnerHTML={{
                     __html: sanitizeHtml(
                         t("errors.forbidden.text", {
-                            host: getHostUrl(),
+                            host: getOrigin(),
                         })
                     ),
                 }}

@@ -98,8 +98,8 @@ export const getBackendUrl = (environment?: GrispiChatOptions["environment"]): s
     return BACKEND_URLS[environment || getEnvironment()];
 };
 
-export const getHostUrl = () => {
-    return window.location.host;
+export const getOrigin = () => {
+    return window.location.origin;
 };
 
 export const uuidv4 = (): string => {
