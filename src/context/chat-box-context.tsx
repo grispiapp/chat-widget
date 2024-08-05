@@ -57,13 +57,15 @@ const ChatBoxContext = createContext<ChatBoxContextType>({
 });
 
 export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
-    const CHAT_OPTIONS = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
+    const CHAT_OPTIONS: GrispiChatOptions = mergeChatOptions(DEFAULT_WIDGET_OPTIONS, optionsProp);
 
     const [isOnline, setIsOnline] = useState<boolean>(null);
     const [configurationStatus, setConfigurationStatus] = useState<
         ChatBoxContextType["configurationStatus"]
     >(ConfigurationStatusEnum.AUTHORIZED);
-    const [state, setState] = useState<ChatBoxContextType["state"]>(getLastBoxStateFromStorage());
+    const [state, setState] = useState<ChatBoxContextType["state"]>(
+        CHAT_OPTIONS.full_screen ? "open" : getLastBoxStateFromStorage()
+    );
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
     const [chat, setChat] = useState<ChatBoxContextType["chat"]>();
@@ -88,6 +90,10 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     }, [options.always_online]);
 
     const toggleState = () => {
+        if (CHAT_OPTIONS.full_screen) {
+            return;
+        }
+
         if (state === "open") {
             setState("closing");
             setTimeout(() => {

@@ -57,7 +57,7 @@ export const Modal: FC<ModalProps> = ({ modal }) => {
 };
 
 export const ModalDialog: FC<ModalDialogProps> = ({ children }) => {
-    return <div className="cb-w-3/4 cb-rounded-xl cb-bg-background">{children}</div>;
+    return <div className="cb-w-3/4 cb-max-w-sm cb-rounded-xl cb-bg-background">{children}</div>;
 };
 
 export const ModalHeader: FC<ModalHeaderProps> = ({ title, onDismiss }) => {
