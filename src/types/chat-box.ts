@@ -26,11 +26,15 @@ export interface GrispiChatOptions {
     /**
      * Optional. Specifies the environment in which the chat is running.
      * Should be one of the values defined in the ENVIRONMENTS object.
+     *
+     * @default "prod"
      */
-    environment?: keyof typeof ENVIRONMENTS;
+    environment?: WidgetEnvironment;
 
     /**
      * Optional. If set to true, enables debug mode for additional logging and debugging information.
+     *
+     * @default false
      */
     debug?: boolean;
 
@@ -40,13 +44,24 @@ export interface GrispiChatOptions {
      *
      * This setting ensures that the chat interface remains accessible to users at all times,
      * creating a perception of constant availability.
+     *
+     * @default false
      */
     always_online?: boolean;
 
     /**
      * Optional. When set to true, displays a "Powered by" attribution in the chat interface.
+     *
+     * @default true
      */
     powered_by?: boolean;
+
+    /**
+     * Optional. When set to true, the chat will open immediately in a full-screen mode.
+     *
+     * @default false
+     */
+    full_screen?: boolean;
 
     /**
      * Contains configurations for different forms within the chat interface.
@@ -73,6 +88,11 @@ export interface GrispiChatOptions {
      */
     texts: Record<string, Partial<LocalizableTexts>>;
 }
+
+export type OptionalGrispiChatOptions = Pick<GrispiChatOptions, "tenantId"> &
+    Partial<Omit<GrispiChatOptions, "tenantId">>;
+
+export type WidgetEnvironment = keyof typeof ENVIRONMENTS;
 
 interface Form {
     fields: FormField[];

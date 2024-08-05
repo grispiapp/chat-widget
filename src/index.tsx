@@ -3,10 +3,14 @@ import { VERSION, type internalEventTypeMap } from "@lib/config";
 import { debug } from "@lib/utils";
 import { render } from "preact";
 import styles from "./index.css?inline";
-import { type GrispiChatOptions } from "./types/chat-box";
+import {
+    type GrispiChatOptions,
+    type OptionalGrispiChatOptions,
+    type WidgetEnvironment,
+} from "./types/chat-box";
 
 type GrispiChatType = {
-    create: (options: GrispiChatOptions) => void;
+    create: (options: OptionalGrispiChatOptions) => void;
     options: GrispiChatOptions | undefined;
     listeners: Partial<Record<keyof typeof internalEventTypeMap, boolean>>;
 };
@@ -65,7 +69,8 @@ window.addEventListener("DOMContentLoaded", () => {
     GrispiChat.create({
         tenantId: params.tenantId,
         debug: params.debug === "true" || params.debug === "1",
-        environment: params.environment ?? "prod",
+        environment: (params.environment ?? "prod") as WidgetEnvironment,
+        full_screen: params.fullscreen === "true" || params.fullscreen === "1",
     });
 });
 
