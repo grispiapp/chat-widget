@@ -60,7 +60,7 @@ export const getTenantId = () => {
 };
 
 export const getEnvironment = (): keyof typeof ENVIRONMENTS => {
-    return window.GrispiChat.options.environment || "prod";
+    return window.GrispiChat.options?.environment || "prod";
 };
 
 export const destinationPaths = (
@@ -77,9 +77,7 @@ export const destinationPaths = (
 };
 
 export const isDebugMode = () => {
-    return window.GrispiChat.options.debug !== undefined
-        ? window.GrispiChat.options.debug
-        : DEFAULT_WIDGET_OPTIONS.debug;
+    return window.GrispiChat.options?.debug ?? DEFAULT_WIDGET_OPTIONS.debug;
 };
 
 export const asset = (path: string) => {

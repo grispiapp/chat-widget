@@ -25,6 +25,7 @@ export const GrispiChat: GrispiChatType = {
         }
 
         GrispiChat.options = options;
+        window.GrispiChat = GrispiChat;
 
         debug("chat.js", VERSION);
 
