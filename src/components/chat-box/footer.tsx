@@ -127,7 +127,7 @@ export const ChatBoxFooter = () => {
                         <Button size="sm" icon={SendIcon} disabled={isInputDisabled} />
                     </div>
                 </form>
-                {options.powered_by && (
+                {options.poweredPy && (
                     <div className="-cb-mt-1">
                         <PoweredBy />
                     </div>

@@ -11,9 +11,20 @@
         </style>
     </head>
     <body>
+        <div
+            style="
+                width: 400px;
+                height: 700px;
+                background-color: red;
+                border-radius: 1rem;
+                overflow: hidden;
+            "
+        >
+            <div id="chat"></div>
+        </div>
         <script
             type="module"
-            src="/src/index.tsx?tenantId=gsocial&fullscreen=0&debug=1"
+            src="/src/index.tsx?tenantId=gsocial&block=0&element=#chat&debug=1"
             data-grispi-chat-widget
         ></script>
     </body>

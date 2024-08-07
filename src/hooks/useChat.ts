@@ -3,7 +3,7 @@ import { useChatBox, type ChatBoxContextType } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { useNotification } from "@context/notification-context";
 import { internalEventTypeMap } from "@lib/config";
-import { STORAGE_KEYS, getChatIdFromStorage } from "@lib/storage";
+import { getChatIdFromStorage, getStoredValue } from "@lib/storage";
 import { blank, debug, detectConversationState } from "@lib/utils";
 import { CURRENT_USER_TEMP_MESSAGE_ID, sendMessage, subscribeChat } from "@lib/websocket";
 import { useCallback, useEffect, useRef } from "preact/hooks";
@@ -137,7 +137,7 @@ export const useChat = () => {
         const sendAwaitingMessages = async (
             e: CustomEvent<{ chat: SubscribeableChatResponseForEndUser }>
         ) => {
-            const isChatEnded = localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1";
+            const isChatEnded = getStoredValue("IS_CHAT_ENDED") === "1";
 
             if (isChatEnded) {
                 return;
@@ -266,8 +266,8 @@ export const useChat = () => {
                 },
             };
 
-            const isChatEnded = localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1";
-            const isSurveySent = localStorage.getItem(STORAGE_KEYS.IS_SURVEY_SENT) === "1";
+            const isChatEnded = getStoredValue("IS_CHAT_ENDED") === "1";
+            const isSurveySent = getStoredValue("IS_SURVEY_SENT") === "1";
 
             const response = await modes[mode].fn();
             window.dispatchEvent(new CustomEvent(modes[mode].type, { detail: response }));

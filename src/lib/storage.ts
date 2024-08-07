@@ -1,18 +1,33 @@
 import { type ChatBoxState } from "@/types/chat-box";
 import { chatBoxStateMap, type ChatBoxContextType } from "@context/chat-box-context";
+import { getTenantId } from "./utils";
 
 export const STORAGE_KEYS = {
-    DISMISS_PROMPT: "grispi.chat.dismissPrompt",
-    CHAT_ID: "grispi.chat.chatId",
-    CHAT_SESSION_ID: "grispi.chat.chatSessionId",
-    LAST_MESSAGE_TIME: "grispi.chat.lastMessageTime",
-    LAST_BOX_STATE: "grispi.chat.lastBoxState",
-    IS_CHAT_ENDED: "grispi.chat.ended",
-    IS_SURVEY_SENT: "grispi.chat.survey_sent",
+    DISMISS_PROMPT: "grispi.%tenant%.chat.dismissPrompt",
+    CHAT_ID: "grispi.%tenant%.chat.chatId",
+    CHAT_SESSION_ID: "grispi.%tenant%.chat.chatSessionId",
+    LAST_MESSAGE_TIME: "grispi.%tenant%.chat.lastMessageTime",
+    LAST_BOX_STATE: "grispi.%tenant%.chat.lastBoxState",
+    IS_CHAT_ENDED: "grispi.%tenant%.chat.ended",
+    IS_SURVEY_SENT: "grispi.%tenant%.chat.survey_sent",
+};
+
+type StorageKey = keyof typeof STORAGE_KEYS;
+
+export const getStorageKey = (key: StorageKey) => {
+    return STORAGE_KEYS[key].replace("%tenant%", getTenantId());
+};
+
+export const getStoredValue = (key: StorageKey) => {
+    return localStorage.getItem(getStorageKey(key));
+};
+
+export const storeValue = (key: StorageKey, value: string) => {
+    return localStorage.setItem(getStorageKey(key), value);
 };
 
 export const getLastBoxStateFromStorage = (): ChatBoxState => {
-    const lastBoxState = localStorage.getItem(STORAGE_KEYS.LAST_BOX_STATE);
+    const lastBoxState = getStoredValue("LAST_BOX_STATE");
 
     return Object.values(chatBoxStateMap).includes(lastBoxState)
         ? (lastBoxState as ChatBoxState)
@@ -20,9 +35,9 @@ export const getLastBoxStateFromStorage = (): ChatBoxState => {
 };
 
 export const getChatIdFromStorage = (): ChatBoxContextType["chat"]["chatId"] => {
-    return localStorage.getItem(STORAGE_KEYS.CHAT_ID);
+    return getStoredValue("CHAT_ID");
 };
 
 export const isPromptDismissed = (): boolean => {
-    return localStorage.getItem(STORAGE_KEYS.DISMISS_PROMPT) === "1";
+    return getStoredValue("DISMISS_PROMPT") === "1";
 };

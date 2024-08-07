@@ -8,7 +8,7 @@ import {
 } from "../types/backend";
 import { type MediaFileMeta } from "../types/file";
 import { internalEventTypeMap } from "./config";
-import { STORAGE_KEYS } from "./storage";
+import { getStoredValue } from "./storage";
 import { debug, destinationPaths, getBrokerUrl, uuidv4 } from "./utils";
 
 interface Gate {
@@ -63,7 +63,7 @@ let subscriptionToUpdates: StompSubscription | undefined;
 const client = new Client({
     reconnectDelay: 0,
     onWebSocketClose: (frame: any) => {
-        const chatSessionId = localStorage.getItem(STORAGE_KEYS.CHAT_SESSION_ID);
+        const chatSessionId = getStoredValue("CHAT_SESSION_ID");
 
         if (chatSessionId) {
             debug("Ending chat session because websocket is closing...");

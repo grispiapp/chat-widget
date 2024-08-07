@@ -64,7 +64,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
         ChatBoxContextType["configurationStatus"]
     >(ConfigurationStatusEnum.AUTHORIZED);
     const [state, setState] = useState<ChatBoxContextType["state"]>(
-        CHAT_OPTIONS.full_screen ? "open" : getLastBoxStateFromStorage()
+        CHAT_OPTIONS.renderAsBlock ? "open" : getLastBoxStateFromStorage()
     );
     const [status, setStatus] = useState<ChatBoxContextType["status"]>("loading");
     const [options, setOptions] = useState<ChatBoxContextType["options"]>(CHAT_OPTIONS);
@@ -76,7 +76,7 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
     });
 
     useEffect(() => {
-        if (options.always_online) {
+        if (options.alwaysOnline) {
             setIsOnline(true);
             return;
         }
@@ -87,10 +87,10 @@ export const ChatBoxContextProvider = ({ options: optionsProp, children }) => {
         };
 
         checkChatIsOnline();
-    }, [options.always_online]);
+    }, [options.alwaysOnline]);
 
     const toggleState = () => {
-        if (CHAT_OPTIONS.full_screen) {
+        if (CHAT_OPTIONS.renderAsBlock) {
             return;
         }
 

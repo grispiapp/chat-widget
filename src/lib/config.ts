@@ -206,8 +206,8 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
     },
     environment: "prod",
     debug: false,
-    powered_by: true,
-    full_screen: false,
+    poweredPy: true,
+    renderAsBlock: false,
 };
 
 export const ENVIRONMENTS = {

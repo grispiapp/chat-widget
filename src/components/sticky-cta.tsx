@@ -1,7 +1,7 @@
 import { ConfigurationStatusEnum } from "@/types/chat-box";
 import { useChatBox } from "@context/chat-box-context";
 import { useTranslation } from "@hooks/useTranslation";
-import { isPromptDismissed, STORAGE_KEYS } from "@lib/storage";
+import { isPromptDismissed, storeValue } from "@lib/storage";
 import { cn } from "@lib/utils";
 import ChatLauncherPreviewImage from "@resources/images/chat-launcher-preview.png";
 import { Button } from "@ui/button";
@@ -18,7 +18,7 @@ export const StickyCta: FC<StickyCtaProps> = () => {
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
         e.stopPropagation();
         setDisplayPrompt(false);
-        localStorage.setItem(STORAGE_KEYS.DISMISS_PROMPT, "1");
+        storeValue("DISMISS_PROMPT", "1");
     };
 
     const isAuthorized = configurationStatus === ConfigurationStatusEnum.AUTHORIZED;

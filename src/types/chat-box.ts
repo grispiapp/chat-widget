@@ -47,21 +47,21 @@ export interface GrispiChatOptions {
      *
      * @default false
      */
-    always_online?: boolean;
+    alwaysOnline?: boolean;
 
     /**
      * Optional. When set to true, displays a "Powered by" attribution in the chat interface.
      *
      * @default true
      */
-    powered_by?: boolean;
+    poweredPy?: boolean;
 
     /**
-     * Optional. When set to true, the chat will open immediately in a full-screen mode.
+     * Optional. When set to true, the chat will open immediately in a block mode.
      *
      * @default false
      */
-    full_screen?: boolean;
+    renderAsBlock?: boolean;
 
     /**
      * Contains configurations for different forms within the chat interface.

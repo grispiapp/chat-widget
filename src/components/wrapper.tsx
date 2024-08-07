@@ -75,7 +75,7 @@ export const Wrapper = ({ children }) => {
     }, [configurationStatus, chat?.subscribed, chat?.ended]);
 
     return display ? (
-        <div style={{ "--color-primary": options.colors.primary }}>
+        <div className="cb-h-full" style={{ "--color-primary": options.colors.primary }}>
             <audio
                 ref={notificationAudioRef}
                 src={import.meta.env.VITE_BASE_URL + incomingMessageSfx}

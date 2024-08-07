@@ -5,7 +5,7 @@ import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
 import { useTranslation } from "@hooks/useTranslation";
-import { STORAGE_KEYS } from "@lib/storage";
+import { STORAGE_KEYS, storeValue } from "@lib/storage";
 import { debug, filled } from "@lib/utils";
 import { Button } from "@ui/button";
 import { Card } from "@ui/card";
@@ -66,7 +66,7 @@ export const SurveyForm = () => {
 
                 await sendSurvey(survey, chat);
 
-                localStorage.setItem(STORAGE_KEYS.IS_SURVEY_SENT, "1");
+                storeValue("IS_SURVEY_SENT", "1");
                 setConversationState("ended");
 
                 notify({

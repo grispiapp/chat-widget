@@ -48,10 +48,10 @@ export const ChatBoxHeader = () => {
                 <span className="cb-text-sm cb-font-bold">{options.account.title}</span>
             </div>
             <div className="cb-flex cb-items-center cb-text-zinc-600">
-                {!options.full_screen && (
+                {!options.renderAsBlock && (
                     <Button onClick={toggleState} variant="link" icon={MinimizeIcon} />
                 )}
-                {(!isAlreadyClosed || !options.full_screen) && (
+                {(!isAlreadyClosed || !options.renderAsBlock) && (
                     <Button onClick={handleClose} variant="link" icon={CloseIcon} />
                 )}
             </div>

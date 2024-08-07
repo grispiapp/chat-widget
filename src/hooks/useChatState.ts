@@ -2,7 +2,7 @@ import { type SubscribeableChatResponseForEndUser } from "@/types/backend";
 import { useChatBox } from "@context/chat-box-context";
 import { useConversation } from "@context/conversation-context";
 import { internalEventTypeMap } from "@lib/config";
-import { STORAGE_KEYS } from "@lib/storage";
+import { getStoredValue, storeValue } from "@lib/storage";
 import { useEffect } from "preact/hooks";
 
 export const useChatState = () => {
@@ -10,24 +10,23 @@ export const useChatState = () => {
     const { setState: setConversationState } = useConversation();
 
     useEffect(() => {
-        chat?.chatId && localStorage.setItem(STORAGE_KEYS.CHAT_ID, chat.chatId);
+        chat?.chatId && storeValue("CHAT_ID", chat.chatId);
     }, [chat?.chatId]);
 
     useEffect(() => {
-        chat?.chatSessionId &&
-            localStorage.setItem(STORAGE_KEYS.CHAT_SESSION_ID, chat.chatSessionId);
+        chat?.chatSessionId && storeValue("CHAT_SESSION_ID", chat.chatSessionId);
     }, [chat?.chatSessionId]);
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEYS.LAST_BOX_STATE, state);
+        storeValue("LAST_BOX_STATE", state);
     }, [state]);
 
     useEffect(() => {
-        if (localStorage.getItem(STORAGE_KEYS.IS_CHAT_ENDED) === "1") {
+        if (getStoredValue("IS_CHAT_ENDED") === "1") {
             return;
         }
 
-        localStorage.setItem(STORAGE_KEYS.IS_CHAT_ENDED, chat?.ended ? "1" : "0");
+        storeValue("IS_CHAT_ENDED", chat?.ended ? "1" : "0");
 
         if (chat?.ended) {
             setConversationState("survey-form");
