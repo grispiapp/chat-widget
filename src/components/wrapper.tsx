@@ -3,7 +3,7 @@ import { useChatBox } from "@context/chat-box-context";
 import { useChat } from "@hooks/useChat";
 import { useChatState } from "@hooks/useChatState";
 import { internalEventTypeMap } from "@lib/config";
-import { debug } from "@lib/utils";
+import { cn, debug } from "@lib/utils";
 import incomingMessageSfx from "@resources/incoming-message.mp3";
 import { useEffect, useState } from "preact/hooks";
 
@@ -75,7 +75,10 @@ export const Wrapper = ({ children }) => {
     }, [configurationStatus, chat?.subscribed, chat?.ended]);
 
     return display ? (
-        <div className="cb-h-full" style={{ "--color-primary": options.colors.primary }}>
+        <div
+            className={cn({ "cb-h-full": options.renderAsBlock })}
+            style={{ "--color-primary": options.colors.primary }}
+        >
             <audio
                 ref={notificationAudioRef}
                 src={import.meta.env.VITE_BASE_URL + incomingMessageSfx}
