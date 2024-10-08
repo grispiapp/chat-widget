@@ -5,7 +5,7 @@ import { useNotification } from "@context/notification-context";
 import { useChat } from "@hooks/useChat";
 import { useErrors } from "@hooks/useErrors";
 import { useTranslation } from "@hooks/useTranslation";
-import { STORAGE_KEYS, storeValue } from "@lib/storage";
+import { removeStoredValue, storeValue } from "@lib/storage";
 import { debug, filled } from "@lib/utils";
 import { Button } from "@ui/button";
 import { Card } from "@ui/card";
@@ -93,8 +93,8 @@ export const SurveyForm = () => {
     const handleReconnectChat = useCallback(async () => {
         setLoading(true);
 
-        localStorage.removeItem(STORAGE_KEYS.IS_CHAT_ENDED);
-        localStorage.removeItem(STORAGE_KEYS.IS_SURVEY_SENT);
+        removeStoredValue("IS_CHAT_ENDED");
+        removeStoredValue("IS_SURVEY_SENT");
 
         await subscribeToExistingChatFromStorage({
             loadChatHistory: false,

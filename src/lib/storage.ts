@@ -26,6 +26,10 @@ export const storeValue = (key: StorageKey, value: string) => {
     return localStorage.setItem(getStorageKey(key), value);
 };
 
+export const removeStoredValue = (key: StorageKey) => {
+    return localStorage.removeItem(getStorageKey(key));
+};
+
 export const getLastBoxStateFromStorage = (): ChatBoxState => {
     const lastBoxState = getStoredValue("LAST_BOX_STATE");
 

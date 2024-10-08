@@ -2,7 +2,7 @@ import { type GrispiChatOptions } from "@/types/chat-box";
 import { type SurveyInput } from "@components/survey-form";
 import { api } from "@lib/api";
 import { internalEventTypeMap } from "@lib/config";
-import { debug, getOrigin } from "@lib/utils";
+import { debug } from "@lib/utils";
 import {
     type SubscribeableChatResponseForEndUser,
     type UploadFilesResponse,
@@ -28,7 +28,7 @@ export const resumeChat = async (chatId: string) => {
 export const createChat = async (user: UserInput) => {
     const body = {
         ...user,
-        url: getOrigin(),
+        url: window.location.href,
     };
 
     debug("createChat", "Creating new chat with", { body });

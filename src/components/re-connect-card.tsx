@@ -1,6 +1,6 @@
 import { useChat } from "@hooks/useChat";
 import { useTranslation } from "@hooks/useTranslation";
-import { STORAGE_KEYS } from "@lib/storage";
+import { removeStoredValue } from "@lib/storage";
 import { Button } from "@ui/button";
 import { Card } from "@ui/card";
 import { useCallback, useState } from "preact/hooks";
@@ -15,8 +15,8 @@ export const ReConnectCard = () => {
     const handleReconnectChat = useCallback(async () => {
         setLoading(true);
 
-        localStorage.removeItem(STORAGE_KEYS.IS_CHAT_ENDED);
-        localStorage.removeItem(STORAGE_KEYS.IS_SURVEY_SENT);
+        removeStoredValue("IS_CHAT_ENDED");
+        removeStoredValue("IS_SURVEY_SENT");
 
         await subscribeToExistingChatFromStorage({
             loadChatHistory: false,
