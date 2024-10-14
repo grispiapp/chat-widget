@@ -75,6 +75,10 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                     title: "Authorisation failure.",
                     text: "<b>{host}</b> does not have permission to use this interface. Please consult your Grispi administrator.",
                 },
+                exchange: {
+                    title: "Configuration error.",
+                    text: "There was an issue with the tenant configuration. Please contact your Grispi representative to resolve this issue.",
+                },
             },
             modal: {
                 buttons: {
@@ -158,6 +162,10 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
                 forbidden: {
                     title: "Yetkilendirme hatası oldu.",
                     text: "<b>{host}</b> bu arayüzü kullanma iznine sahip değil. Lütfen Grispi yöneticinize danışın.",
+                },
+                exchange: {
+                    title: "Yapılandırma hatası.",
+                    text: "Tenant yapılandırmasında bir sorun oluştu. Bu sorunu çözmek için lütfen Grispi temsilcinizle iletişime geçin.",
                 },
             },
             modal: {

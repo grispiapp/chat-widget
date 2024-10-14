@@ -6,6 +6,7 @@ import { LoadingSpinner } from "@ui/loading-spinner";
 import { useRef } from "preact/hooks";
 import { ContentAuthorized } from "./content-authorized";
 import { ContentCommonError } from "./content-common-error";
+import { ContentExchangeError } from "./content-exchange-error";
 import { ContentForbidden } from "./content-forbidden";
 
 export const ChatBoxContent = () => {
@@ -29,6 +30,8 @@ export const ChatBoxContent = () => {
                     <ContentAuthorized />
                 ) : configurationStatus === ConfigurationStatusEnum.FORBIDDEN ? (
                     <ContentForbidden />
+                ) : configurationStatus === ConfigurationStatusEnum.EXCHANGE_ERROR ? (
+                    <ContentExchangeError />
                 ) : (
                     <ContentCommonError />
                 )}

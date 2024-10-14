@@ -141,6 +141,7 @@ export enum ConfigurationStatusEnum {
     AUTHORIZED = "authorized",
     FORBIDDEN = "forbidden",
     COMMON_ERROR = "common_error",
+    EXCHANGE_ERROR = "exchange_error",
 }
 
 export type ChatBoxState = keyof typeof chatBoxStateMap;
