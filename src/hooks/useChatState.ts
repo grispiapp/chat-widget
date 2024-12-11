@@ -11,11 +11,9 @@ export const useChatState = () => {
 
     useEffect(() => {
         chat?.chatId && storeValue("CHAT_ID", chat.chatId);
-    }, [chat?.chatId]);
-
-    useEffect(() => {
         chat?.chatSessionId && storeValue("CHAT_SESSION_ID", chat.chatSessionId);
-    }, [chat?.chatSessionId]);
+        chat?.userId && storeValue("USER_ID", chat.userId);
+    }, [chat?.chatId, chat?.chatSessionId, chat?.userId]);
 
     useEffect(() => {
         storeValue("LAST_BOX_STATE", state);

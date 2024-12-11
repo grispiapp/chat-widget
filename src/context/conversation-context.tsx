@@ -1,5 +1,6 @@
 import { useTranslation } from "@hooks/useTranslation";
-import { filled, getFirst, tryParseJsonString, uuidv4 } from "@lib/utils";
+import { getStoredValue } from "@lib/storage";
+import { detectConversationState, filled, getFirst, tryParseJsonString, uuidv4 } from "@lib/utils";
 import { sendMediaMessage, sendMessage } from "@lib/websocket";
 import { createContext } from "preact";
 import { type SetStateAction } from "preact/compat";
@@ -270,7 +271,11 @@ export const ConversationContextProvider = ({ children }) => {
     const reset = useCallback(() => {
         if (isOnline === null) return;
 
-        setState("idle");
+        const isChatEnded = getStoredValue("IS_CHAT_ENDED") === "1";
+        const isSurveySent = getStoredValue("IS_SURVEY_SENT") === "1";
+        const conversationState = detectConversationState({ isChatEnded, isSurveySent });
+
+        setState(conversationState);
 
         addMessage(
             {

@@ -11,8 +11,16 @@ import { chatHistory, chatPreferences, createChat, resumeChat } from "../api/cha
 import { useTranslation } from "./useTranslation";
 
 interface SubscribeOptions {
-    loadChatHistory: boolean;
+    loadChatHistory?: boolean;
 }
+
+type SubscribeOptionsWithConfig = SubscribeOptions & {
+    userId: ChatBoxContextType["user"]["id"];
+    chatId: ChatBoxContextType["chat"]["chatId"];
+    chatSessionId: ChatBoxContextType["chat"]["chatSessionId"];
+};
+
+let isHistoryLoaded = false;
 
 export const useChat = () => {
     const notificationAudioRef = useRef<HTMLAudioElement>(null);
@@ -227,6 +235,8 @@ export const useChat = () => {
                 Promise.all(formattedMessages).then((messages) => {
                     debug("The formatted messages loaded from history", { messages });
                 });
+
+                isHistoryLoaded = true;
             } catch (err) {
                 notify({
                     title: t("errors.common.title"),
@@ -241,12 +251,7 @@ export const useChat = () => {
     );
 
     const subscribe = useCallback(
-        async (
-            mode: "create" | "resume",
-            options?: SubscribeOptions & {
-                chatId: ChatBoxContextType["chat"]["chatId"];
-            }
-        ) => {
+        async (mode: "create" | "resume", options?: SubscribeOptionsWithConfig) => {
             const modes = {
                 create: {
                     fn: () => {
@@ -269,12 +274,38 @@ export const useChat = () => {
             const isChatEnded = getStoredValue("IS_CHAT_ENDED") === "1";
             const isSurveySent = getStoredValue("IS_SURVEY_SENT") === "1";
 
+            setConversationState(detectConversationState({ isChatEnded, isSurveySent }));
+
+            const canLoadHistory =
+                mode === "resume" && (options?.loadChatHistory ?? true) && !isHistoryLoaded;
+
+            if (isChatEnded) {
+                if (canLoadHistory) {
+                    const chat: ChatBoxContextType["chat"] = {
+                        userId: options?.userId?.toString(),
+                        chatId: options?.chatId,
+                        chatSessionId: options?.chatSessionId,
+                        subscribed: false,
+                        ended: true,
+                        token: "",
+                        name: "",
+                        email: "",
+                    };
+
+                    const user: ChatBoxContextType["user"] = {
+                        id: options?.userId,
+                        fullName: "",
+                        email: "",
+                    };
+
+                    await loadChatHistory(chat, user);
+                }
+
+                return;
+            }
+
             const response = await modes[mode].fn();
             window.dispatchEvent(new CustomEvent(modes[mode].type, { detail: response }));
-
-            if (!isChatEnded) {
-                await subscribeChat(response);
-            }
 
             const newChatState: ChatBoxContextType["chat"] = {
                 ...response,
@@ -291,11 +322,12 @@ export const useChat = () => {
             debug("setChat", newChatState);
             setChat(newChatState);
             setUser(newUserState);
-            setConversationState(detectConversationState({ isChatEnded, isSurveySent }));
 
-            if (mode === "resume" && (options?.loadChatHistory ?? true)) {
+            if (canLoadHistory) {
                 await loadChatHistory(newChatState, newUserState);
             }
+
+            await subscribeChat(response);
 
             return {
                 chat: newChatState,
@@ -310,8 +342,8 @@ export const useChat = () => {
     }, [subscribe]);
 
     const subscribeToExistingChat = useCallback(
-        async (chatId: ChatBoxContextType["chat"]["chatId"], options?: SubscribeOptions) => {
-            return await subscribe("resume", { chatId, ...options });
+        async (options?: SubscribeOptionsWithConfig) => {
+            return await subscribe("resume", options);
         },
         [subscribe]
     );
@@ -319,6 +351,8 @@ export const useChat = () => {
     const subscribeToExistingChatFromStorage = useCallback(
         async (options?: SubscribeOptions) => {
             const chatId = getChatIdFromStorage();
+            const chatSessionId = getStoredValue("CHAT_SESSION_ID");
+            const userId = Number(getStoredValue("USER_ID"));
 
             if (!chatId) {
                 setChatBoxStatus("idle");
@@ -326,9 +360,14 @@ export const useChat = () => {
             }
 
             try {
-                await subscribeToExistingChat(chatId, options);
+                await subscribeToExistingChat({
+                    ...options,
+                    chatId,
+                    chatSessionId,
+                    userId,
+                });
                 setChatBoxStatus("idle");
-            } catch (err) {
+            } catch (_) {
                 console.error("Error when subscribing to existing chat...");
                 // TODO: We may want to create new chat session.
             }

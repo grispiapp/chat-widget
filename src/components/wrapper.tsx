@@ -49,6 +49,11 @@ export const Wrapper = ({ children }) => {
         const ensureWsSubscription = async () => {
             if (configurationStatus !== ConfigurationStatusEnum.AUTHORIZED) return;
 
+            if (!chat) {
+                debug("Chat not found.");
+                return;
+            }
+
             if (chat?.subscribed === true) {
                 debug("Already subscribed.");
                 return;

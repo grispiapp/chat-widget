@@ -4,6 +4,7 @@ import { getTenantId } from "./utils";
 
 export const STORAGE_KEYS = {
     DISMISS_PROMPT: "grispi.%tenant%.chat.dismissPrompt",
+    USER_ID: "grispi.%tenant%.chat.userId",
     CHAT_ID: "grispi.%tenant%.chat.chatId",
     CHAT_SESSION_ID: "grispi.%tenant%.chat.chatSessionId",
     LAST_MESSAGE_TIME: "grispi.%tenant%.chat.lastMessageTime",
