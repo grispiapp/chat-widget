@@ -54,7 +54,12 @@ export interface GrispiChatOptions {
      *
      * @default true
      */
-    poweredPy?: boolean;
+    poweredBy?: boolean;
+
+    /**
+     * Optional. Custom icon to be displayed in the chat interface.
+     */
+    icon?: "grispi" | "static" | string;
 
     /**
      * Optional. When set to true, the chat will open immediately in a block mode.

@@ -22,10 +22,13 @@
         >
             <div id="chat"></div>
         </div> -->
-        <script
-            type="module"
-            src="/src/index.tsx?tenantId=gsocial&block=0&debug=1"
-            data-grispi-chat-widget
-        ></script>
+        <script type="module" src="/src/index.tsx?tenantId=gsocial&block=0&debug=1"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                GrispiChat.create({
+                    tenantId: "gsocial",
+                });
+            });
+        </script>
     </body>
 </html>

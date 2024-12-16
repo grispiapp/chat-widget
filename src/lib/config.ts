@@ -214,8 +214,9 @@ export const DEFAULT_WIDGET_OPTIONS: Omit<GrispiChatOptions, "tenantId"> = {
     },
     environment: "prod",
     debug: false,
-    poweredPy: true,
+    poweredBy: true,
     renderAsBlock: false,
+    icon: "grispi",
 };
 
 export const ENVIRONMENTS = {

@@ -47,7 +47,7 @@ export const ChatBoxFooter = () => {
                 });
 
                 inputRef.current?.focus();
-            } catch (err) {
+            } catch (_) {
                 setValue(value);
             }
         },
@@ -127,7 +127,7 @@ export const ChatBoxFooter = () => {
                         <Button size="sm" icon={SendIcon} disabled={isInputDisabled} />
                     </div>
                 </form>
-                {options.poweredPy && (
+                {options.poweredBy && (
                     <div className="-cb-mt-1">
                         <PoweredBy />
                     </div>

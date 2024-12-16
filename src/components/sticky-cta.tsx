@@ -6,13 +6,13 @@ import { cn } from "@lib/utils";
 import ChatLauncherPreviewImage from "@resources/images/chat-launcher-preview.png";
 import { Button } from "@ui/button";
 import { useState, type FC } from "preact/compat";
-import { AnimatedGrispiIcon, CloseIcon, ErrorOutlineIcon } from "./icons";
+import { AnimatedGrispiIcon, ChatSmileFillIcon, CloseIcon, ErrorOutlineIcon } from "./icons";
 
-interface StickyCtaProps {}
+interface StickyCtaProps { }
 
 export const StickyCta: FC<StickyCtaProps> = () => {
     const { t } = useTranslation();
-    const { state, toggleState, isOnline, configurationStatus } = useChatBox();
+    const { options, state, toggleState, isOnline, configurationStatus } = useChatBox();
     const [displayPrompt, setDisplayPrompt] = useState<boolean>(!isPromptDismissed());
 
     const handleCloseWelcomeMessage = (e: MouseEvent) => {
@@ -54,9 +54,14 @@ export const StickyCta: FC<StickyCtaProps> = () => {
                     />
                 </div>
             )}
-            <div className="cb-flex cb-h-14 cb-w-14 cb-shrink-0 cb-items-center cb-justify-center cb-rounded-full cb-bg-primary cb-shadow-xl">
-                {/* <ChatSmileFillIcon className="cb-h-7 cb-w-7 cb-text-background" /> */}
-                <AnimatedGrispiIcon className="cb-h-7 cb-w-7 cb-text-background" />
+            <div className="cb-flex cb-h-14 cb-w-14 cb-shrink-0 cb-items-center cb-justify-center cb-rounded-full cb-bg-primary cb-shadow-xl *:cb-size-7 *:cb-text-background">
+                {options.icon === "static" ? (
+                    <ChatSmileFillIcon />
+                ) : options.icon === "grispi" ? (
+                    <AnimatedGrispiIcon />
+                ) : (
+                    <div dangerouslySetInnerHTML={{ __html: options.icon }} />
+                )}
             </div>
             {isOnline && isAuthorized && (
                 <div className="cb-absolute cb-right-0 cb-top-0">
