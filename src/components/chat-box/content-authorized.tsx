@@ -3,9 +3,12 @@ import { ReConnectCard } from "@components/re-connect-card";
 import { SurveyForm } from "@components/survey-form";
 import { UserForm } from "@components/user-form";
 import { useConversation } from "@context/conversation-context";
+import { useProcessSeenMessages } from "@hooks/useProcessSeenMessages";
 
 export const ContentAuthorized = () => {
     const { messages, state: conversationState } = useConversation();
+
+    useProcessSeenMessages();
 
     return (
         <>

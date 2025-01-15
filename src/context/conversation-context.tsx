@@ -72,13 +72,13 @@ const ConversationContext = createContext<ConversationContextType>({
     state: "idle",
     messages: [],
     replies: [],
-    setState: () => {},
-    setReplies: () => {},
-    selectReply: () => {},
-    addMessage: async () => {},
-    updateMessage: () => {},
-    deleteMessage: () => {},
-    reset: () => {},
+    setState: () => { },
+    setReplies: () => { },
+    selectReply: () => { },
+    addMessage: async () => { },
+    updateMessage: () => { },
+    deleteMessage: () => { },
+    reset: () => { },
 });
 
 const setDefaultsForMessage = (message: AddMessage | WsMessage): Message => {
@@ -282,6 +282,7 @@ export const ConversationContextProvider = ({ children }) => {
                 id: "starter",
                 sender: "ai",
                 text: isOnline ? t("welcome_message") : t("offline_message"),
+                status: "seen",
                 shouldSendToApi: false,
             },
             false

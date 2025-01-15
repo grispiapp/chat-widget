@@ -179,6 +179,10 @@ export const isEmail = (input: string): boolean => {
     return EMAIL_REGEX.test(input);
 };
 
+export const isUuid = (uuid: string): boolean => {
+    return /^[a-z,0-9,-]{36,36}$/.test(uuid);
+};
+
 type EncapsulatedStringObject = Record<string, string | object>;
 export function convertKeysToDotNotation(
     object: EncapsulatedStringObject,

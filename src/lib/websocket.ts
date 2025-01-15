@@ -268,6 +268,7 @@ function sendMessageOverWs(message: WsMessage, destination: string): void {
 //<editor-fold desc="sendSeen">
 function sendSeen(messageId: string, chat: SubscribeableChatResponseForEndUser) {
     if (!client?.connected) {
+        debug("sendSeen", "client is not connected", { messageId, chat });
         return;
     }
     client.publish({
@@ -283,8 +284,6 @@ const subscribeChat = async (chat: SubscribeableChatResponseForEndUser) => {
     const destination = destinationPaths(chat.chatSessionId).exchange();
 
     try {
-        await terminateWsConnection();
-
         const gate = {
             token: chat.token,
             brokerUrl: getBrokerUrl(),
