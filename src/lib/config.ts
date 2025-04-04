@@ -224,6 +224,7 @@ export const ENVIRONMENTS = {
     staging: "staging",
     preprod: "preprod",
     prod: "prod",
+    prodtr: "prodtr",
 };
 
 export const API_URLS = {
@@ -231,6 +232,7 @@ export const API_URLS = {
     [ENVIRONMENTS.staging]: "https://api.grispi.dev",
     [ENVIRONMENTS.preprod]: "https://api.grispi.net",
     [ENVIRONMENTS.prod]: "https://api.grispi.com",
+    [ENVIRONMENTS.prodtr]: "https://api.grispi.com.tr",
 };
 
 export const BROKER_URLS = {
@@ -238,6 +240,7 @@ export const BROKER_URLS = {
     [ENVIRONMENTS.staging]: "wss://chat.grispi.dev/socket-registry",
     [ENVIRONMENTS.preprod]: "wss://chat.grispi.net/socket-registry",
     [ENVIRONMENTS.prod]: "wss://chat.grispi.com/socket-registry",
+    [ENVIRONMENTS.prodtr]: "wss://chat.grispi.com.tr/socket-registry",
 };
 
 export const BACKEND_URLS = {
@@ -245,6 +248,7 @@ export const BACKEND_URLS = {
     [ENVIRONMENTS.staging]: "https://chat.grispi.dev",
     [ENVIRONMENTS.preprod]: "https://chat.grispi.net",
     [ENVIRONMENTS.prod]: "https://chat.grispi.com",
+    [ENVIRONMENTS.prodtr]: "https://chat.grispi.com.tr",
 };
 
 export const internalEventTypeMap = {
